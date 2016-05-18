@@ -18,3 +18,8 @@ The package introduces a common namespace and currently supports the following d
 ### Install
 
 pip install skdaccess
+
+
+### Documentation
+
+See <https://github.com/skdaccess/skdaccess/tree/master/skdaccess/docs>
