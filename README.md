@@ -10,7 +10,7 @@ Advantages of skdacces
 - Skdaccess code is open source (MIT License)
 
 The package introduces a common namespace and currently supports the following data sets:
-- Light curves from Kepler
+- Light curves from *Kepler*
 - Water depth from wells in California provided by USGS
 - GPS time series data from the UNAVACO Plate Boundary
 - Grace Tellus Monthly Mass Grids from JPL
