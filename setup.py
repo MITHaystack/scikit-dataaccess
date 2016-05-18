@@ -7,7 +7,7 @@ package_name = 'skdaccess'
 package_list = find_packages()
 
 setup(name     = package_name,
-      version  = '0.9.1',
+      version  = '0.9.2',
       packages = package_list,
       zip_safe = False,
       scripts=['bin/skdaccess'],      
@@ -29,5 +29,5 @@ setup(name     = package_name,
           'Programming Language :: Python :: 3 :: Only'
           ],
 
-      package_data={'skdaccess': ['examples/groundwater_example.py','docs/skdaccess_Doxygen.pdf','docs/skdaccess_manual.pdf']}
+      package_data={'skdaccess': ['examples/groundwater_example.py','docs/skdaccess_doxygen.pdf','docs/skdaccess_manual.pdf']}
       )
