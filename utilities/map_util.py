@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
 # The MIT License (MIT)
-# Copyright (c) 2015 Massachusetts Institute of Technology
+# Copyright (c) 2016 Massachusetts Institute of Technology
 #
 # Author: David Blair
-# This software is part of the NSF DIBBS Project "An Infrastructure for
-# Computer Aided Discovery in Geoscience" , PI: V. Pankratius
+# This software has been created in projects supported by the US National
+# Science Foundation and NASA (PI: Pankratius)
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
