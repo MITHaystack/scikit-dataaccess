@@ -29,10 +29,11 @@ import gzip
 import tarfile
 import glob
 import re
+from urllib.request import urlopen
+from shutil import copyfileobj
 import pandas as pd
 import numpy as np
 import io
-import wget
 import tqdm
 import warnings
 import tables
@@ -320,14 +321,20 @@ def downloadGW(out_file = 'gw_data.h5', local_data = None):
     if local_data is None:
         print("Downloading data from USGS")
         # Download data
-        data_filename = data_filename = wget.download('http://waterservices.usgs.gov/nwis/dv/?format=rdb&stateCd=ca&startDT=1800-01-01&endDT=2020-12-31&statCd=00008&parameterCd=72019&siteType=GW')
-        os.rename(data_filename, 'gw_data.rdb')
-        data_filename = 'gw_data.rdb'
+        data_filename = 'gw_data.rdb'        
+
+        data_file = open(data_filename, 'wb')
+        copyfileobj(urlopen('http://waterservices.usgs.gov/nwis/dv/?format=rdb&stateCd=ca&startDT=1800-01-01&endDT=2020-12-31&statCd=00008&parameterCd=72019&siteType=GW'),
+                    data_file)
+        data_file.close()
+
 
         # Download meta data
-        metadata_filename = wget.download('http://waterservices.usgs.gov/nwis/site/?format=rdb&stateCd=ca&startDT=1800-01-01&endDT=2020-12-31&parameterCd=72019&siteType=GW&hasDataTypeCd=dv')
-        os.rename(metadata_filename, 'gw_metadata.rdb')
-
+        data_file = open('gw_metadata.rdb', 'wb')
+        copyfileobj(urlopen('http://waterservices.usgs.gov/nwis/site/?format=rdb&stateCd=ca&startDT=1800-01-01&endDT=2020-12-31&parameterCd=72019&siteType=GW&hasDataTypeCd=dv'),
+                    data_file)
+        data_file.close()
+        
         print("Download complete")
     else:
         data_filename = local_data
@@ -362,7 +369,7 @@ def downloadGW(out_file = 'gw_data.h5', local_data = None):
 
 
     #Read metadata
-    meta_data = pd.read_table(metadata_filename, skiprows=31, names = ['Agency', 'Site Number', 'Site Name', 'Site Type', 
+    meta_data = pd.read_table('gw_metadata.rdb', skiprows=31, names = ['Agency', 'Site Number', 'Site Name', 'Site Type', 
                                                                        'Lat', 'Lon', 'LatLon Accuracy', 'LatLon Datum',
                                                                        'Altitude', 'Altitude Accuracy', 'Altitude Datum',
                                                                        'Hydrologic Code'], index_col=1)
