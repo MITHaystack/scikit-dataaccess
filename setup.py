@@ -7,7 +7,7 @@ package_name = 'skdaccess'
 package_list = find_packages()
 
 setup(name     = package_name,
-      version  = '0.9.2',
+      version  = '0.9.3',
       packages = package_list,
       zip_safe = False,
       scripts=['bin/skdaccess'],      
