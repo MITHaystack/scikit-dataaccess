@@ -70,7 +70,7 @@ class DataFetcherBase:
 class DataWrapperBase(object):
     ''' Base class for wrapping data for use in DiscoveryPipeline. '''
     
-    def __init__(self, obj_wrap, run_id = -1):
+    def __init__(self, obj_wrap, run_id = -1, meta_data = None):
         '''
         Construct object from input data. 
 
@@ -81,6 +81,7 @@ class DataWrapperBase(object):
         self.results = dict()
         self.constants = dict()
         self.run_id = run_id
+        self.meta_data = meta_data
     
     def update(self, obj):
         ''' Updated wrapped data '''
@@ -118,3 +119,60 @@ class DataWrapperBase(object):
     def getIndices(self):
         ''' Get indices of the data '''
         pass
+
+    def getLength(self):
+        pass
+
+class TableFetcher(DataFetcherBase):
+
+    def __init__(self, pd_data):
+
+        super(TableFetcher, self).__init__([])
+        self.pd_data = pd_data
+
+
+    def output(self):
+        return DataPanelWrapper(self.pd_data)
+
+
+class DataPanelWrapper(DataWrapperBase):
+    '''
+    Generic Data wrapper for pandas data panels. Iterators over data frames
+    '''
+    
+    def getIterator(self):
+        '''
+        Iterator access to data. Iterates over the minor axis.
+
+        @return iterator to data frames from Panel
+        '''
+        for label in self.data.minor_axis:
+            yield label, self.data[:,:,label]
+
+    def getLength(self):
+        '''
+        @return Number of data frames
+        '''
+        return len(self.data.minor_axis)
+            
+
+class DictionaryWrapper(DataWrapperBase):
+    '''
+    Generic data wrapper for a dictionary of data frames
+    '''
+    
+    def getIterator(self):
+        '''
+        Iterator access to data. Iterates over the minor axis.
+
+        @return iterator to data frames from Panel
+        '''        
+        for label in self.data.keys():
+            yield label, self.data[label]
+
+
+    def getLength(self):
+        '''
+        @return Number of data frames
+        '''
+        return len(self.data)

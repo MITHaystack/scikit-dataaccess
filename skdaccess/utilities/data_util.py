@@ -106,14 +106,6 @@ def setDataLocation(data_name, location):
 
 
 def downloadPBO(out_file = 'pbo_data.h5', use_file=None):
-    '''
-    Download and parse data from the Plate Boundary Observatory
-
-    @param out_file: Output filename for parsed data
-    @param use_file: Use already downloaded data. If None, data will be downloaded.
-
-    @return Absolute path of parsed data
-    '''
 
     def convert_timedelta(in_number):
         time_string = str(in_number)
@@ -199,19 +191,10 @@ def downloadPBO(out_file = 'pbo_data.h5', use_file=None):
     return os.path.abspath(out_file)
 
 def downloadGRACE(out_file = 'grace.h5', local_data = None):
-    '''
-    Download and parse data from the Gravity Recovery and Climate Experiment.
 
-    @param out_file: Output filename for parsed data
-    @param local_data: Use already downloaded data. If None, data will be downloaded.
-
-    @return Absolute path of parsed data
-    '''
-    # Get date of grace data from filename
     def getDate(filename):
         return pd.to_datetime(re.search('[0-9]{8}',filename).group())
 
-    # Check if two dates are within 10 days of eachother
     def dateMismatch(date1,date2):
         if np.abs(date1 - date2) > pd.to_timedelta(10, 'D'):
             return True
@@ -274,7 +257,6 @@ def downloadGRACE(out_file = 'grace.h5', local_data = None):
     data = {}
     u_dict = {}
 
-    print('Parsing Grace data')
     for file_list in tqdm.tqdm(zip(jpl_files, csr_files, gfz_files), total=min_length):
 
         # Check for date mismatch
@@ -332,14 +314,6 @@ def downloadGRACE(out_file = 'grace.h5', local_data = None):
     return os.path.abspath(out_file)
 
 def downloadGW(out_file = 'gw_data.h5', local_data = None):
-    '''
-    Download and parse California groundwater data provided by USGS
-
-    @param out_file: Output filename for parsed data
-    @param local_data: Use already downloaded data. If None, data will be downloaded.
-
-    @return Absolute path of parsed data
-    '''
 
     # If using local data metadata name is assumed
     metadata_filename = 'gw_metadata.rdb'
@@ -356,7 +330,7 @@ def downloadGW(out_file = 'gw_data.h5', local_data = None):
 
 
         # Download meta data
-        data_file = open(metadata_filename, 'wb')
+        data_file = open('gw_metadata.rdb', 'wb')
         copyfileobj(urlopen('http://waterservices.usgs.gov/nwis/site/?format=rdb&stateCd=ca&startDT=1800-01-01&endDT=2020-12-31&parameterCd=72019&siteType=GW&hasDataTypeCd=dv'),
                     data_file)
         data_file.close()
@@ -395,7 +369,7 @@ def downloadGW(out_file = 'gw_data.h5', local_data = None):
 
 
     #Read metadata
-    meta_data = pd.read_table(metadata_filename, skiprows=31, names = ['Agency', 'Site Number', 'Site Name', 'Site Type', 
+    meta_data = pd.read_table('gw_metadata.rdb', skiprows=31, names = ['Agency', 'Site Number', 'Site Name', 'Site Type', 
                                                                        'Lat', 'Lon', 'LatLon Accuracy', 'LatLon Datum',
                                                                        'Altitude', 'Altitude Accuracy', 'Altitude Datum',
                                                                        'Hydrologic Code'], index_col=1)
@@ -413,13 +387,6 @@ def downloadGW(out_file = 'gw_data.h5', local_data = None):
     return os.path.abspath(out_file)
 
 def downloadKeplerData(kid_list):
-    '''
-    Download and parse Kepler data for a list of kepler id's
-
-    @param kid_list: List of Kepler ID's to download
-
-    @return dictionary of kepler data
-    '''
 
     return_data = dict()
 

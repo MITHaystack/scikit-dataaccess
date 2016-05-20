@@ -27,7 +27,7 @@ Provides classes for accessing Kepler data.
 """
 
 # mithagi required Base,Utils imports
-from skdaccess.framework.data_class import DataFetcherBase
+from skdaccess.framework.data_class import DataFetcherBase, DictionaryWrapper
 from skdaccess.utilities import trend_util
 from skdaccess.astro.kepler.data_wrapper import DataWrapper
 from skdaccess.utilities import data_util
@@ -46,7 +46,7 @@ from astropy.io import fits
 
 class DataFetcher(DataFetcherBase):
     ''' Data Fetcher for Kepler light curve data '''
-    def __init__(self, ap_paramList, normalize=False, drop_on_quality=False, filter_window=None, quarter_list=None):
+    def __init__(self, ap_paramList, normalize=False, drop_on_quality=False, filter_window=None, quarter_list=None, wrapper_type = 'series'):
         '''
         Initialize Kepler Data Fetcher
 
@@ -55,12 +55,14 @@ class DataFetcher(DataFetcherBase):
         @param drop_on_quality: Drop data if SAP_QUALITY != 0 
         @param filter_window: Size of window used when removing systematic offsets.
         @param quarter_list: List of quarters (0-17)
+        @param wrapper_type: Select the type of iterator wrapper to generate, as series or table
         '''
 
         self.normalize = normalize
         self.drop_on_quality = drop_on_quality
         self.filter_window = filter_window
         self.quarter_list = quarter_list
+        self.wrapper_type = wrapper_type
         super(DataFetcher, self).__init__(ap_paramList)
         
     def output(self):
@@ -125,5 +127,10 @@ class DataFetcher(DataFetcherBase):
                     data = kid_data[kid][kid_data[kid]['QUARTER'] == quarter].loc[:,'PDCSAP_FLUX']                    
                     kid_data[kid].update(data - trend_util.medianFilter(data, self.filter_window, interpolate=False))
 
-
-        return DataWrapper(kid_data)
+        if self.wrapper_type == 'series':
+            return DataWrapper(kid_data)
+        elif self.wrapper_type == 'table':
+            return DictionaryWrapper(kid_data)
+        else:
+            print('... Invald wrapper type, defaulting to series ...')
+            return DataWrapper(kid_data)

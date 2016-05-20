@@ -27,7 +27,7 @@ Provides classes for accessing GRACE data.
 """
 
 # mithagi required Base imports
-from skdaccess.framework.data_class import DataFetcherBase
+from skdaccess.framework.data_class import DataFetcherBase, DataPanelWrapper
 from skdaccess.geo.grace.data_wrapper import DataWrapper
 from skdaccess.utilities.data_util import getDataLocation
 
@@ -38,7 +38,7 @@ import numpy as np
 class DataFetcher(DataFetcherBase):
     ''' Data Fetcher for GRACE data '''
 
-    def __init__(self, ap_paramList, start_date = None, end_date = None, resample = True):
+    def __init__(self, ap_paramList, start_date = None, end_date = None, resample = True, wrapper_type='series'):
         '''
         Construct a Grace Data Fetcher
 
@@ -46,11 +46,13 @@ class DataFetcher(DataFetcherBase):
         @param start_date: Beginning date
         @param end_date: Ending date
         @param resample: Resample the data to daily resolution, leaving NaN's in days without data (Default True)
+        @param wrapper_type: Select the type of iterator wrapper to generate, as series or table
         '''
         
         self.start_date = start_date
         self.end_date = end_date
         self.resample = resample
+        self.wrapper_type = wrapper_type
         super(DataFetcher, self).__init__(ap_paramList)
         
     def output(self):
@@ -106,7 +108,15 @@ class DataFetcher(DataFetcherBase):
         if self.resample == True:
             grace_data = grace_data.reindex(pd.date_range(start_date, end_date))
 
-        return(DataWrapper(grace_data))
+        if self.wrapper_type == 'series':
+            return(DataWrapper(grace_data))
+        elif self.wrapper_type == 'table':
+            grace_data.columns = ['Equivalent Water Thickness (cm)', 'Uncertainty']
+            return(DataPanelWrapper(pd.Panel.from_dict({'GRACE':grace_data},orient='minor')))
+        else:
+            print('... Invald wrapper type, defaulting to series ...')
+            return(DataWrapper(grace_data))
+            
 
     def __str__(self):
         '''

@@ -27,7 +27,7 @@ Provides classes for accessing Groundwater data.
 """
 
 # mithagi required Base imports
-from skdaccess.framework.data_class import DataFetcherBase
+from skdaccess.framework.data_class import DataFetcherBase, DataPanelWrapper
 from skdaccess.utilities.data_util import getDataLocation
 from skdaccess.geo.groundwater.data_wrapper import DataWrapper
 
@@ -40,13 +40,16 @@ class DataFetcher(DataFetcherBase):
     '''
     Generates Data Wrappers of groundwater measurements taken in California
     '''
-    def __init__(self,  ap_paramList = [], start_date = None, end_date = None, cutoff=0.75, adjust_heights = False):
+    def __init__(self,  ap_paramList = [], start_date = None, end_date = None, cutoff=0.75, adjust_heights = False, wrapper_type='series'):
         ''' 
         Construct a Ground Water Data Fetcher
 
         @param ap_paramList[station_list]: List of stations (Optional)
         @param start_date: Starting date (defualt: None)
         @param end_date: Ending date (default: None)
+        @param cutoff: Specified required amount of data at a station
+        @param adjust_heights: Flag to indicate going to water height, instead of original depth to water
+        @param wrapper_type: Select the type of iterator wrapper to generate, as series or table
         '''
         self.meta_data = DataFetcher.getStationMetadata()
 
@@ -55,6 +58,7 @@ class DataFetcher(DataFetcherBase):
         self.ap_paramList = ap_paramList
         self.cutoff = cutoff
         self.adjust_heights = adjust_heights
+        self.wrapper_type = wrapper_type
 
     def output(self):
         ''' 
@@ -102,8 +106,15 @@ class DataFetcher(DataFetcherBase):
                 
         store.close()
 
-        data = DataWrapper(pd.Panel.from_dict(data_dict,orient='minor'), self.meta_data)
-        return data
+        if self.wrapper_type == 'series':
+            data = DataWrapper(pd.Panel.from_dict(data_dict,orient='minor'), self.meta_data)
+            return data
+        elif self.wrapper_type == 'table':
+            return(DataPanelWrapper(pd.Panel.from_dict(data_dict,orient='minor'), meta_data=self.meta_data))
+        else:
+            print('... Invald wrapper type, defaulting to series ...')
+            data = DataWrapper(pd.Panel.from_dict(data_dict,orient='minor'), self.meta_data)
+            
 
     def __str__(self):
         '''

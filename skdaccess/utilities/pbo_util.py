@@ -566,3 +566,4 @@ def nostab_sys(allH,allD,timerng,indx=1,mdyratio=.7):
         smSet_dict[smHdr[ii]['4ID']] = smSet[ii]
         smHdr_dict[smHdr[ii]['4ID']] = smHdr[ii]
     return smSet_dict, smHdr_dict
+

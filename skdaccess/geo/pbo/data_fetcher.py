@@ -27,7 +27,7 @@ Provides classes for accessing PBO data.
 """
 
 # mithagi required Base,Utils imports
-from skdaccess.framework.data_class import DataFetcherBase
+from skdaccess.framework.data_class import DataFetcherBase, DataPanelWrapper
 from skdaccess.utilities import pbo_util
 from skdaccess.utilities import data_util
 
@@ -37,7 +37,6 @@ from skdaccess.geo.pbo.data_wrapper import DataWrapper
 # 3rd party package imports
 import pandas as pd
 import numpy as np
-import pickle
 
 
 
@@ -48,7 +47,7 @@ class DataFetcher(DataFetcherBase):
         2) stabilization area (for running stabilization)
     '''
     
-    def __init__(self, start_time, end_time, lat_range, lon_range, ap_paramList, mdyratio=.5, epFlag=1, stabFlag=1):
+    def __init__(self, start_time, end_time, lat_range, lon_range, ap_paramList, mdyratio=.5, ep_flag=1, stab_flag=1, wrapper_type='series'):
         ''' 
         Initialize a DataFetcher
 
@@ -58,21 +57,25 @@ class DataFetcher(DataFetcherBase):
         @param lon_range: Longitude range used to select stabilization sites
         @range ap_paramList[radius]: Site radius to search around (km)
         @param ap_paramList[geo_point] Tuple containing lat and lon coordinates
+        @param ep_flag: Propagate errors through stabilization
+        @param stab_flag: Perform regional stabilization
+        @param wrapper_type: Select the type of iterator wrapper to generate, as series or table
         '''
         
         
-        self.start_time = start_time
-        self.end_time = end_time
+        self._start_time = start_time
+        self._end_time = end_time
         self.ap_paramList = ap_paramList
-        self.geospace = (lat_range, lon_range)
+        self._geospace = (lat_range, lon_range)
         self.station_list = None
-        self.mdyratio = mdyratio
-        self.epFlag = epFlag
-        self.stabFlag = stabFlag
+        self._mdyratio = mdyratio
+        self._ep_flag = ep_flag
+        self._stab_flag = stab_flag
+        self.wrapper_type = wrapper_type
 
         self.meta_data = DataFetcher.getStationMetadata()
 
-        if stabFlag == 1:
+        if stab_flag == 1:
             self.stabilize()
         else:
             self.rawData()
@@ -119,17 +122,17 @@ class DataFetcher(DataFetcherBase):
 
         storeData = pd.HDFStore(storeData_fn)
 
-        mdyratio = self.mdyratio
-        epFlag = self.epFlag
+        mdyratio = self._mdyratio
+        epFlag = self._ep_flag
 
         keyList =[]
         for ii in storeName.keys():
             coord = storeName[ii]['refNEU']
-            if coord[0]>self.geospace[0][0] and coord[0]<self.geospace[0][1] and coord[1]>self.geospace[1][0] and coord[1]<self.geospace[1][1]:
+            if coord[0]>self._geospace[0][0] and coord[0]<self._geospace[0][1] and coord[1]>self._geospace[1][0] and coord[1]<self._geospace[1][1]:
                 keyList.append(storeName[ii]['4ID'])
-            elif coord[0]>self.geospace[0][0] and coord[0]<self.geospace[0][1] and coord[1]>(360+self.geospace[1][0]) and coord[1]<(360+self.geospace[1][1]):
+            elif coord[0]>self._geospace[0][0] and coord[0]<self._geospace[0][1] and coord[1]>(360+self._geospace[1][0]) and coord[1]<(360+self._geospace[1][1]):
                 keyList.append(storeName[ii]['4ID'])
-        smSet_all, smHdr_all = pbo_util.stab_sys(storeName,storeData,[self.start_time,self.end_time],indx=keyList,mdyratio=mdyratio,errProp=epFlag)
+        smSet_all, smHdr_all = pbo_util.stab_sys(storeName,storeData,[self._start_time,self._end_time],indx=keyList,mdyratio=mdyratio,errProp=epFlag)
 
         self.smSet_all = smSet_all
         self.smHdr_all = smHdr_all
@@ -150,16 +153,16 @@ class DataFetcher(DataFetcherBase):
 
         storeData = pd.HDFStore(storeData_fn)
 
-        mdyratio = self.mdyratio
+        mdyratio = self._mdyratio
 
         keyList =[]
         for ii in storeName.keys():
             coord = storeName[ii]['refNEU']
-            if coord[0]>self.geospace[0][0] and coord[0]<self.geospace[0][1] and coord[1]>self.geospace[1][0] and coord[1]<self.geospace[1][1]:
+            if coord[0]>self._geospace[0][0] and coord[0]<self._geospace[0][1] and coord[1]>self._geospace[1][0] and coord[1]<self._geospace[1][1]:
                 keyList.append(storeName[ii]['4ID'])
-            elif coord[0]>self.geospace[0][0] and coord[0]<self.geospace[0][1] and coord[1]>(360+self.geospace[1][0]) and coord[1]<(360+self.geospace[1][1]):
+            elif coord[0]>self._geospace[0][0] and coord[0]<self._geospace[0][1] and coord[1]>(360+self._geospace[1][0]) and coord[1]<(360+self._geospace[1][1]):
                 keyList.append(storeName[ii]['4ID'])
-        smSet_all, smHdr_all = pbo_util.nostab_sys(storeName,storeData,[self.start_time,self.end_time],indx=keyList,mdyratio=mdyratio)
+        smSet_all, smHdr_all = pbo_util.nostab_sys(storeName,storeData,[self._start_time,self._end_time],indx=keyList,mdyratio=mdyratio)
 
         self.smSet_all = smSet_all
         self.smHdr_all = smHdr_all
@@ -215,7 +218,14 @@ class DataFetcher(DataFetcherBase):
                 data[ii] = self.smSet_all[ii]
                 info[ii] = self.smHdr_all[ii]
 
-        return DataWrapper(pd.Panel.from_dict(data, orient='minor'), geo_point, info)
+        if self.wrapper_type == 'series':
+            return DataWrapper(pd.Panel.from_dict(data, orient='minor'), geo_point, info)
+        elif self.wrapper_type == 'table':
+            return(DataPanelWrapper(pd.Panel.from_dict(data,orient='minor'), meta_data=info))
+        else:
+            print('... Invald wrapper type, defaulting to series ...')
+            return DataWrapper(pd.Panel.from_dict(data, orient='minor'), geo_point, info)
+
 
     def __str__(self):
         '''
