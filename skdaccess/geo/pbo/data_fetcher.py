@@ -48,7 +48,7 @@ class DataFetcher(DataFetcherBase):
         2) stabilization area (for running stabilization)
     '''
     
-    def __init__(self, start_time, end_time, lat_range, lon_range, ap_paramList, mdyratio=.5, epFlag=0, stabFlag=1):
+    def __init__(self, start_time, end_time, lat_range, lon_range, ap_paramList, mdyratio=.5, epFlag=1, stabFlag=1):
         ''' 
         Initialize a DataFetcher
 
