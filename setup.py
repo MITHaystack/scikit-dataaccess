@@ -2,7 +2,7 @@
 from setuptools import setup
 from setuptools import find_packages
 
-package_name = 'skdaccess'
+package_name = 'scikit-dataaccess'
 
 package_list = find_packages()
 
@@ -18,7 +18,7 @@ setup(name     = package_name,
                           'scipy',
                           'setuptools',
                           'astropy>=1.1.2'],
-      description = 'Sci-kit Data Access Package for accessing scientific data sets.',
+      description = 'Scikit Data Access Package for accessing scientific data sets.',
       author = 'MITHAGI',
       author_email='skdaccess@mit.edu',
       classifiers=[
