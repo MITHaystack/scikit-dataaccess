@@ -32,16 +32,17 @@ from skdaccess.utilities import trend_util
 from skdaccess.astro.kepler.data_wrapper import DataWrapper
 from skdaccess.utilities import data_util
 
-# 3rd party package imports
-import pandas as pd
-import numpy as np
+# Standard library imports
 from collections import OrderedDict
 import re
 import glob
 import os
+
+# 3rd party package imports
+import pandas as pd
+import numpy as np
 from astropy.table import Table
 from astropy.io import fits
-
 
 
 class DataFetcher(DataFetcherBase):
@@ -71,7 +72,8 @@ class DataFetcher(DataFetcherBase):
 
         @return DataWrapper
         '''
-        data_location = data_util.getDataLocation('kepler')
+
+        data_location = data_util.getDataLocation('kepler', raise_exception = False)
 
         if data_location == None:
             data_location = os.path.join(os.path.expanduser('~'), '.skdaccess', 'kepler')

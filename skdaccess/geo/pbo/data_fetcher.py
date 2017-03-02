@@ -31,7 +31,7 @@ from skdaccess.framework.data_class import DataFetcherBase, DataPanelWrapper
 from skdaccess.utilities import pbo_util
 from skdaccess.utilities import data_util
 
-#IGNORE THIS LINE
+# Import datawrapper
 from skdaccess.geo.pbo.data_wrapper import DataWrapper
 
 # 3rd party package imports
@@ -82,6 +82,7 @@ class DataFetcher(DataFetcherBase):
 
     def setStationList(self, station_list):
         self.station_list = station_list
+
         
     def stationCheck(self):
         '''
@@ -115,10 +116,7 @@ class DataFetcher(DataFetcherBase):
         
         storeName = self.meta_data
 
-        storeData_fn = data_util.getDataLocation('pbo')
-        if storeData_fn is None:
-            print('Dataset not available')
-            return None
+        storeData_fn = data_util.getDataLocation('pbo')        
 
         storeData = pd.HDFStore(storeData_fn)
 
@@ -147,10 +145,7 @@ class DataFetcher(DataFetcherBase):
         storeName = self.meta_data
 
         storeData_fn = data_util.getDataLocation('pbo')
-        if storeData_fn is None:
-            print('Dataset not available')
-            return None
-
+            
         storeData = pd.HDFStore(storeData_fn)
 
         mdyratio = self._mdyratio
@@ -243,9 +238,6 @@ class DataFetcher(DataFetcherBase):
         '''
 
         storeData_fn = data_util.getDataLocation('pbo')
-        if storeData_fn is None:
-            print('Dataset not available')
-            return None
 
         store = pd.HDFStore(storeData_fn, 'r')
         meta_frame = store['meta_data']

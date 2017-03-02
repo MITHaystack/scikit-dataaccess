@@ -67,10 +67,8 @@ class DataFetcher(DataFetcherBase):
         @return Groundwater Data Wrapper
         '''
 
-        data_file    = getDataLocation('groundwater')
-        if data_file is None:
-            print("No data available")
-            return None
+        
+        data_file = getDataLocation('groundwater')
 
 
         if self.ap_paramList == []:
@@ -127,9 +125,6 @@ class DataFetcher(DataFetcherBase):
 
     def getStationMetadata():
         data_file = getDataLocation('groundwater')
-        if data_file is None:
-            print('Dataset not available')
-            return None
 
         store = pd.HDFStore(data_file,'r')
         meta_data = store['meta_data']

@@ -63,9 +63,6 @@ class DataFetcher(DataFetcherBase):
         '''
 
         data_file = getDataLocation('grace')
-        if data_file is None:
-            print("No data available")
-            return None
         
         geo_point = self.ap_paramList[0]()
         store = pd.HDFStore(data_file, 'r')

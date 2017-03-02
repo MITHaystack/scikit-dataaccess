@@ -47,6 +47,7 @@ from tarfile import TarFile
 from io import BytesIO
 
 import configparser
+from configparser import NoSectionError, NoOptionError
 import os
 
 def getConfig():
@@ -55,7 +56,7 @@ def getConfig():
 
     @return configParser.ConfigParser object of configuration
     '''
-    config_location = os.path.expanduser('~') + '/.skdaccess.conf'
+    config_location = os.path.join(os.path.expanduser('~'), '.skdaccess.conf')
 
     conf = configparser.ConfigParser()
     conf.read(config_location)
@@ -68,13 +69,13 @@ def writeConfig(conf):
 
     @param configparser.ConfigParser object
     '''
-    config_location = os.path.expanduser('~') + '/.skdaccess.conf'
+    config_location = os.path.join(os.path.expanduser('~'), '.skdaccess.conf')
     config_handle = open(config_location, "w")
     conf.write(config_handle)
     config_handle.close()
 
 
-def getDataLocation(data_name):
+def getDataLocation(data_name, raise_exception = True):
     ''' 
     Get the location of data set
 
@@ -85,7 +86,17 @@ def getDataLocation(data_name):
     data_name = str.lower(data_name)
 
     conf = getConfig()
-    return conf.get(data_name, 'data_location', fallback=None)
+
+    try:
+        return conf.get(data_name, 'data_location')
+    except (NoOptionError, NoSectionError) as e:
+        print("Data unavailable. In a terminal, please run: skdaccess", data_name)
+
+        if raise_exception:
+            raise e
+        else:
+            return None
+    
 
 def setDataLocation(data_name, location):
     '''
