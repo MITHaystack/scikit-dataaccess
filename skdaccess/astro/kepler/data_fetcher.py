@@ -74,9 +74,9 @@ class DataFetcher(DataFetcherBase):
         data_location = data_util.getDataLocation('kepler')
 
         if data_location == None:
-            data_location = os.path.expanduser('~') + '/.skdaccess/kepler/'
+            data_location = os.path.join(os.path.expanduser('~'), '.skdaccess', 'kepler')
             os.makedirs(data_location, exist_ok=True)
-            data_location += 'kepler_data.h5'
+            data_location = os.path.join(data_location, 'kepler_data.h5')
             data_util.setDataLocation('kepler', data_location)
 
         store = pd.HDFStore(data_location)
