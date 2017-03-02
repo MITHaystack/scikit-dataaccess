@@ -560,9 +560,11 @@ def nostab_sys(allH,allD,timerng,indx=1,mdyratio=.7):
             smSet.append(pddata)
             smHdr.append(allH[ii])
     
-    # returns the corrected data and the relevant headers as dictionaries, and the transformation's 7-parameters
+    # returns the data and the relevant headers as dictionaries
     smSet_dict = dict(); smHdr_dict = dict()
     for ii in range(len(smHdr)):
+        smSet[ii].loc[:,['dN','dE','dU']] *= 1000
+        smSet[ii].loc[:,['Sn','Se','Su']] *= 1000
         smSet_dict[smHdr[ii]['4ID']] = smSet[ii]
         smHdr_dict[smHdr[ii]['4ID']] = smHdr[ii]
     return smSet_dict, smHdr_dict
