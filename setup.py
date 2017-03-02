@@ -7,10 +7,10 @@ package_name = 'scikit-dataaccess'
 package_list = find_packages()
 
 setup(name     = package_name,
-      version  = '1.0.0',
+      version  = '1.1.0',
       packages = package_list,
       zip_safe = False,
-      scripts=['bin/skdaccess'],      
+      
       install_requires = ['tqdm',
                           'numpy>=1.10',
                           'pandas>=0.17',
@@ -18,6 +18,7 @@ setup(name     = package_name,
                           'scipy',
                           'setuptools',
                           'astropy>=1.1.2'],
+      
       description = 'Scikit Data Access Package for accessing scientific data sets.',
       author = 'MITHAGI',
       author_email='skdaccess@mit.edu',
@@ -28,5 +29,12 @@ setup(name     = package_name,
           'Programming Language :: Python :: 3 :: Only'
           ],
 
-      package_data={'skdaccess': ['examples/groundwater_example.py','docs/skdaccess_doxygen.pdf','docs/skdaccess_manual.pdf']}
+      package_data={'skdaccess': ['examples/groundwater_example.py', 'examples/Demo_Grace.ipynb',
+                                  'examples/Demo_Groundwater.ipynb', 'examples/Demo_Kepler.ipynb',
+                                  'examples/Demo_PBO.ipynb','docs/skdaccess_doxygen.pdf',
+                                  'docs/skdaccess_manual.pdf']},
+
+      entry_points = {'console_scripts': [
+          'skdaccess = skdaccess.commands:skdaccess_script'
+          ]}
       )
