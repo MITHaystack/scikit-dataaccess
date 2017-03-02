@@ -17,7 +17,7 @@ The package introduces a common namespace and currently supports the following d
 
 ### Install
 
-pip install skdaccess
+pip install scikit-dataaccess
 
 
 ### Documentation
