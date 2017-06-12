@@ -1,6 +1,6 @@
 # Scikit Data Access
 
-Advantages of skdacces
+Advantages of skdaccess
 - API to import a data generator + function to get next data chunk (configurable)
 - Eliminates the need to create parsers for each data set and simplifies the construction of scientific data processing pipelines.
 - Enables studies involving data fusion and cross-comparisons from several sources.
@@ -22,4 +22,4 @@ pip install scikit-dataaccess
 
 ### Documentation
 
-See <https://github.com/skdaccess/skdaccess/tree/master/skdaccess/docs>
+See <https://github.com/MITHaystack/scikit-dataaccess/tree/master/skdaccess/docs>
