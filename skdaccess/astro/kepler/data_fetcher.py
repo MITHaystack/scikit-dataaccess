@@ -120,14 +120,15 @@ class DataFetcher(DataFetcherBase):
 
         
         for quarter in quarter_list:
-            data = kid_data[kid].loc[kid_data[kid]['QUARTER'] == quarter, 'PDCSAP_FLUX']
-            if len(data) > 0:
-                if self.normalize:
-                    kid_data[kid].loc[kid_data[kid]['QUARTER'] == quarter, 'PDCSAP_FLUX'] = data / np.nanmedian(data)
+            for kid in kid_list:
+                data = kid_data[kid].loc[kid_data[kid]['QUARTER'] == quarter, 'PDCSAP_FLUX']
+                if len(data) > 0:
+                    if self.normalize:
+                        kid_data[kid].loc[kid_data[kid]['QUARTER'] == quarter, 'PDCSAP_FLUX'] = data / np.nanmedian(data)
 
-                if self.filter_window != None: 
-                    data = kid_data[kid][kid_data[kid]['QUARTER'] == quarter].loc[:,'PDCSAP_FLUX']                    
-                    kid_data[kid].update(data - trend_util.medianFilter(data, self.filter_window, interpolate=False))
+                    if self.filter_window != None:
+                        data = kid_data[kid][kid_data[kid]['QUARTER'] == quarter].loc[:,'PDCSAP_FLUX']
+                        kid_data[kid].update(data - trend_util.medianFilter(data, self.filter_window, interpolate=False))
 
         if self.wrapper_type == 'series':
             return DataWrapper(kid_data)
