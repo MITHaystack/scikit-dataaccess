@@ -7,7 +7,7 @@ package_name = 'scikit-dataaccess'
 package_list = find_packages()
 
 setup(name     = package_name,
-      version  = ‘1.1.1’,
+      version  = '1.1.2',
       packages = package_list,
       zip_safe = False,
       
