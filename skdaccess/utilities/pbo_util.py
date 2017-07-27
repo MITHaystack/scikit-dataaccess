@@ -22,18 +22,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-"""@package pbo_util
-Tools for working with PBO GPS data, including reference frame stabilization code
-"""
+# """@package pbo_util
+# Tools for working with PBO GPS data, including reference frame stabilization code
+# """
 
-from . import map_util as mo
 
 import numpy as np
 import pandas as pd
 import warnings
 from datetime import datetime
 import tqdm
-
 
 def getStationCoords( pbo_info, station_list):
     '''
@@ -56,6 +54,7 @@ def getStationCoords( pbo_info, station_list):
 
     return coord_list
 
+
 def getLatLonRange(pbo_info, station_list):
     '''
     Retrive the range of latitude and longitude occupied by a set of stations
@@ -63,7 +62,7 @@ def getLatLonRange(pbo_info, station_list):
     @param pbo_info: PBO Metadata
     @param station_list: List of stations
 
-    @return array containg two tuples, lat_range and lon_range
+    @return list containg two tuples, lat_range and lon_range
     '''
 
     coord_list = getStationCoords(pbo_info, station_list)
@@ -79,413 +78,177 @@ def getLatLonRange(pbo_info, station_list):
 
     return [lat_range, lon_range]
 
-def mogi(xdata, lat, lon, source_depth, amplitude):
-    source_coords = (lat, lon)
 
-    results = []
+def getROIstations(geo_point,radiusParam,data,header):
+    '''
+    This function returns the 4ID station codes for the stations located in the
+    region of interest defined by the geographic coordinate and a window size.
 
-    for data in xdata:
-
-        dim = data[0]
-        station_coords = (float(data[1]),float(data[2]))
-        # print(station_coords)
-
-        y_distance = mo.wgs84_distance( source_coords, (station_coords[0], source_coords[1]) )
-        x_distance = mo.wgs84_distance( source_coords, (source_coords[0], station_coords[1]) )
-
-        x_distance = x_distance * np.sign(station_coords[1] - source_coords[1])
-        y_distance = y_distance * np.sign(station_coords[0] - source_coords[0])
-
-
-        R3 = (x_distance**2 + y_distance**2 + source_depth**2)**(3/2)
-
-        result = None
-
-        if dim == 'x':
-            result = amplitude * x_distance / R3
-        elif dim == 'y':
-            result = amplitude * y_distance / R3
-        elif dim == 'z':
-            result = amplitude * source_depth / R3
-        else:
-            print("Did not understand dimension")
-
-        results.append(result)
-    return results
-
+    @param geo_point: The geographic (lat,lon) coordinate of interest
+    @param radiusParam: An overloaded radius of interest [km] or latitude and longitude window [deg] around the geo_point
+    @param data: Stabilized (or unstabilized) data generated from the data fetcher or out of stab_sys
+    @param header: Header dictionary with stations metadata keyed by their 4ID code. This is output with the data.
     
-def finite_sphere(xdata, lat, lon, source_depth, amplitude, alpha_rad):
+    @return station_list, list of site 4ID codes in the specified geographic region
+     '''
+    ccPos = (geo_point[0]*np.pi/180, geo_point[1]*np.pi/180)
+    if np.isscalar(radiusParam):
+        station_list = []
+        for ii in header.keys():
+            coord = (header[ii]['refNEU'][0]*np.pi/180,(header[ii]['refNEU'][1]-360)*np.pi/180)
+            dist = 6371*2*np.arcsin(np.sqrt(np.sin((ccPos[0]-coord[0])/2)**2+np.cos(ccPos[0])*np.cos(coord[0])*np.sin((ccPos[1]-coord[1])/2)**2))
+            if np.abs(dist) < radiusParam:
+                station_list.append(header[ii]['4ID'])
+    else:
+        # overloaded radiusParam term to be radius or lat/lon window size
+        latWin = radiusParam[0]/2
+        lonWin = radiusParam[1]/2
+        station_list = []
+
+        try:
+            for ii in header.keys():
+                coord = (header[ii]['refNEU'][0],(header[ii]['refNEU'][1]-360))
+                if (geo_point[0]-latWin)<=coord[0]<=(geo_point[0]+latWin) and (geo_point[1]-lonWin)<=coord[1]<=(geo_point[1]+lonWin):
+                    station_list.append(header[ii]['4ID'])
+        except:
+            station_list = None
+            
+    return station_list
+
+
+def stab_sys(data_iterator,metadata,stab_min_NE=.0005,stab_min_U=.005,sigsc=2,
+             errProp=1):
     '''
-    Volcano Deformation, Dzurisin 2006, pg 290
-    http://link.springer.com/book/10.1007/978-3-540-49302-0
-    '''
-    nu_v = .25
-    C1 = (1+nu_v)/(2*(-7+5*nu_v))
-    C2 = 15*(-2+nu_v)/(4*(-7+5*nu_v))
-    source_coords = (lat, lon)
+    The stab_sys function is a Python implemention of the Helmhert 7-parameter
+    transformation, used to correct for common mode error. This builds on
+    Prof Herring's stab_sys function in his tscon Fortran code. It uses a SVD
+    approach to estimating the rotation matrix gathered from 'Computing Helmert
+    Transformations' by G.A. Watson as well as its references. Note that units
+    should be in meters, that is in the format from the level 2 processed
+    UNAVCO pos files
 
-    results = []
-
-    for data in xdata:
-
-        dim = data[0]
-        station_coords = (float(data[1]),float(data[2]))
-        # print(station_coords)
-
-        y_distance = mo.wgs84_distance( source_coords, (station_coords[0], source_coords[1]) )
-        x_distance = mo.wgs84_distance( source_coords, (source_coords[0], station_coords[1]) )
-        x_distance = x_distance * np.sign(station_coords[1] - source_coords[1])
-        y_distance = y_distance * np.sign(station_coords[0] - source_coords[0])
-
-        R3 = (x_distance**2 + y_distance**2 + source_depth**2)**(3/2)
-        result = None
-        if dim == 'x':
-            result = amplitude *alpha_rad**3*(1+(alpha_rad/source_depth)**3*(C1+C2*source_depth**2/R3**(2/3))) * x_distance / R3
-        elif dim == 'y':
-            result = amplitude *alpha_rad**3*(1+(alpha_rad/source_depth)**3*(C1+C2*source_depth**2/R3**(2/3))) * y_distance / R3
-        elif dim == 'z':
-            result = amplitude *alpha_rad**3*(1+(alpha_rad/source_depth)**3*(C1+C2*source_depth**2/R3**(2/3))) * source_depth / R3
-        else:
-            print("Did not understand dimension")
-
-        results.append(result)
-    return results
+    @param data_iterator: Expects an iterator that returns label, pandas dataframe
+    @param metadata: Metadata that contains 'refXYZ' and 'refNEU'
+    @param stab_min_NE: Optional minimum horizontal covariance parameter
+    @param stab_min_U: Optional minimum vertical covariance parameter
+    @param sigsc: Optional scaling factor for determining cutoff bounds for non@param stable sites
+    @param errorProp: Propagate errors through the transformation
     
-
-def closed_pipe(xdata, lat, lon, source_depth, amplitude, pipe_delta):
-    '''
-    Volcano Deformation, Dzurisin 2006, pg 292
-    http://link.springer.com/book/10.1007/978-3-540-49302-0
-    '''
-    nu_v = .25
-    source_coords = (lat, lon)
-
-    results = []
-
-    for data in xdata:
-
-        dim = data[0]
-        station_coords = (float(data[1]),float(data[2]))
-        # print(station_coords)
-
-        y_distance = mo.wgs84_distance( source_coords, (station_coords[0], source_coords[1]) )
-        x_distance = mo.wgs84_distance( source_coords, (source_coords[0], station_coords[1]) )
-        x_distance = x_distance * np.sign(station_coords[1] - source_coords[1])
-        y_distance = y_distance * np.sign(station_coords[0] - source_coords[0])
-
-        result = None
-        c1 = source_depth + pipe_delta
-        c2 = source_depth - pipe_delta
-        R_1 = (x_distance**2 + y_distance**2 + c1**2)**(1/2)
-        R_2 = (x_distance**2 + y_distance**2 + c2**2)**(1/2)
-        r2  = (x_distance**2 + y_distance**2)
-        if dim == 'x':
-            result = amplitude *((c1/R_1)**3+2*c1*(-3+5*nu_v)/R_1+(5*c2**3*(1-2*nu_v)-2*c2*r2*(-3+5*nu_v))/R_2**3) * x_distance / r2
-        elif dim == 'y':
-            result = amplitude *((c1/R_1)**3+2*c1*(-3+5*nu_v)/R_1+(5*c2**3*(1-2*nu_v)-2*c2*r2*(-3+5*nu_v))/R_2**3) * y_distance / r2
-        elif dim == 'z':
-            result = - amplitude *(c1**2/R_1**3+2*(-2+5*nu_v)/R_1+(c2**2*(3-10*nu_v)-2*r2*(-2+5*nu_v))/R_2**3)
-        else:
-            print("Did not understand dimension")
-
-        results.append(result)
-    return results
+    @return smSet, a reduced size dictionary of the data (in mm) for the sites in the specified geographic region,
+            smHdr, a reduced size dictionary of the headers for the sites in the region
+     '''
     
-    
-def constant_open_pipe(xdata, lat, lon, source_depth, amplitude, pipe_delta):
-    '''
-    Volcano Deformation, Dzurisin 2006, pg 295
-    http://link.springer.com/book/10.1007/978-3-540-49302-0
-    '''
-    nu_v = .25
-    source_coords = (lat, lon)
-
-    results = []
-
-    for data in xdata:
-
-        dim = data[0]
-        station_coords = (float(data[1]),float(data[2]))
-        # print(station_coords)
-
-        y_distance = mo.wgs84_distance( source_coords, (station_coords[0], source_coords[1]) )
-        x_distance = mo.wgs84_distance( source_coords, (source_coords[0], station_coords[1]) )
-        x_distance = x_distance * np.sign(station_coords[1] - source_coords[1])
-        y_distance = y_distance * np.sign(station_coords[0] - source_coords[0])
-
-        result = None
-        c1 = source_depth + pipe_delta
-        c2 = source_depth - pipe_delta
-        R_1 = (x_distance**2 + y_distance**2 + c1**2)**(1/2)
-        R_2 = (x_distance**2 + y_distance**2 + c2**2)**(1/2)
-        r2  = (x_distance**2 + y_distance**2)
-        if dim == 'x':
-            result = amplitude *((c1/R_1)**3-2*c1*(1+nu_v)/R_1+(c2**3*(1+2*nu_v)+2*c2*r2*(1+nu_v))/R_2**3)* x_distance / r2
-        elif dim == 'y':
-            result = amplitude *((c1/R_1)**3-2*c1*(1+nu_v)/R_1+(c2**3*(1+2*nu_v)+2*c2*r2*(1+nu_v))/R_2**3)* y_distance / r2
-        elif dim == 'z':
-            result = - amplitude *(c1**2/R_1**3-2*nu_v/R_1+(-c2**2+2*R_2**2*nu_v)/R_2**3)
-        else:
-            print("Did not understand dimension")
-
-        results.append(result)
-    return results
-    
-       
-def rising_open_pipe(xdata, lat, lon, source_depth, amplitude, pipe_delta,open_pipe_top):
-    '''
-    Volcano Deformation, Dzurisin 2006, pg 295
-    http://link.springer.com/book/10.1007/978-3-540-49302-0
-    '''
-    nu_v = .25
-    source_coords = (lat, lon)
-
-    results = []
-
-    for data in xdata:
-
-        dim = data[0]
-        station_coords = (float(data[1]),float(data[2]))
-        # print(station_coords)
-
-        y_distance = mo.wgs84_distance( source_coords, (station_coords[0], source_coords[1]) )
-        x_distance = mo.wgs84_distance( source_coords, (source_coords[0], station_coords[1]) )
-        x_distance = x_distance * np.sign(station_coords[1] - source_coords[1])
-        y_distance = y_distance * np.sign(station_coords[0] - source_coords[0])
-
-        result = None
-        c0 = open_pipe_top
-        c1 = source_depth + pipe_delta
-        R_0 = (x_distance**2 + y_distance**2 + c0**2)**(1/2)
-        R_1 = (x_distance**2 + y_distance**2 + c1**2)**(1/2)
-        r2  = (x_distance**2 + y_distance**2)
-        if dim == 'x':
-            result = amplitude *(-(c0**2/R_0**3)+2*nu_v/R_0+(c1**2-2*(c1**2+r2)*nu_v)/R_1**3)* x_distance / c1
-        elif dim == 'y':
-            result = amplitude *(-(c0**2/R_0**3)+2*nu_v/R_0+(c1**2-2*(c1**2+r2)*nu_v)/R_1**3)* y_distance / c1
-        elif dim == 'z':
-            result = -amplitude *((c0**3/R_0**3)-c1**3/R_1**3+c1*(-1+2*nu_v)/R_1+c0*(1-2*nu_v)/R_0+(-1+2*nu_v)*np.log(c0+R_0)-(-1+2*nu_v)*np.log(c1+R_1))/ c1
-        else:
-            print("Did not understand dimension")
-
-        results.append(result)
-    return results
-    
-    
-def sill(xdata, lat, lon, source_depth, amplitude):
-    '''
-    Volcano Deformation, Dzurisin 2006, pg 297
-    http://link.springer.com/book/10.1007/978-3-540-49302-0
-    '''
-    source_coords = (lat, lon)
-    results = []
-
-    for data in xdata:
-
-        dim = data[0]
-        station_coords = (float(data[1]),float(data[2]))
-        # print(station_coords)
-
-        y_distance = mo.wgs84_distance( source_coords, (station_coords[0], source_coords[1]) )
-        x_distance = mo.wgs84_distance( source_coords, (source_coords[0], station_coords[1]) )
-        x_distance = x_distance * np.sign(station_coords[1] - source_coords[1])
-        y_distance = y_distance * np.sign(station_coords[0] - source_coords[0])
-
-        R5 = (x_distance**2 + y_distance**2 + source_depth**2)**(5/2)
-        result = None
-        if dim == 'x':
-            result = amplitude * x_distance * source_depth**2 / R5
-        elif dim == 'y':
-            result = amplitude * y_distance * source_depth**2 / R5
-        elif dim == 'z':
-            result = amplitude * source_depth**3 / R5
-        else:
-            print("Did not understand dimension")
-
-        results.append(result)
-    return results
-    
-    
-def getEigenvectors(pcaRes, geo_point, stationList, info_dict):
-        '''
-        returns the eigenvectors, all pointing "outward" for plotting
-        '''
-        n_stations = len(stationList)
-        f_pca = pcaRes['CA']
-        component = 1
-        
-        eigen_vectors = []
-        for i in range(n_stations):
-            eigen_vectors.append((f_pca.components_[component-1][i*2+1], f_pca.components_[component-1][i*2]))
-
-        dd = 0.01 #fixed distance for evaluating new coordinate
-        in_cnt = 0; out_cnt = 0; null_cnt = 0
-        poi_coord = np.array(geo_point)*np.pi/180
-        for jj in range(0,len(stationList)):
-            # check overall horizontal movement as in or out configuration
-            ii = stationList[jj]
-            coord = (info_dict[ii]['refNEU'][0]*np.pi/180,(info_dict[ii]['refNEU'][1]-360)*np.pi/180)
-            dist = 6371*2*np.arcsin(np.sqrt(np.sin((poi_coord[0]-coord[0])/2)**2
-                                    +np.cos(poi_coord[0])*np.cos(coord[0])*(np.sin((poi_coord[1]-coord[1])/2))**2))
-            eig_ang = np.arctan2(eigen_vectors[jj][1],eigen_vectors[jj][0])
-            ncoord = (coord[0]+dd*np.sin(eig_ang)*np.pi/180,coord[1]+dd*np.cos(eig_ang)*np.pi/180)                
-            ndist = 6371*2*np.arcsin(np.sqrt(np.sin((poi_coord[0]-ncoord[0])/2)**2
-                                    +np.cos(poi_coord[0])*np.cos(ncoord[0])*(np.sin((poi_coord[1]-ncoord[1])/2))**2))
-            if ndist>dist:
-                out_cnt += 1
-            elif ndist<dist:
-                in_cnt += 1
-            else:
-                null_cnt += 1
-        # flip eigenvectors and projection
-        if in_cnt>(out_cnt+null_cnt):
-            eigen_vectors = (np.array(eigen_vectors)*-1).tolist()
-            pcaRes['Projection'] *= -1
-
-        return eigen_vectors
-
-        
-        
-## The stab_sys function is a Python implemention of the Helmhert 7-parameter
-#  transformation, used to correct for common mode error. This builds on
-#  Prof Herring's stab_sys function in his tscon Fortran code. It uses a SVD
-#  approach to estimating the rotation matrix gathered from 'Computing Helmert
-#  Transformations' by G.A. Watson as well as its references. Note that units
-#  should be in meters, that is in the format from the level 2 processed
-#  UNAVCO pos files
-#  Input:
-#   - allH, a dictionary of all of the headers of all sites loaded from the data directory
-#   - allD, a dictionary of all of the panda format data of all of the corresponding sites
-#   - timerng, an array with two string elements, describing the starting and ending dates
-#   - indx, a list of site 4ID's indicating stations in the relevant geographic location
-#   - stab_min_NE, optional minimum horizontal covariance parameter
-#   - stab_min_U, optional minimum vertical covariance parameter
-#   - sigsc, optional scaling factor for determining cutoff bounds for non-stable sites
-#   - mdyratio, optional parameter for the minimum required ratio of data to determine if a site is kept for further analysis
-#
-#  Output:
-#   - smSet, a reduced size dictionary of the data for the sites in the specified geographic region
-#   - smHdr, a reduced size dictionary of the headers for the sites in the region
-#   - R, the calculated 3x3 rotation matrix
-#   - sc, the scaling parameter
-#   - t, the translation 3x1 vector
-def stab_sys(allH,allD,timerng,indx=1,stab_min_NE=.0005,stab_min_U=.005,sigsc=2,mdyratio=.7,errProp=0):
     # grabs all of the relevant data into labeled matrices
     smTestFlag = 0; numSites = 0; smSet = []; smHdr = [];
-    datelen = pd.date_range(start=timerng[0],end=timerng[1],freq='D').shape[0]
-    smNEUcov = []
-    # needs the specified ratio of data to be present for further use. or at least 2 years
-    if mdyratio == 0:
-        mindays = 731
-    else:
-        mindays = ((datetime.strptime(timerng[1],"%Y-%m-%d")-datetime.strptime(timerng[0],"%Y-%m-%d")).days)*mdyratio   
+    smNEUcov = [];
     
     #grab specified sites from the given list of data, or defaults to using all of the sites
-    if indx == 1:
-        indx = allH.keys()
-    if 'Snow' in allD['data_' + indx[0]].keys():
-        snowDat = 1
-    else:
-        snowDat = 0
-    for ii in tqdm.tqdm(indx):
-        if snowDat == 0:
-            dCheck = allD['data_' + ii][timerng[0]:timerng[1]].shape[0]
-        elif snowDat == 1:
-            dCheck = sum(np.isfinite(allD['data_' + ii][timerng[0]:timerng[1]]['dN']))
-        if dCheck>mindays:
-            # requires the minimum amount of data to be present
-            # resamples these stations to daily
-            pddata = allD['data_' + ii][timerng[0]:timerng[1]]
-            if pddata.shape[0] < datelen:
-                pddata = pddata.reindex(pd.date_range(start=timerng[0],end=timerng[1],freq='D'))
-            else:
-                pddata = pddata.reindex(pd.date_range(start=pddata.index[0],end=pddata.index[-1],freq='D'))
-            if smTestFlag == 0:
-                # grabbing position changes and the NEU change uncertainty
-                # instead of positions ([2,3,4] and [11,12,13])
-                smXYZ = pddata.ix[:,[2,3,4]] - allH[ii]['refXYZ']
-                smNEU = pddata.ix[:,[14,15,16]]
-                smNEcov = np.sqrt(pddata.ix[:,17]**2 + pddata.ix[:,18]**2)
-                smUcov = pddata.ix[:,19]**2
-                smTestFlag = 1
-                
-            else:
-                smXYZ = np.concatenate((smXYZ.T,(pddata.ix[:,[2,3,4]] - allH[ii]['refXYZ']).T)).T
-                smNEU = np.concatenate((smNEU.T,pddata.ix[:,[14,15,16]].T)).T
-                smNEcov = np.vstack((smNEcov,np.sqrt(pddata.ix[:,17]**2 + pddata.ix[:,18]**2)))
-                smUcov = np.vstack((smUcov,(pddata.ix[:,19]**2)))
-            if errProp==1:
-                smNEUcov.append(np.array(pddata.ix[:,17:23]))
-                
-            # also keep the headers
-            numSites += 1
-            smSet.append(pddata)
-            smHdr.append(allH[ii])
+
+    for ii, pddata in data_iterator:
+        # requires the minimum amount of data to be present
+        # resamples these stations to daily
+
+        if smTestFlag == 0:
+            # grabbing position changes and the NEU change uncertainty
+            # instead of positions ([2,3,4] and [11,12,13])
+            #  --> had to put the factor of 1000 back in from raw stab processing
+            smXYZ = pddata.loc[:,['X','Y','Z']] - metadata[ii]['refXYZ']
+            smNEU = pddata.loc[:,['dN','dE','dU']]
+            smNEcov = np.sqrt(pddata.loc[:,'Sn']**2 + pddata.loc[:,'Se']**2)
+            smUcov = pddata.loc[:,'Su']**2
+            smTestFlag = 1
             
-    smNEcov = smNEcov.T
-    smUcov = smUcov.T
-    smNEUcov = np.array(smNEUcov)
-    
-    # minimum tolerances, number of sigma cutoff defined in input
-    sNEtol = np.nanmax(np.vstack(((np.nanmedian(smNEcov,axis=1)-np.nanmin(smNEcov,axis=1)).T,np.ones((datelen,))*stab_min_NE)),axis=0)
-    sUtol = np.nanmax(np.vstack(((np.nanmedian(smUcov,axis=1)-np.nanmin(smUcov,axis=1)).T,np.ones((datelen,))*stab_min_U)),axis=0)
-    stable_site_idx = (np.nan_to_num(smNEcov-np.tile(np.nanmin(smNEcov,axis=1),(numSites,1)).T)<(sigsc*np.tile(sNEtol,(numSites,1)).T))
-    stable_site_idx *= (np.nan_to_num(smUcov-np.tile(np.nanmin(smUcov,axis=1),(numSites,1)).T)<(sigsc*np.tile(sUtol,(numSites,1)).T))                                       
-    if np.min(np.sum(stable_site_idx,axis=1)<3):
-        warnings.warn('Fewer than 3 stabilization sites in part of this interval')                
-    # compute the parameters for each time step
-    stable_site_idx = np.repeat(stable_site_idx,3,axis=1)
-    stable_site_idx[pd.isnull(smXYZ)] = False
-    for ii in range(datelen):
-        # cut out the nans for stable sites
-        xyz = smXYZ[ii,stable_site_idx[ii,:]]
-        xyz = np.reshape(xyz,[len(xyz)/3,3])
-        neu = smNEU[ii,stable_site_idx[ii,:]]
-        neu = np.reshape(neu,[len(neu)/3,3])
-        # find mean and also remove it from the data
-        xyzm = np.mean(xyz,axis=0)
-        xyz = xyz - xyzm
-        neum = np.mean(neu,axis=0)
-        neu = neu - neum
-        # using an SVD method instead
-        U,s,V = np.linalg.linalg.svd(np.dot(xyz.T,neu))
-        R=np.dot(U,V)
-        sc = (np.sum(np.diag(np.dot(neu,np.dot(R.T,xyz.T)))))/(np.sum(np.diag(np.dot(xyz,xyz.T))))
-        t = neum - sc*np.dot(xyzm,R)
-        # looping over all sites to apply stabilization, including "stable" sites
-        # no need to remove nans as transformed nans still nan
-        xyz = smXYZ[ii,pd.isnull(smXYZ[ii,:])==False]
-        xyz = np.reshape(xyz,[len(xyz)/3,3])
-        smNEU[ii,pd.isnull(smXYZ[ii,:])==False] = np.reshape(np.dot(xyz,R)*sc + t,[len(xyz)*3,])
-        
-        # do error propagation
+        else:
+            smXYZ = np.concatenate((smXYZ.T,(pddata.loc[:,['X','Y','Z']] - metadata[ii]['refXYZ']).T)).T
+            smNEU = np.concatenate((smNEU.T,pddata.loc[:,['dN','dE','dU']].T)).T
+            smNEcov = np.vstack((smNEcov,np.sqrt(pddata.loc[:,'Sn']**2 + pddata.loc[:,'Se']**2)))
+            smUcov = np.vstack((smUcov,pddata.loc[:,'Su']**2))
         if errProp==1:
-            propagateErrors(R,sc,smNEUcov[:,ii,:])
+            smNEUcov.append(np.array(pddata.loc[:,['Sn','Se','Su','Rne','Rnu','Reu']]))
+            
+        # also keep the headers
+        numSites += 1
+        smSet.append(pddata)
+        smHdr.append(metadata[ii])
         
+    # grab the datelen from the last data chunk
+    datelen = len(pddata)
+            
+    if numSites <= 1:
+        # no or only 1 stations
+        return dict(), dict()
+    else:
+        # do stabilization
+        smNEcov = smNEcov.T
+        smUcov = smUcov.T
+        smNEUcov = np.array(smNEUcov)
         
-    # fit back into the panda format overall data set, replaces original NEU, changes to mm units
-    for jj in range(len(smSet)):
-        smSet[jj].ix[:,14:17] = smNEU[:,jj*3:(jj+1)*3]*1000
-        # the "covariances" put back in also now in mm units
-        if errProp==1:
-            smSet[jj].ix[:,17:23] = smNEUcov[jj,:,:]
-    
-    # returns the corrected data and the relevant headers as dictionaries, and the transformation's 7-parameters
-    smSet_dict = dict(); smHdr_dict = dict()
-    for ii in range(len(smHdr)):
-        smSet_dict[smHdr[ii]['4ID']] = smSet[ii]
-        smHdr_dict[smHdr[ii]['4ID']] = smHdr[ii]
-    return smSet_dict, smHdr_dict
+        # minimum tolerances, number of sigma cutoff defined in input
+        sNEtol = np.nanmax(np.vstack(((np.nanmedian(smNEcov,axis=1)-np.nanmin(smNEcov,axis=1)).T,np.ones((datelen,))*stab_min_NE)),axis=0)
+        sUtol = np.nanmax(np.vstack(((np.nanmedian(smUcov,axis=1)-np.nanmin(smUcov,axis=1)).T,np.ones((datelen,))*stab_min_U)),axis=0)
+        stable_site_idx = (np.nan_to_num(smNEcov-np.tile(np.nanmin(smNEcov,axis=1),(numSites,1)).T)<(sigsc*np.tile(sNEtol,(numSites,1)).T))
+        stable_site_idx *= (np.nan_to_num(smUcov-np.tile(np.nanmin(smUcov,axis=1),(numSites,1)).T)<(sigsc*np.tile(sUtol,(numSites,1)).T))                                       
+        if np.min(np.sum(stable_site_idx,axis=1)<3):
+            warnings.warn('Fewer than 3 stabilization sites in part of this interval')                
+        # compute the parameters for each time step
+        stable_site_idx = np.repeat(stable_site_idx,3,axis=1)
+        stable_site_idx[pd.isnull(smXYZ)] = False
+        for ii in range(datelen):
+            # cut out the nans for stable sites
+            xyz = smXYZ[ii,stable_site_idx[ii,:]]
+            xyz = np.reshape(xyz,[int(len(xyz)/3),3])
+            neu = smNEU[ii,stable_site_idx[ii,:]]
+            neu = np.reshape(neu,[int(len(neu)/3),3])
+            # find mean and also remove it from the data
+            xyzm = np.mean(xyz,axis=0)
+            xyz = xyz - xyzm
+            neum = np.mean(neu,axis=0)
+            neu = neu - neum
+            # using an SVD method instead
+            U,s,V = np.linalg.linalg.svd(np.dot(xyz.T,neu))
+            R=np.dot(U,V)
+            sc = (np.sum(np.diag(np.dot(neu,np.dot(R.T,xyz.T)))))/(np.sum(np.diag(np.dot(xyz,xyz.T))))
+            t = neum - sc*np.dot(xyzm,R)
+            # looping over all sites to apply stabilization, including "stable" sites
+            # no need to remove nans as transformed nans still nan
+            xyz = smXYZ[ii,pd.isnull(smXYZ[ii,:])==False]
+            xyz = np.reshape(xyz,[int(len(xyz)/3),3])
+            smNEU[ii,pd.isnull(smXYZ[ii,:])==False] = np.reshape(np.dot(xyz,R)*sc + t,[len(xyz)*3,])
+            
+            # do error propagation
+            if errProp==1:
+                propagateErrors(R,sc,smNEUcov[:,ii,:])
+            
+            
+        # fit back into the panda format overall data set, replaces original NEU, changes to mm units
+        for jj in range(len(smSet)):
+            smSet[jj].loc[:,['dN','dE','dU']] = smNEU[:,jj*3:(jj+1)*3]*1000
+            # the "covariances" put back in also now in mm units
+            if errProp==1:
+                smSet[jj].loc[:,['Sn','Se','Su','Rne','Rnu','Reu']] = smNEUcov[jj,:,:]
+        
+        # returns the corrected data and the relevant headers as dictionaries, and the transformation's 7-parameters
+        smSet_dict = dict(); smHdr_dict = dict()
+        for ii in range(len(smHdr)):
+            smSet_dict[smHdr[ii]['4ID']] = smSet[ii]
+            smHdr_dict[smHdr[ii]['4ID']] = smHdr[ii]
+        return smSet_dict, smHdr_dict
 
 
 
 def propagateErrors(R,sc,stationCovs):
-    # by writing out the R*E*R.T equations... to calculate the new covariance matrix
-    # without needing to form the matrix first as an intermediate step
+    '''
+    By writing out the R*E*R.T equations... to calculate the new covariance matrix
+    without needing to form the matrix first as an intermediate step. Modifies
+    covariance matrix in place
+
+    @param R: Rotation matrix
+    @param sc: Scaling value
+    @param stationCovs: Station Covariances
+    '''
 
     oldCs = stationCovs.copy()
     # need to make a copy to get the std & correlations to covariances
-    oldCs[:,0:3] *= 1e3
     oldCs[:,3] *= oldCs[:,0]*oldCs[:,1]
     oldCs[:,4] *= oldCs[:,0]*oldCs[:,2]
     oldCs[:,5] *= oldCs[:,1]*oldCs[:,2]
@@ -510,42 +273,38 @@ def propagateErrors(R,sc,stationCovs):
                 R[0,1]*R[1,2]+R[0,2]*R[1,1],R[0,1]*R[2,2]+R[0,2]*R[1,2],
                 R[2,2]*R[1,1]+R[1,2]**2])/(stationCovs[:,1]*stationCovs[:,2])
 
+    oldCs[:,0:3] *= 1000
 
 
-## The nostab_sys function does not apply stabilization and simply returns 
-#  stations after checking for sufficient amount of data
-#  Input:
-#   - allH, a dictionary of all of the headers of all sites loaded from the data directory
-#   - allD, a dictionary of all of the panda format data of all of the corresponding sites
-#   - timerng, an array with two string elements, describing the starting and ending dates
-#   - indx, a list of site 4ID's indicating stations in the relevant geographic location
-#   - mdyratio, optional parameter for the minimum required ratio of data to determine if a site is kept for further analysis
-#
-#  Output:
-#   - smSet, a reduced size dictionary of the data for the sites in the specified geographic region
-#   - smHdr, a reduced size dictionary of the headers for the sites in the region
 def nostab_sys(allH,allD,timerng,indx=1,mdyratio=.7):
+    '''
+    The nostab_sys function does not apply stabilization and simply returns 
+    stations after checking for sufficient amount of data
+
+    @param allH: a dictionary of all of the headers of all sites loaded from the data directory
+    @param allD: a dictionary of all of the panda format data of all of the corresponding sites
+    @param timerng: an array with two string elements, describing the starting and ending dates
+    @param indx: a list of site 4ID's indicating stations in the relevant geographic location, or 1 for all sites
+    @param mdyratio: optional parameter for the minimum required ratio of data to determine if a sitef is kept for further analysis
+ 
+    @return smSet, a reduced size dictionary of the data (in meters) for the sites in the specified geographic region and
+            smHdr, a reduced size dictionary of the headers for the sites in the region
+    '''
+    
     # grabs all of the relevant data into labeled matrices
     numSites = 0; smSet = []; smHdr = [];
     datelen = pd.date_range(start=timerng[0],end=timerng[1],freq='D').shape[0]
-    # needs the specified ratio of data to be present for further use. or at least 2 years
-    if mdyratio == 0:
-        mindays = 731
+    # needs the specified ratio of data to be present for further use. or number of days
+    if mdyratio > 1:
+        mindays = mdyratio
     else:
         mindays = ((datetime.strptime(timerng[1],"%Y-%m-%d")-datetime.strptime(timerng[0],"%Y-%m-%d")).days)*mdyratio   
     
     #grab specified sites from the given list of data, or defaults to using all of the sites
     if indx == 1:
-        indx = allH.keys()
-    if 'Snow' in allD['data_' + indx[0]].keys():
-        snowDat = 1
-    else:
-        snowDat = 0
+        indx = list(allH.keys())
     for ii in tqdm.tqdm(indx):
-        if snowDat == 0:
-            dCheck = allD['data_' + ii][timerng[0]:timerng[1]].shape[0]
-        elif snowDat == 1:
-            dCheck = sum(np.isfinite(allD['data_' + ii][timerng[0]:timerng[1]]['dN']))
+        dCheck = allD['data_' + ii][timerng[0]:timerng[1]].shape[0]
         if dCheck>mindays:
             # requires the minimum amount of data to be present
             # resamples these stations to daily
@@ -560,12 +319,53 @@ def nostab_sys(allH,allD,timerng,indx=1,mdyratio=.7):
             smSet.append(pddata)
             smHdr.append(allH[ii])
     
-    # returns the data and the relevant headers as dictionaries
+    # returns the data and the relevant headers as dictionaries, and the transformation's 7-parameters
     smSet_dict = dict(); smHdr_dict = dict()
     for ii in range(len(smHdr)):
-        smSet[ii].loc[:,['dN','dE','dU']] *= 1000
-        smSet[ii].loc[:,['Sn','Se','Su']] *= 1000
         smSet_dict[smHdr[ii]['4ID']] = smSet[ii]
         smHdr_dict[smHdr[ii]['4ID']] = smHdr[ii]
     return smSet_dict, smHdr_dict
 
+
+def removeAntennaOffset(antenna_offsets, data, window_start = pd.to_timedelta('4D'), window_end=pd.to_timedelta('4D'),min_diff=0.005, debug=False):
+    '''
+    Remove offsets caused by changes in antennas
+
+    @param antenna_offsets: Pandas series of dates describing when the antenna changes were made
+    @param data: Input GPS data
+    @param window_start: Starting time before and after event to use for calculating offset
+    @param window_end: Ending time before and after event to use before calculating offset
+    @param min_diff: Minimum difference before and after offset to for applying correction
+    @param debug: Enable debug output
+
+    @return GPS data with the offsets removed
+    '''
+    if antenna_offsets is None:
+        return data
+
+    data_copy = data.copy()
+    
+    for full_offset in antenna_offsets:
+
+        # truncate date
+        offset = pd.to_datetime(pd.datetime(full_offset.year, full_offset.month, full_offset.day))
+
+        if offset > (data.index[0] + window_end):
+        
+            before = data_copy.loc[(offset - window_end) - window_start : offset-window_start]
+            after = data_copy.loc[offset + window_start : (offset + window_end) + window_start]
+
+            if min(len(after.dropna()),len(before.dropna())) > 0:
+                if np.abs(np.nanmedian(before) - np.nanmedian(after)) >= min_diff:                    
+                    if debug == True:
+                        print('fixing',offset, end=': ')
+                        print(np.nanmedian(before)*1e3, np.nanmedian(after)*1e3)
+                        
+                    data_copy.loc[offset:] = data_copy.loc[offset:] + (np.nanmedian(before) - np.nanmedian(after))
+                    if not pd.isnull(data_copy.loc[offset]):
+                        data_copy.loc[offset] = np.nanmedian(pd.concat([before,
+                                                                        data_copy.loc[offset + window_start : (offset + window_end) + window_start]]))
+                    
+
+
+    return data_copy

@@ -7,7 +7,7 @@ package_name = 'scikit-dataaccess'
 package_list = find_packages()
 
 setup(name     = package_name,
-      version  = '1.1.2',
+      version  = '1.9.0',
       packages = package_list,
       zip_safe = False,
       
@@ -17,7 +17,9 @@ setup(name     = package_name,
                           'tables',
                           'scipy',
                           'setuptools',
-                          'astropy>=1.1.2'],
+                          'astropy>=1.1.2',
+                          'netcdf4 >= 1.2.8',
+      ],
       
       description = 'Scikit Data Access Package for accessing scientific data sets.',
       author = 'MITHAGI',
@@ -35,6 +37,6 @@ setup(name     = package_name,
                                   'docs/skdaccess_manual.pdf']},
 
       entry_points = {'console_scripts': [
-          'skdaccess = skdaccess.commands:skdaccess_script'
+          'skdaccess = skdaccess.bin.skdaccess:skdaccess_script'
           ]}
       )

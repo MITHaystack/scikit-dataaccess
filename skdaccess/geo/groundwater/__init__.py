@@ -1,1 +1,1 @@
-from .data_fetcher import DataFetcher, DataWrapper
+from .data_fetcher import DataFetcher

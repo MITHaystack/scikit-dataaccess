@@ -25,33 +25,45 @@
 # THE SOFTWARE.
 
 
-"""@package map_util
-A collection of map manipulation tools
-"""
+# """@package map_util
+# A collection of map manipulation tools
+# """
 
 import numpy as np
 import math
+import copy
+from scipy.optimize import minimize
 
 
 class Planet:
     """
     A class for storing variables about a planetary body
-
-    @params name: The name of the planetary body
     """
 
     def __init__(self, name):
+        '''
+        Initialize Planet object
+
+        @param name: The name of the planetary body choice of ('earth', 'wgs84', 'grs80', or 'moon'). 
+                      'wgs84' and 'earth' provide the same planet.
+
+        '''
         if (name.lower() == "earth") or (name.lower() == "wgs84"):
             self.a = 6378137.0
             self.b = 6356752.3142
             self.e_sq = (self.a**2 - self.b**2)/(self.a**2)
-        if name.lower() == "moon":
+        elif name.lower() == "moon":
             self.a = 1738140.0
             self.b = 1735970.0
             #NB: The Moon is considered a sphere (e_sq = 0.0) by convention,
             #    although the true calculated value would be
             #    e_sq = 0.0024953633422124632
             self.e_sq = 0.0
+        elif name.lower() == "grs80":
+            self.a = 6378137.0
+            self.b = 6356752.314140347
+            self.e_sq = (self.a**2 - self.b**2)/(self.a**2)
+	
 
         self.equator_1deg = np.pi*self.a/180
         self.avg_radius = np.mean((self.a,self.b))
@@ -65,7 +77,7 @@ class Planet:
         Example: input of ppd = 1 for the body "Earth" results in an array 180
         cells long with lateraldist_array[90] = 111 (m).
 
-        @params ppd: the number of pixels-per-degree-of-latitude; the resulting
+        @param ppd: the number of pixels-per-degree-of-latitude; the resulting
                      array will therefore be (180*ppd) cells tall
 
         @returns lateraldist_array: an array of the size (in meters) of 1 degree of
@@ -99,15 +111,54 @@ class Planet:
 
         return lateraldist_array
 
+    def get_lateraldist(self, lats, ppd):
+        '''
+        Get the lateral distance in meters for an input of lats
 
+        @param lats: Either a scalar or an array of latitudes
+        @param ppd: Pixels per degree of latitude
+        
+        @return Lateral distance at each latitude in meters
+        '''
+        # 1 degree distances east-west
+        distances = wgs84_distance( (lats, np.zeros(len(lats))), (lats, np.ones(len(lats))/ppd), copy.copy(self) )
+
+        # convert kilometers to meters
+        distances *= 1000
+
+        return distances
+
+    def get_medialdist(self, lats, ppd):
+        '''
+        Get the medial distance at specific lattitudes
+
+        @param lats: Either a scalar or an array of latitudes
+        @param ppd: Pixels per degree of latitude
+        
+        @return Medial distance at each latitude in meters
+        '''
+
+        # Create list of lons at 0
+        lons = np.zeros(len(lats))
+        
+        # 1 degree distances north-south
+        distances = wgs84_distance( (lats, lons), (lats+(1/ppd), lons), copy.copy(self) )
+
+        # convert kilometers to meters
+        distances *= 1000
+
+        return distances
+        
 def sanitize_latlon(lat_lon_tuple, ppd=1, start_from_90N=False):
     """
     Wraps around latitude & longitudes, including interpretation of points past
     the poles.
 
-    @params lat_lon_tuple: (lat, lon), in either degrees or pixels
-    @params ppd: pixels-per-degree
-    @params start_from_90N: consider 90N to be 0 latitude
+    @param lat_lon_tuple: (lat, lon), in either degrees or pixels
+    @param ppd: pixels-per-degree
+    @param start_from_90N: consider 90N to be 0 latitude
+
+    @return Latitude and Longitude after they have been sanitized
     """
 
     lat, lon = lat_lon_tuple
@@ -132,12 +183,12 @@ def trim_map(array, ppd, nswe, lat_npole=90, lon_offset=0):
     """
     Returns a copy of a map/array trimmed to the given N, S, W, E extents
 
-    @params array: the input array to be trimmed
-    @params ppd: the pixels-per-degree of the array
-    @params nswe: a 1x4 array of the desired [N, S, W, E] edges
-    @params lat_npole: the latitude of the N Pole in the same system as the
+    @param array: the input array to be trimmed
+    @param ppd: the pixels-per-degree of the array
+    @param nswe: a 1x4 array of the desired [N, S, W, E] edges
+    @param lat_npole: the latitude of the N Pole in the same system as the
                           given N, S, W, E values
-    @params lat_npole: the longitude of the prime meridian in the same system
+    @param lat_npole: the longitude of the prime meridian in the same system
                           as the given N, S, W, E values
 
     @returns trimmed_map: the input data trimmed to the desired edges
@@ -160,11 +211,11 @@ def calc_slopes(topo_array, ppd, planet, scaled=True,
     For now, this tool assumes a global topographic dataset; in the future, it
     will be expanded to work on regional datasets as well. 
 
-    @params topo_array: a global topographic dataset, in numpy array form
-    @params ppd: the pixels-per-degree of the topo array
-    @params bodyname: the name of the planetary body in question
-    @params scaled: whether values should be scaled by latitude
-    @params nswe: the (NW,SE) corners of the area-of-interest
+    @param topo_array: a global topographic dataset, in numpy array form
+    @param ppd: the pixels-per-degree of the topo array
+    @param bodyname: the name of the planetary body in question
+    @param scaled: whether values should be scaled by latitude
+    @param nswe: the (NW,SE) corners of the area-of-interest
     """
 
     # Parameters for different celestial bodies
@@ -250,10 +301,12 @@ def calc_slopes(topo_array, ppd, planet, scaled=True,
     return slope_array
 
 
-# Vincenty distance adapted from public domain vincenty package:
-# https://github.com/maurycyp/vincenty  
+
 def wgs84_distance(point1, point2, planet=Planet("wgs84"), miles=False):
     """
+    Vincenty distance adapted from public domain vincenty package:
+    https://github.com/maurycyp/vincenty  
+
     Vincenty's formula (inverse method) to calculate the distance (in
     kilometers or miles) between two points on the surface of a spheroid
     Doctests:
@@ -272,6 +325,13 @@ def wgs84_distance(point1, point2, planet=Planet("wgs84"), miles=False):
     298.396057
     >>> wgs84_distance(boston, newyork, miles=True)
     185.414657
+
+    @param point1: (lat1, lon1)
+    @param point2: (lat2, lon2)
+    @param Planet: Planet to perform the computation on
+    @param miles: Convert result to miles (default kilometers)
+
+    @return distance between point1 and point2
     """
     
     MILES_PER_KILOMETER = 0.621371
@@ -281,65 +341,114 @@ def wgs84_distance(point1, point2, planet=Planet("wgs84"), miles=False):
     a = planet.a
     b = planet.b
     f = 1 - b / a
+        
+    def calc_distance(lat1, lon1,lat2, lon2):
+        # short-circuit coincident points
+        if lat1 == lat2 and lon1 == lon2:
+            return 0.0
 
-    # short-circuit coincident points
-    if point1[0] == point2[0] and point1[1] == point2[1]:
-        return 0.0
+        U1 = math.atan((1 - f) * math.tan(math.radians(lat1)))
+        U2 = math.atan((1 - f) * math.tan(math.radians(lat2)))
+        L = math.radians(lon2 - lon1)
+        Lambda = L
 
-    U1 = math.atan((1 - f) * math.tan(math.radians(point1[0])))
-    U2 = math.atan((1 - f) * math.tan(math.radians(point2[0])))
-    L = math.radians(point2[1] - point1[1])
-    Lambda = L
+        sinU1 = math.sin(U1)
+        cosU1 = math.cos(U1)
+        sinU2 = math.sin(U2)
+        cosU2 = math.cos(U2)
 
-    sinU1 = math.sin(U1)
-    cosU1 = math.cos(U1)
-    sinU2 = math.sin(U2)
-    cosU2 = math.cos(U2)
+        for iteration in range(MAX_ITERATIONS):
+            sinLambda = math.sin(Lambda)
+            cosLambda = math.cos(Lambda)
+            sinSigma = math.sqrt((cosU2 * sinLambda) ** 2 +
+                                 (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda) ** 2)
+            if sinSigma == 0:
+                return 0.0  # coincident points
+            cosSigma = sinU1 * sinU2 + cosU1 * cosU2 * cosLambda
+            sigma = math.atan2(sinSigma, cosSigma)
+            sinAlpha = cosU1 * cosU2 * sinLambda / sinSigma
+            cosSqAlpha = 1 - sinAlpha ** 2
+            try:
+                cos2SigmaM = cosSigma - 2 * sinU1 * sinU2 / cosSqAlpha
+            except ZeroDivisionError:
+                cos2SigmaM = 0
+            C = f / 16 * cosSqAlpha * (4 + f * (4 - 3 * cosSqAlpha))
+            LambdaPrev = Lambda
+            Lambda = L + (1 - C) * f * sinAlpha * (sigma + C * sinSigma *
+                                                   (cos2SigmaM + C * cosSigma *
+                                                    (-1 + 2 * cos2SigmaM ** 2)))
+            if abs(Lambda - LambdaPrev) < CONVERGENCE_THRESHOLD:
+                break  # successful convergence
+        else:
+            return None  # failure to converge
 
-    for iteration in range(MAX_ITERATIONS):
-        sinLambda = math.sin(Lambda)
-        cosLambda = math.cos(Lambda)
-        sinSigma = math.sqrt((cosU2 * sinLambda) ** 2 +
-                             (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda) ** 2)
-        if sinSigma == 0:
-            return 0.0  # coincident points
-        cosSigma = sinU1 * sinU2 + cosU1 * cosU2 * cosLambda
-        sigma = math.atan2(sinSigma, cosSigma)
-        sinAlpha = cosU1 * cosU2 * sinLambda / sinSigma
-        cosSqAlpha = 1 - sinAlpha ** 2
-        try:
-            cos2SigmaM = cosSigma - 2 * sinU1 * sinU2 / cosSqAlpha
-        except ZeroDivisionError:
-            cos2SigmaM = 0
-        C = f / 16 * cosSqAlpha * (4 + f * (4 - 3 * cosSqAlpha))
-        LambdaPrev = Lambda
-        Lambda = L + (1 - C) * f * sinAlpha * (sigma + C * sinSigma *
-                                               (cos2SigmaM + C * cosSigma *
-                                                (-1 + 2 * cos2SigmaM ** 2)))
-        if abs(Lambda - LambdaPrev) < CONVERGENCE_THRESHOLD:
-            break  # successful convergence
+        uSq = cosSqAlpha * (a ** 2 - b ** 2) / (b ** 2)
+        A = 1 + uSq / 16384 * (4096 + uSq * (-768 + uSq * (320 - 175 * uSq)))
+        B = uSq / 1024 * (256 + uSq * (-128 + uSq * (74 - 47 * uSq)))
+        deltaSigma = B * sinSigma * (cos2SigmaM + B / 4 * (cosSigma *
+                     (-1 + 2 * cos2SigmaM ** 2) - B / 6 * cos2SigmaM *
+                     (-3 + 4 * sinSigma ** 2) * (-3 + 4 * cos2SigmaM ** 2)))
+        s = b * A * (sigma - deltaSigma)
+
+        s /= 1000  # meters to kilometers
+        if miles:
+            s *= MILES_PER_KILOMETER  # kilometers to miles
+
+        return round(s, 6)
+
+    lat1 = point1[0]
+    lon1 = point1[1]
+
+    lat2 = point2[0]
+    lon2 = point2[1]
+
+    if np.isscalar(lat1) and np.isscalar(lon1) and np.isscalar(lat2) and np.isscalar(lon2) :
+        return calc_distance(lat1, lon1, lat2, lon2)
     else:
-        return None  # failure to converge
-
-    uSq = cosSqAlpha * (a ** 2 - b ** 2) / (b ** 2)
-    A = 1 + uSq / 16384 * (4096 + uSq * (-768 + uSq * (320 - 175 * uSq)))
-    B = uSq / 1024 * (256 + uSq * (-128 + uSq * (74 - 47 * uSq)))
-    deltaSigma = B * sinSigma * (cos2SigmaM + B / 4 * (cosSigma *
-                 (-1 + 2 * cos2SigmaM ** 2) - B / 6 * cos2SigmaM *
-                 (-3 + 4 * sinSigma ** 2) * (-3 + 4 * cos2SigmaM ** 2)))
-    s = b * A * (sigma - deltaSigma)
-
-    s /= 1000  # meters to kilometers
-    if miles:
-        s *= MILES_PER_KILOMETER  # kilometers to miles
-
-    return round(s, 6)
-    
-    
+        return np.fromiter(map(lambda x: calc_distance(*x), zip(lat1, lon1, lat2, lon2)),
+                           dtype=np.float,count=np.max([len(lat1), len(lon1), len(lat2), len(lon2)]))
 
     
+        
+# This function converts pixel x,y coordinates into global coordinates
+def global_coords(x_in,y_in,coeffs):
+    '''
+    Transform pixel coordinates into global coords using affine transformation coefficients
 
+    @param x_in: X pixel coordinates
+    @param y_in: Y pixel coordinates
+    @param in_coeffs: Affine transformation coefficients
+
+    @return global coordinates
+    '''
     
+    x = x_in + 0.5
+    y = y_in + 0.5
+    return (coeffs[0] + coeffs[1]*x + coeffs[2]*y, coeffs[3] + coeffs[4]*x + coeffs[5]*y)
+
+
+# gpsmethod is the GPS coordinate mapping function from above
+# gps_coord is the GPS coordinate to match, as (lat,lon)
+# init_guess is the initial guess for the pixel coordinate (optional)
+# Function for finding the pixel coordinate associated with a gps coordinate
+def gps2pixel(gpsmethod, gps_coord,init_guess):
+    '''
+    Function for finding the pixel coordinate associated with a gps coordinate
+
+    @param gpsmethod: GPS coordinate mapping function
+    @param gps_coord: GPS coordinate to match, as (lat,lon)
+    @param init_guess: Initial guess for the pixel coordinate (optional)
+
+    @return Integer pixel coordinate nearest to lat,lon coordinate point 
+    '''
+    
+    # map_ops great circle distance
+    func = lambda imgxy: wgs84_distance(gpsmethod(imgxy[0],imgxy[1]),(gps_coord[0],gps_coord[1]))
+
+    res = minimize(func, init_guess, method='Nelder-Mead', tol=1e-8).x
+    
+    # returns the nearest integer pixel value
+    return np.array([int(round(cc)) for cc in res])
 
 #### Test Examples #############################################################
 

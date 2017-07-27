@@ -25,40 +25,45 @@
 # THE SOFTWARE.
 
 
-# import data fetcher
+# import data fetcher and AutoParams
 from skdaccess.geo.groundwater import DataFetcher as WDF
 from skdaccess.framework.param_class import *
 
+# Create a data fetcher of stations within
+# 35 < Latitude < 38, and -119 < Longitude < -118
+# in the time period 2007-01-01 to 2016-12-31
+fullDF = WDF([AutoParam(35), AutoParam(38), AutoParam(-119), AutoParam(-118)],
+             '2007-01-01','2016-12-31',cutoff=0.0)
 
-# First, create a data fetcher of all stations
-# and access data wrapper and meta data
-fullDF = WDF()
+# Access data wrapper
 fullDW = fullDF.output()
+
+# Access metadata
 meta_data = WDF.getStationMetadata()
 
 
 # Get an iterator to the data
-dataIT = fullDW.getIterator()
+dataIt = fullDW.getIterator()
 
 
-# The iterator access returns the data label, the data, and uncertainties.
-# In the case of groundwater data, no uncertainties are given
-label_1, data_1, error = next(dataIT)
-label_2, data_2, error = next(dataIT)
+# The iterator returns the data label and the data.
+label_1, data_1 = next(dataIt)
+label_2, data_2 = next(dataIt)
 
 
 
 # Try to plot the first two groundwater stations:
 try:
     import matplotlib.pyplot as plt
-    plt.gcf().set_size_inches(14,4)
-    plt.ylabel(label_1)
-    plt.title(data_1.name)
-    plt.plot(data_1);
+
     plt.figure().set_size_inches(14,4)
-    plt.ylabel(label_2)
-    plt.title(data_2.name)
-    plt.plot(data_2,color='red')
+    plt.ylabel('Median Depth to Water Level')
+    plt.title(label_1)
+    plt.plot(data_1['Median Water Depth']);
+    plt.figure().set_size_inches(14,4)
+    plt.ylabel('Median Depth to Water Level')
+    plt.title(label_2);
+    plt.plot(data_2['Median Water Depth'],color='red')
 
     plt.show()
 

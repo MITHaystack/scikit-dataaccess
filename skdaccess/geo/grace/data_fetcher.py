@@ -22,97 +22,119 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-"""@package GRACE
-Provides classes for accessing GRACE data.
-"""
+# """@package GRACE
+# Provides classes for accessing GRACE data.
+# """
 
 # mithagi required Base imports
-from skdaccess.framework.data_class import DataFetcherBase, DataPanelWrapper
-from skdaccess.geo.grace.data_wrapper import DataWrapper
-from skdaccess.utilities.data_util import getDataLocation
+from skdaccess.framework.data_class import DataFetcherStorage, TableWrapper
+from skdaccess.utilities.grace_util import read_grace_data
+
+# standard library imports
+import re
+from ftplib import FTP
+import os
+import glob
+from collections import OrderedDict
+from configparser import NoSectionError, NoOptionError
+from glob import glob
+from math import floor
 
 # 3rd party package imports
 import pandas as pd
 import numpy as np
+from tqdm import tqdm
 
-class DataFetcher(DataFetcherBase):
+
+class DataFetcher(DataFetcherStorage):
     ''' Data Fetcher for GRACE data '''
 
-    def __init__(self, ap_paramList, start_date = None, end_date = None, resample = True, wrapper_type='series'):
+    def __init__(self, ap_paramList, start_date = None, end_date = None):
         '''
         Construct a Grace Data Fetcher
 
-        @param ap_paramList[geo_pont]: Geographic location of grace data to select
+        @param ap_paramList[geo_pont]: AutoList of geographic location tuples (lat,lon)
         @param start_date: Beginning date
         @param end_date: Ending date
-        @param resample: Resample the data to daily resolution, leaving NaN's in days without data (Default True)
-        @param wrapper_type: Select the type of iterator wrapper to generate, as series or table
         '''
         
         self.start_date = start_date
         self.end_date = end_date
-        self.resample = resample
-        self.wrapper_type = wrapper_type
         super(DataFetcher, self).__init__(ap_paramList)
         
     def output(self):
         ''' 
-        Create data wrapper of grace data for specified geopoint.
+        Create data wrapper of grace data for specified geopoints.
 
         @return Grace Data Wrapper
         '''
 
-        data_file = getDataLocation('grace')
+        conf = DataFetcher.getConfig()
+
+        try:
+            data_location = conf.get('grace', 'data_location')
+            csr_filename = conf.get('grace', 'csr_filename')
+            jpl_filename = conf.get('grace', 'jpl_filename')
+            gfz_filename = conf.get('grace', 'gfz_filename')
+            scale_factor_filename = conf.get('grace', 'scale_factor_filename')
+
+
+        except (NoOptionError, NoSectionError) as exc:
+            print('No data information available, please run: skdaccess grace')
+            raise exc
+
+
+        csr_data = read_grace_data(os.path.join(data_location, csr_filename), 'lat','lon','lwe_thickness','time')
+        jpl_data = read_grace_data(os.path.join(data_location, jpl_filename), 'lat','lon','lwe_thickness','time')
+        gfz_data = read_grace_data(os.path.join(data_location, gfz_filename), 'lat','lon','lwe_thickness','time')
+
         
-        geo_point = self.ap_paramList[0]()
-        store = pd.HDFStore(data_file, 'r')
+        scale_factor = read_grace_data(os.path.join(data_location, scale_factor_filename), 'Latitude', 'Longitude', 'SCALE_FACTOR')
+        leakage_error = read_grace_data(os.path.join(data_location, scale_factor_filename), 'Latitude', 'Longitude', 'LEAKAGE_ERROR')
+        measurement_error = read_grace_data(os.path.join(data_location, scale_factor_filename), 'Latitude', 'Longitude', 'MEASUREMENT_ERROR')        
+            
+        geo_point_list = self.ap_paramList[0]()
 
         # Get appropriate time range
         start_date = self.start_date
         end_date = self.end_date
 
         if start_date == None:
-            start_date = store['grace'].keys()[0]
-
-        elif type(start_date) == str:
-            start_date = pd.to_datetime(start_date)
+            start_date = np.min([csr_data.items[0], jpl_data.items[0], gfz_data.items[0]])
 
 
         if end_date == None:
-            end_date = store['grace'].keys()[-1]
+            end_date = np.max([csr_data.items[-1], jpl_data.items[-1], gfz_data.items[-1]])
 
-        elif type(end_date) == str:
-            end_date == pd.to_datetime(end_date)
+        data_dict = OrderedDict()
+        metadata_dict = OrderedDict()
+        for geo_point in geo_point_list:
+
+            lat = geo_point[0]
+            lon = (geo_point[1] + 360) % 360
+
+            lat_index = floor(lat) + 0.5
+            lon_index = floor(lon) + 0.5
+
+
+
+            data = pd.DataFrame({'CSR' : csr_data.loc[start_date:end_date, lat_index, lon_index].copy(),
+                                 'JPL' : jpl_data.loc[start_date:end_date, lat_index, lon_index].copy(),
+                                 'GFZ' : gfz_data.loc[start_date:end_date, lat_index, lon_index].copy()})
+            data.index.name = 'Date'
+
+
+            label = str(geo_point[0]) + ', ' + str(geo_point[1])
+            
+            metadata_dict[label] = pd.Series({'scale_factor' : scale_factor.loc[lat_index, lon_index],
+                                             'measurement_error' : measurement_error.loc[lat_index,lon_index],
+                                             'leakage_error' : leakage_error.loc[lat_index, lon_index]})
+
+            data_dict[label] = data
+
         
-        
-        data = store['grace'][start_date:end_date]
-        unc = store['uncertainty']
-        store.close()
-
-        lat = geo_point[0]
-        lon = geo_point[1] + 360
-
-        lat_index = round(lat - (lat % 1)) + 0.5
-        lon_index = round(lon - (lon % 1)) + 0.5
-
-        grace_data = data.loc[:,lat_index, lon_index]
-        grace_data.name = 'Grace'
-
-        grace_unc = unc.loc[lat_index, lon_index]
-        grace_unc = pd.Series(np.ones(len(grace_data)) * grace_unc, index=grace_data.index,name="Uncertainty")
-        grace_data = pd.concat([grace_data, grace_unc], axis=1)
-
-        if self.resample == True:
-            grace_data = grace_data.reindex(pd.date_range(start_date, end_date))
-
-        if self.wrapper_type == 'series':
-            return(DataWrapper(grace_data))
-        elif self.wrapper_type == 'table':
-            grace_data.columns = ['Equivalent Water Thickness (cm)', 'Uncertainty']
-            return(DataPanelWrapper(pd.Panel.from_dict({'GRACE':grace_data},orient='minor')))
-        else:
-            print('... Invald wrapper type, defaulting to series ...')
-            return(DataWrapper(grace_data))
+        metadata_frame = pd.DataFrame.from_dict(metadata_dict)
+        return(TableWrapper(data_dict,meta_data = metadata_frame,default_columns=['CSR','JPL','GFZ']))
             
 
     def __str__(self):
@@ -122,3 +144,68 @@ class DataFetcher(DataFetcherBase):
         @return String listing the name and geopoint of data fetcher
         '''
         return 'Grace Data Fetcher' + super(DataFetcher, self).__str__()
+
+
+    @classmethod
+    def downloadFullDataset(cls, out_file = 'grace.h5', use_file = None):
+        '''
+        Download and parse data from the Gravity Recovery and Climate Experiment.
+
+        @param out_file: Output filename for parsed data
+        @param use_file: Directory of already downloaded data. If None, data will be downloaded.
+
+        @return Absolute path of parsed data
+        '''
+        # Get date of grace data from filename
+
+        def setConfigFile(filename):
+            if re.search('SCALE_FACTOR', filename):
+                DataFetcher.setDataLocation('grace', filename, key='scale_factor_filename')
+
+            elif re.search('CSR', filename):
+                DataFetcher.setDataLocation('grace', filename, key='csr_filename')
+
+            elif re.search('GFZ', filename):
+                DataFetcher.setDataLocation('grace', filename, key='gfz_filename')
+
+            elif re.search('JPL', filename):
+                DataFetcher.setDataLocation('grace', filename, key='jpl_filename')
+
+            else:
+
+                return False
+
+            return True
+
+        if use_file is None:
+            print("Downloading GRACE Land Mass Data")
+            ftp = FTP("podaac-ftp.jpl.nasa.gov")
+            ftp.login()
+            ftp.cwd('/allData/tellus/L3/land_mass/RL05/netcdf')
+            dir_list = list(ftp.nlst(''))
+            file_list = [file for file in dir_list if re.search('.nc$', file)]
+            for filename in tqdm(file_list):
+
+                status = setConfigFile(filename)
+
+                if status == False:
+                    print("Uknown file:", filename)
+                    continue
+
+                
+                ftp.retrbinary('RETR ' + filename, open(filename, 'wb').write)
+                
+            ftp.quit()
+            DataFetcher.setDataLocation('grace', os.path.abspath('./'))
+
+        else:
+            files = glob(os.path.join(use_file, '*.nc'))
+
+            for filename in files:
+                status = setConfigFile(filename)
+
+            if status == False:
+                print('Unknown file')
+
+            DataFetcher.setDataLocation('grace', os.path.abspath(use_file))
+                         

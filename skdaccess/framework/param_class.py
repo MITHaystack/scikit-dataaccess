@@ -21,9 +21,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-"""@package AlgoParam
-Provides tunable parameter classes for use in the Computer-Aided Discovery pipeline.
-"""
+
+# """@package AlgoParam
+# Provides tunable parameter classes for use in the Computer-Aided Discovery pipeline.
+# """
 
 
 import random
@@ -78,7 +79,8 @@ class AutoParam:
 
 class AutoParamMinMax(AutoParam):
     '''
-    a tunable parameter with min and max ranges, perturbs to a random value in range.
+    A tunable parameter with min and max ranges, perturbs to a random value in range.
+
     It can optionally choose either the min or the max after n perturbs
     '''
     
@@ -130,6 +132,7 @@ class AutoParamMinMax(AutoParam):
                 self.n += 1
 
     def reset(self):
+        ''' Reset to initial value '''
         self.n = 0
         self.val = self.val_init
         
@@ -137,7 +140,7 @@ class AutoParamMinMax(AutoParam):
 
 class AutoParamList(AutoParam):
     '''
-    a tunable parameter with a specified list of choices that can be randomly selected via perturb
+    A tunable parameter with a specified list of choices that can be randomly selected via perturb
     '''
     def __init__(self, val_init, val_list):
         ''' 
@@ -191,7 +194,7 @@ class AutoParamListCycle(AutoParam):
 ### Starting list perturber
 class AutoList(object):
     '''
-    specifies a list for returning selections of lists, as opposed to a single element
+    Specifies a list for returning selections of lists, as opposed to a single element
     '''
     def __init__(self, val_list):
         '''
@@ -221,7 +224,12 @@ class AutoList(object):
         self.val_list = self.val_init
 
     def getAllOptions(self):
-        return val_init
+        '''
+        Get all possible options
+
+        @return List that contains every option that could possibly be selected
+        '''
+        return self.val_init
  
     def __str__(self):
         '''
@@ -229,6 +237,9 @@ class AutoList(object):
 
         @return String containing all parmaters in list
         '''
+
+        return '[' + ', '.join([str(val) for val in self.val_list]) + ']'
+        
         return str(self.val_list)
         
     def __len__(self):
@@ -256,7 +267,6 @@ class AutoList(object):
         @param val: Input value
         '''
         self.val_list[ii] = val
-        return self.val_list[ii]
         
     def __call__(self):
         '''
@@ -270,7 +280,7 @@ class AutoList(object):
 
 class AutoListSubset(AutoList):
     '''
-    A list perturber that creates random subsets of a list. List can be empty.
+    An AutoList perturber that creates random subsets of a list. List can be empty.
     '''    
     def perturb(self):
         ''' Peturb the list by selecting a random subset of the initial list '''
@@ -323,7 +333,7 @@ class AutoListRemove(AutoList):
         
 class AutoListCycle(AutoList):
     '''
-    Cycles through a list of list selections.
+    An Autolist that cycles through different lists
     '''
     def __init__(self, list_val_list):
         '''
@@ -356,6 +366,12 @@ class AutoListCycle(AutoList):
         self.val_list = self.list_val_list[self.index]
 
     def getAllOptions(self):
+        '''
+        Get elements that could possibly be called
+
+        @return List of all possible elements
+        '''
+        
         all_options = []
         for option_list in list_val_list:
             all_options += option_list
