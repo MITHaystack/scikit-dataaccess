@@ -7,7 +7,7 @@ package_name = 'scikit-dataaccess'
 package_list = find_packages()
 
 setup(name     = package_name,
-      version  = '1.9.0',
+      version  = '1.9.2',
       packages = package_list,
       zip_safe = False,
       
@@ -17,8 +17,8 @@ setup(name     = package_name,
                           'tables',
                           'scipy',
                           'setuptools',
-                          'astropy>=1.1.2',
-                          'netcdf4 >= 1.2.8',
+                          'astropy>=1.1.0',
+                          'netCDF4',
       ],
       
       description = 'Scikit Data Access Package for accessing scientific data sets.',
