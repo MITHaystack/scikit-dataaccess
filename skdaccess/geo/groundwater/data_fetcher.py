@@ -123,7 +123,7 @@ class DataFetcher(DataFetcherStorage):
                 
         store.close()
 
-        return(TableWrapper(data_dict, meta_data=meta_data, default_columns=['Water Depth']))
+        return(TableWrapper(data_dict, meta_data=meta_data, default_columns=['Median Depth to Water']))
 
     def __str__(self):
         '''
