@@ -32,7 +32,7 @@ import itertools
 
 class AutoParam:
     '''
-    Defines a tunable parameter class inherited by specific subclasses.
+    Defines a tunable parameter class inherited by specific subclasses
 
     AutoParam class and subclass work on a single value.
     functions: perturb value and reset to initial value    
@@ -280,7 +280,7 @@ class AutoList(object):
 
 class AutoListSubset(AutoList):
     '''
-    An AutoList perturber that creates random subsets of a list. List can be empty.
+    An AutoList perturber that creates random subsets of a list. List can be empty
     '''    
     def perturb(self):
         ''' Peturb the list by selecting a random subset of the initial list '''
@@ -293,7 +293,7 @@ class AutoListSubset(AutoList):
 
 class AutoListPermute(AutoList):
     '''
-    A perturber that permutes a list.
+    A perturber that permutes a list
     '''
     def perturb(self):
         ''' Randomly permutes the initial list '''

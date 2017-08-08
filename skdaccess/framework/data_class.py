@@ -213,7 +213,7 @@ class DataFetcherCache(DataFetcherLocal):
     
 
 class DataWrapperBase(object):
-    ''' Base class for wrapping data for use in DiscoveryPipeline. '''
+    ''' Base class for wrapping data for use in DiscoveryPipeline '''
 
     def __init__(self, obj_wrap, run_id = -1, meta_data = None):
         '''
