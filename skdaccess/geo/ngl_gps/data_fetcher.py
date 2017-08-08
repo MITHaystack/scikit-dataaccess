@@ -27,9 +27,9 @@
 # """
 
 # mithagi required Base,Utils imports
-from skdaccess.framework.data_class import DataFetcherStorage, DictionaryWrapper
+from skdaccess.framework.data_class import DataFetcherStorage, TableWrapper
 from skdaccess.utilities import pbo_util
-from skdaccess.utilities import data_util
+# from skdaccess.utilities import data_util
 
 
 # 3rd party package imports
@@ -158,7 +158,7 @@ class DataFetcher(DataFetcherStorage):
 
 
         metadata = metadata.loc[data_dict.keys()]
-        return DictionaryWrapper(data_dict, meta_data = metadata, default_columns = default_columns,
-                                 default_error_columns = default_error_columns)
+        return TableWrapper(data_dict, meta_data = metadata, default_columns = default_columns,
+                            default_error_columns = default_error_columns)
 
         

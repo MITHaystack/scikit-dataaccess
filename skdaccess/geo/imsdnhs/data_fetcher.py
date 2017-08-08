@@ -1,4 +1,4 @@
-from skdaccess.framework.data_class import DataFetcherBase, TableWrapper
+from skdaccess.framework.data_class import DataFetcherStorage, TableWrapper
 
 
 from collections import OrderedDict
@@ -6,9 +6,9 @@ import pandas as pd
 import numpy as np
 import pyproj
 
-class DataFetcher(DataFetcherBase):
+class DataFetcher(DataFetcherStorage):
     ''' 
-    Fetches data for the Interactive Multisensor Snow and Ice Mapping System Daily Northern Hemisphere Snow and Ice Analysis. 
+    Fetches data for the Interactive Multisensor Snow and Ice Mapping System Daily Northern Hemisphere Snow and Ice Analysis
     '''
 
     def __init__(self, coordinate_dict, start_date, end_date):
