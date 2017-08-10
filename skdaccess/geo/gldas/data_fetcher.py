@@ -48,7 +48,7 @@ class DataFetcher(DataFetcherStorage):
         '''
         Construct a GLDAS Data Fetcher
 
-        @param ap_paramList[geo_pont]: Autolist of Geographic location tuples 
+        @param ap_paramList[geo_point]: Autolist of Geographic location tuples
         @param start_date: Beginning date
         @param end_date: Ending date
         @param resample: Resample the data to daily resolution, leaving NaN's in days without data (Default True)

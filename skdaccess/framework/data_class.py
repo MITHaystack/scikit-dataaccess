@@ -54,12 +54,12 @@ class DataFetcherBase(object):
         pass
 
     def perturb(self):
-        '''perturb parameters'''
+        '''Perturb parameters'''
         for param in self.ap_paramList:
             param.perturb()
             
     def reset(self):
-        '''set all parameters to initial value'''
+        '''Set all parameters to initial value'''
         for param in self.ap_paramList:
             param.reset()
 
@@ -413,7 +413,7 @@ class TableWrapper(DataWrapperBase):
     
     def getIterator(self):
         '''
-        Iterator access to data. Iterates over the minor axis.
+        Iterator access to data.
 
         @return iterator to (label, data frame) from Dictionary
         '''        
@@ -422,6 +422,8 @@ class TableWrapper(DataWrapperBase):
 
     def getLength(self):
         '''
+        Get number of data frames
+
         @return Number of data frames
         '''
         return len(self.data)

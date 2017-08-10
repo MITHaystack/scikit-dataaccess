@@ -37,16 +37,17 @@ def dateMismatch(dates, days=10):
 
 def compute_ewd(grace_data, scale_factor, round_nearest_day=False):
     '''
-    Compute scale corrected equivalent water depth by averaging results from
-    GFZ; CSR; and JPL; and then applying the scale factor
-    
+    Compute scale corrected equivalent water depth
+
+    Equivalent water depth by averaging results from
+    GFZ, CSR, and JPL, and then applying the scale factor
 
     @param grace_data: Data frame containing grace data
     @param scale_factor: Scale factor to apply
     @param round_nearest_day: Round dates to nearest day
 
-    @return Equivalent water depth determined by applying the 
-            scale factor to the average GFZ, JPL and CSR.
+    @return Equivalent water depth determined by applying the scale factor to
+            the average GFZ, JPL and CSR.
     '''
     
     def cut_missing_data(in_data, reverse=False):

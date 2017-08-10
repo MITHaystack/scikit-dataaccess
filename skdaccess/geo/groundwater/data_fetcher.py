@@ -159,8 +159,8 @@ class DataFetcher(DataFetcherStorage):
         Download and parse US groundwater data provided by USGS
 
         @param out_file: Output filename for parsed data
-        @param local_data: Specify the directory where the data is. 
-                           If None, the function will download the data
+        @param use_file: Specify the directory where the data is.
+                         If None, the function will download the data
 
         @return Absolute path of parsed data
         '''

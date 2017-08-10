@@ -195,7 +195,7 @@ class DataFetcher(DataFetcherCache):
                 
     def output(self):
         ''' 
-        Generate dataw rapper for Mahali data
+        Generate data wrapper for Mahali data
 
         @return Mahali data wrapper
         '''

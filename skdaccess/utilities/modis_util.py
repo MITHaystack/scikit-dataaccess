@@ -20,9 +20,11 @@ def getImageType(in_data):
     Determine what type of modis data is being processed
 
     There are 3 array shapes we deal with:
-    mode 1: (y, x, z)
-    mode 2: (y, x)
-    mode 3: (z, y ,x)
+    @verbatim
+    mode 1 -> (y, x, z)
+    mode 2 -> (y, x)
+    mode 3 -> (z, y ,x)
+    @endverbatim
     where z axis represents different data products
     and y and x correspond to the y and x image
     coordinates from the modis instrument
@@ -156,6 +158,8 @@ class LatLon(object):
 
         ''' 
         Initialize getLatLon object
+
+        @param metadata: Image metadata
         @param x_offset: Pixel offset (used when gridding data)
         @param y_offset: Pixel offset (used when gridding data)
         '''
@@ -283,7 +287,9 @@ def checkBit(data,bit):
 
 def createGrid(data, y_start, y_end, x_start, x_end, y_grid, x_grid, dtype, grid_fill = np.nan):
     '''
-    Subsets image data into a smaller image. Takes care to make sure the resulting subsection
+    Subsets image data into a smaller image
+
+    Takes care to make sure the resulting subsection
     has the expected size by filling in missing data
 
     @param data: Input data
@@ -293,6 +299,7 @@ def createGrid(data, y_start, y_end, x_start, x_end, y_grid, x_grid, dtype, grid
     @param x_end: Ending pixel for x
     @param y_grid: Grid size for y
     @param x_grid: Grid size for x
+    @param dtype: The dtype of the new grid data
     @param grid_fill: Fill value to use when there is no data
 
     @return image subsection, fraction of valid data
@@ -355,8 +362,8 @@ def getFileIDs(modis_identifier, start_date, end_date, lat, lon, daynightboth):
     Retrieve file IDs for images matching search parameters
 
     @param modis_identifier: Product identifier (e.g. MOD09)
-    @param start date: Starting date
-    @param end date: Ending date
+    @param start_date: Starting date
+    @param end_date: Ending date
     @param lat: Latitude 
     @param lon: Longitude
     @param daynightboth: Get daytime images ('D'), nightime images ('N') or both ('B')
@@ -430,7 +437,7 @@ def readMODISData(modis_list, variables, grid, grid_fill, use_long_name, platfor
     @param variables: List of variables in the MODIS data to load 
     @param grid: Further divide each image into a multiple grids of size (y,x)
     @param grid_fill: Fill value to use when creating gridded data 
-    @param use_long_names = Use long names for metadata instead of variable name
+    @param use_long_name: Use long names for metadata instead of variable name
     @param platform: Which satellite to use, either MOD or MYD.
     @param product_id: Product string (e.g. '06_L2')
     '''

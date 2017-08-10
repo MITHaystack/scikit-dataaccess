@@ -71,6 +71,8 @@ class Planet:
 
     def get_lateraldist_array(self, ppd):
         """
+        Retrieve the lateral distance array
+
         Get an array of the lateral size of 1/ppd of a degree of longitude at
         every 1/ppd of a degree of latitude. Results given in meters.
 
@@ -151,8 +153,7 @@ class Planet:
         
 def sanitize_latlon(lat_lon_tuple, ppd=1, start_from_90N=False):
     """
-    Wraps around latitude & longitudes, including interpretation of points past
-    the poles.
+    Wraps around latitude & longitudes, including interpretation of points past the poles
 
     @param lat_lon_tuple: (lat, lon), in either degrees or pixels
     @param ppd: pixels-per-degree
@@ -188,7 +189,7 @@ def trim_map(array, ppd, nswe, lat_npole=90, lon_offset=0):
     @param nswe: a 1x4 array of the desired [N, S, W, E] edges
     @param lat_npole: the latitude of the N Pole in the same system as the
                           given N, S, W, E values
-    @param lat_npole: the longitude of the prime meridian in the same system
+    @param lon_offset: the longitude of the prime meridian in the same system
                           as the given N, S, W, E values
 
     @returns trimmed_map: the input data trimmed to the desired edges
@@ -206,16 +207,20 @@ def trim_map(array, ppd, nswe, lat_npole=90, lon_offset=0):
 def calc_slopes(topo_array, ppd, planet, scaled=True,
                 nswe="global", lon_offset=0, lat_npole=90):
     """
-    Calculate a slope map from a topographic dataset.
+    Calculate a slope map from a topographic dataset
 
     For now, this tool assumes a global topographic dataset; in the future, it
-    will be expanded to work on regional datasets as well. 
+    will be expanded to work on regional datasets as well
 
     @param topo_array: a global topographic dataset, in numpy array form
     @param ppd: the pixels-per-degree of the topo array
-    @param bodyname: the name of the planetary body in question
+    @param planet: The planetary body in question
     @param scaled: whether values should be scaled by latitude
     @param nswe: the (NW,SE) corners of the area-of-interest
+    @param lon_offset: the longitude of the prime meridian in the same system
+                          as the given N, S, W, E values
+    @param lat_npole: the latitude of the N Pole in the same system as the
+                          given N, S, W, E values
     """
 
     # Parameters for different celestial bodies
@@ -304,12 +309,12 @@ def calc_slopes(topo_array, ppd, planet, scaled=True,
 
 def wgs84_distance(point1, point2, planet=Planet("wgs84"), miles=False):
     """
-    Vincenty distance adapted from public domain vincenty package:
-    https://github.com/maurycyp/vincenty  
+    Vincenty distance adapted from public domain vincenty package
 
+    Adapted from https://github.com/maurycyp/vincenty
+    @verbatim
     Vincenty's formula (inverse method) to calculate the distance (in
     kilometers or miles) between two points on the surface of a spheroid
-    Doctests:
     >>> wgs84_distance((0.0, 0.0), (0.0, 0.0))  # coincident points
     0.0
     >>> wgs84_distance((0.0, 0.0), (0.0, 1.0))
@@ -325,10 +330,11 @@ def wgs84_distance(point1, point2, planet=Planet("wgs84"), miles=False):
     298.396057
     >>> wgs84_distance(boston, newyork, miles=True)
     185.414657
+    @endverbatim
 
     @param point1: (lat1, lon1)
     @param point2: (lat2, lon2)
-    @param Planet: Planet to perform the computation on
+    @param planet: Planet to perform the computation on
     @param miles: Convert result to miles (default kilometers)
 
     @return distance between point1 and point2
@@ -417,7 +423,7 @@ def global_coords(x_in,y_in,coeffs):
 
     @param x_in: X pixel coordinates
     @param y_in: Y pixel coordinates
-    @param in_coeffs: Affine transformation coefficients
+    @param coeffs: Affine transformation coefficients
 
     @return global coordinates
     '''

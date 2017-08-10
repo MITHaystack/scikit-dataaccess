@@ -61,13 +61,13 @@ class DataFetcher(DataFetcherCache):
         @param ap_paramList[lon]: Search longitude
         @param modis_platform: Platform (Either "Terra" or "Aqua")
         @param modis_id: Product string (e.g. '06_L2')
-        @param variable list: List of variables to fetch
+        @param variable_list: List of variables to fetch
         @param start_date: Starting date
         @param end_date: Ending date
         @param daynightboth: Use daytime data ('D'), nighttime data ('N') or both ('B')
         @param grid: Further divide each image into a multiple grids of size (y,x)
         @param grid_fill: Fill value to use when creating gridded data
-        @param use_long_names = Use long names for metadata instead of variable name
+        @param use_long_name: Use long names for metadata instead of variable name
         '''
 
 

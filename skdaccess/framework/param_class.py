@@ -215,7 +215,7 @@ class AutoList(object):
         return self.val_list
 
     def perturb(self):
-        ''' This class doesn't change list when being perturbed. '''
+        ''' This class doesn't change the list when being perturbed '''
 
         self.val_list = self.val_list
         

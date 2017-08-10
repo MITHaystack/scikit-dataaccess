@@ -10,6 +10,7 @@ from skdaccess.geo.grace import DataFetcher as GRACEDF
 from skdaccess.geo.gldas import DataFetcher as GLDASDF
 
 def skdaccess_script():
+    '''This funcion defines a script for downloading data'''
     parser = argparse.ArgumentParser(description='The Sci-kit Data Access (skdaccess) package is a tool for integrating various scientific data sets into the Python environment using a common interface. This script can download different scientific data sets for offline analysis.')
     parser.add_argument('data_set', help='Name of data set', nargs='?')
     parser.add_argument('-l','--list', dest='list_bool', help='List data sets', action='store_true')

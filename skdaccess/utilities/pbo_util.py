@@ -81,8 +81,9 @@ def getLatLonRange(pbo_info, station_list):
 
 def getROIstations(geo_point,radiusParam,data,header):
     '''
-    This function returns the 4ID station codes for the stations located in the
-    region of interest defined by the geographic coordinate and a window size.
+    This function returns the 4ID station codes for the stations in a region
+
+    The region of interest is defined by the geographic coordinate and a window size
 
     @param geo_point: The geographic (lat,lon) coordinate of interest
     @param radiusParam: An overloaded radius of interest [km] or latitude and longitude window [deg] around the geo_point
@@ -119,20 +120,23 @@ def getROIstations(geo_point,radiusParam,data,header):
 def stab_sys(data_iterator,metadata,stab_min_NE=.0005,stab_min_U=.005,sigsc=2,
              errProp=1):
     '''
-    The stab_sys function is a Python implemention of the Helmhert 7-parameter
-    transformation, used to correct for common mode error. This builds on
-    Prof Herring's stab_sys function in his tscon Fortran code. It uses a SVD
-    approach to estimating the rotation matrix gathered from 'Computing Helmert
-    Transformations' by G.A. Watson as well as its references. Note that units
-    should be in meters, that is in the format from the level 2 processed
+    Stabilize GPS data to a region
+
+    The stab_sys function is a Python implemention of the
+    Helmhert 7-parameter transformation, used to correct for common
+    mode error. This builds on Prof Herring's stab_sys function in his
+    tscon Fortran code. It uses a SVD approach to estimating the
+    rotation matrix gathered from 'Computing Helmert Transformations'
+    by G.A. Watson as well as its references. Note that units should
+    be in meters, that is in the format from the level 2 processed
     UNAVCO pos files
 
     @param data_iterator: Expects an iterator that returns label, pandas dataframe
     @param metadata: Metadata that contains 'refXYZ' and 'refNEU'
     @param stab_min_NE: Optional minimum horizontal covariance parameter
     @param stab_min_U: Optional minimum vertical covariance parameter
-    @param sigsc: Optional scaling factor for determining cutoff bounds for non@param stable sites
-    @param errorProp: Propagate errors through the transformation
+    @param sigsc: Optional scaling factor for determining cutoff bounds for non stable sites
+    @param errProp: Propagate errors through the transformation
     
     @return smSet, a reduced size dictionary of the data (in mm) for the sites in the specified geographic region,
             smHdr, a reduced size dictionary of the headers for the sites in the region
@@ -238,6 +242,8 @@ def stab_sys(data_iterator,metadata,stab_min_NE=.0005,stab_min_U=.005,sigsc=2,
 
 def propagateErrors(R,sc,stationCovs):
     '''
+    Propagate GPS errors
+
     By writing out the R*E*R.T equations... to calculate the new covariance matrix
     without needing to form the matrix first as an intermediate step. Modifies
     covariance matrix in place
@@ -278,8 +284,7 @@ def propagateErrors(R,sc,stationCovs):
 
 def nostab_sys(allH,allD,timerng,indx=1,mdyratio=.7):
     '''
-    The nostab_sys function does not apply stabilization and simply returns 
-    stations after checking for sufficient amount of data
+    Do not apply stabilization and simply returns stations after checking for sufficient amount of data
 
     @param allH: a dictionary of all of the headers of all sites loaded from the data directory
     @param allD: a dictionary of all of the panda format data of all of the corresponding sites

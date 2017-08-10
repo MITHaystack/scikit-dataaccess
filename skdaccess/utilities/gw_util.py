@@ -3,10 +3,11 @@ import numpy as np
 
 def combine_water_heights(in_data):
     '''
-    Creates a column of water heights in input data frame using Median
+    Combine median and average water heights
+
+    Create a column of water heights in input data frame using Median
     Water Depth by default, but fills in missing data using average
     values
-
 
     @param in_data: Input water heights data
     '''

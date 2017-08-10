@@ -53,7 +53,7 @@ class DataFetcher(DataFetcherStorage):
         '''
         Construct a Grace Data Fetcher
 
-        @param ap_paramList[geo_pont]: AutoList of geographic location tuples (lat,lon)
+        @param ap_paramList[geo_point]: AutoList of geographic location tuples (lat,lon)
         @param start_date: Beginning date
         @param end_date: Ending date
         '''
