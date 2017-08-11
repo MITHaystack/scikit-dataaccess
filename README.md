@@ -11,7 +11,7 @@ Advantages of skdaccess
 
 The package introduces a common namespace and currently supports the following data sets:
 - Light curves from *Kepler*
-- Water depth from wells in California obtained from the USGS
+- Water depth from wells in the United States obtained from the USGS
 - GPS time series data from the UNAVACO Plate Boundary
 - Grace Tellus Monthly Mass Grids from JPL
 
