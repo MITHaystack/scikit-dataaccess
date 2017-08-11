@@ -1,6 +1,7 @@
 # Scikit Data Access
 
 Advantages of skdaccess
+
 - API to import a data generator + function to get next data chunk (configurable)
 - Eliminates the need to create parsers for each data set and simplifies the construction of scientific data processing pipelines.
 - Enables studies involving data fusion and cross-comparisons from several sources.
@@ -10,6 +11,7 @@ Advantages of skdaccess
 - Skdaccess code is open source (MIT License)
 
 The package introduces a common namespace and currently supports the following data sets:
+
 - Light curves from *Kepler*
 - Water depth from wells in the United States obtained from the USGS
 - GPS time series data from the UNAVACO Plate Boundary
