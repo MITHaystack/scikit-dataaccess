@@ -1,5 +1,5 @@
 <p align="left">
-  <img alt="Scikit Data Access" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess_logo.png" width="350"/>
+  <img alt="Scikit Data Access" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess_logo360x100.png"/>
 </p>
 
 - Import scientific data from various sources in Python through one easy API.
