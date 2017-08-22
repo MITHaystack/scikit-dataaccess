@@ -2,14 +2,18 @@
   <img alt="Scikit Data Access" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess_logo360x100.png"/>
 </p>
 
-- Import scientific data from various sources in Python through one easy API.
+- Import scientific data from various sources through one easy Python API.
 - Use iterator patterns for each data source (configurable data generators + functions to get next data chunk).
-- Skip parser programming and time understanding file formats.
-- Enjoy a common namespace for all data and unleash the power of data fusion across a variety of data sets.
+- Skip parser programming and file format handling.
+- Enjoy a common namespace for all data and unleash the power of data fusion.
 - Handle data distribution in different modes: (1) local download, (2) caching of accessed data, or (3) online stream access
-- Distribute data chunks easily on cloud servers for parallel processing
-- Build on an extensible plattform. Accessing a new data source only requires addition of its "DataFetcher.py".   
+- Easily pull data on cloud servers through Python scripts and facilitate large-scale parallel processing.
+- Build on an extensible plattform: Adding access to a new data source only requires addition of its "DataFetcher.py".   
 - Open source (MIT License)
+
+<p align="center">
+  <img alt="Scikit Data Access" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess_overviewdiag.png"/>
+</p>
 
 Supported data sets:
 
