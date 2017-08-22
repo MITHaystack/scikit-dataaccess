@@ -12,7 +12,7 @@
 - Open source (MIT License)
 
 <p align="center">
-  <img alt="Scikit Data Access Overview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess_overviewdiag.png"/>
+  <img alt="Scikit Data Access Overview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess_overviewdiag.png" width="810"/>
 </p>
 
 Supported data sets:
