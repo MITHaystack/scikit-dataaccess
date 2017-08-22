@@ -12,7 +12,7 @@
 - Open source (MIT License)
 
 <p align="center">
-  <img alt="Scikit Data Access" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess_overviewdiag.png"/>
+  <img alt="Scikit Data Access Overview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess_overviewdiag.png"/>
 </p>
 
 Supported data sets:
@@ -47,3 +47,9 @@ Project developers: Cody M. Rude, Justin D. Li, David M. Blair, Michael G. Gowan
 ### Acknowledgements
 
 We acknowledge support from NASA AISTNNX15AG84G, NSF ACI1442997, and NSF AGS-1343967.
+
+## Examples
+
+<p align="center">
+  <img alt="Scikit Data Access Overview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess-quickexamples.png"/>
+</p>
