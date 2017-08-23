@@ -99,7 +99,7 @@ class DataFetcher(DataFetcherCache):
                 file = tfile.extractfile(member)
                 fits_data = fits.open(file)
                 data = Table(fits_data[1].data).to_pandas()
-                data.set_index('TIME',inplace=True)
+                data.set_index('CADENCENO',inplace=True)
                 data.loc[:,'QUARTER'] = fits_data[0].header['QUARTER']
                 data_list.append(data)
             full_data = pd.concat(data_list)
@@ -165,6 +165,12 @@ class DataFetcher(DataFetcherCache):
 
         for kid in kid_list:
             kid_data[kid] = store['kid_' + kid]
+            # If downloaded using old skdaccess version
+            # switch index
+            if kid_data[kid].index.name == 'TIME':
+                kid_data[kid]['TIME'] = kid_data[kid].index
+                kid_data[kid].set_index('CADENCENO', inplace=True)
+
 
         store.close()                
         kid_data = OrderedDict(sorted(kid_data.items(), key=lambda t: t[0]))
