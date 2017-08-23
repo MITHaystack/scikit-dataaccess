@@ -27,6 +27,7 @@
 from skdaccess.framework.data_class import DataFetcherCache
 from skdaccess.framework.param_class import *
 from skdaccess.geo.mahali.data_wrapper import DataWrapper
+from pkg_resources import resource_filename
 
 
 # Standard library imports
@@ -122,10 +123,11 @@ class DataFetcher(DataFetcherCache):
         data_list = pd.DataFrame(columns=['Site','Date'])
         
         # Get a list of all data that needs to be loaded
+        mahali_data_info_location = resource_filename('skdaccess',os.path.join('support','mahali_data_info.hdf'))
         for station in station_list:
             
             try:
-                available_dates = pd.read_hdf('mahali_data_info.hdf', station)
+                available_dates = pd.read_hdf(mahali_data_info_location, station)
             except KeyError:
                 print('Unknown station:',station, )
 

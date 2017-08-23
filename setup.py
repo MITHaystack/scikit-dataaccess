@@ -6,8 +6,12 @@ package_name = 'scikit-dataaccess'
 
 package_list = find_packages()
 
+with open("README.rst") as rfile:
+    readme = rfile.read()
+
+
 setup(name     = package_name,
-      version  = '1.9.3',
+      version  = '1.9.4post1',
       packages = package_list,
       zip_safe = False,
       
@@ -34,9 +38,12 @@ setup(name     = package_name,
       package_data={'skdaccess': ['examples/groundwater_example.py', 'examples/Demo_Grace.ipynb',
                                   'examples/Demo_Groundwater.ipynb', 'examples/Demo_Kepler.ipynb',
                                   'examples/Demo_PBO.ipynb','docs/skdaccess_doxygen.pdf',
-                                  'docs/skdaccess_manual.pdf']},
+                                  'docs/skdaccess_manual.pdf','support/mahali_data_info.hdf']},
 
       entry_points = {'console_scripts': [
           'skdaccess = skdaccess.bin.skdaccess:skdaccess_script'
-          ]}
+          ]},
+      url = 'https://github.com/MITHaystack/scikit-dataaccess',
+      python_requires='>=3.4',
+      long_description = readme
       )
