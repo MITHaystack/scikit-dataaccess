@@ -1,5 +1,5 @@
 <p align="left">
-  <img alt="Scikit Data Access" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess_logo360x100.png"/>
+  <img alt="Scikit Data Access" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/skdaccess_logo360x100.png"/>
 </p>
 
 - Import scientific data from various sources through one easy Python API.
@@ -12,7 +12,7 @@
 - Open source (MIT License)
 
 <p align="center">
-  <img alt="Scikit Data Access Overview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess_overviewdiag.png" width="810"/>
+  <img alt="Scikit Data Access Overview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/skdaccess_overviewdiag.png" width="810"/>
 </p>
 
 Supported data sets:
@@ -53,5 +53,5 @@ We acknowledge support from NASA AISTNNX15AG84G, NSF ACI1442997, and NSF AGS-134
 Code available at [/skdaccess/examples](https://github.com/MITHaystack/scikit-dataaccess/tree/master/skdaccess/examples)
 
 <p align="center">
-  <img alt="Scikit Data Access Overview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess-quickexamples-combined.png"/>
+  <img alt="Scikit Data Access Overview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/skdaccess-quickexamples-combined.png"/>
 </p>
