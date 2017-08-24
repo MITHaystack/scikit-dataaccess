@@ -35,7 +35,7 @@ setup(name     = package_name,
           'Programming Language :: Python :: 3 :: Only'
           ],
 
-      package_data={'skdaccess': ['examples/groundwater_example.py', 'examples/Demo_Grace.ipynb',
+      package_data={'skdaccess': ['examples/terminal_groundwater_example.py', 'examples/Demo_Grace.ipynb',
                                   'examples/Demo_Groundwater.ipynb', 'examples/Demo_Kepler.ipynb',
                                   'examples/Demo_PBO.ipynb','docs/skdaccess_doxygen.pdf',
                                   'docs/skdaccess_manual.pdf','support/mahali_data_info.hdf']},
