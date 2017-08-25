@@ -36,7 +36,8 @@ pip install scikit-dataaccess
 
 ### Documentation
 
-See <https://github.com/MITHaystack/scikit-dataaccess/tree/master/skdaccess/docs>
+User Manual: [/docs/skdaccess_manual.pdf](/docs/skdaccess_manual.pdf)<br>
+Doxygen code documentation: [/docs/skdaccess_doxygen.pdf](/docs/skdaccess_doxygen.pdf)
 
 
 ### Contributors
