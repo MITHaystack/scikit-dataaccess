@@ -1,5 +1,3 @@
-{% twitter https://twitter.com/mithaystack maxwidth=500 limit=5 %}
-
 <p align="left">
   <img alt="Scikit Data Access" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/skdaccess_logo360x100.png"/>
 </p>
@@ -17,7 +15,8 @@
   <img alt="Scikit Data Access Overview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/skdaccess_overviewdiag.png" width="810"/>
 </p>
 
-Supported data sets:
+Supported data sets
+For updates, follow https://twitter.com/mithaystack
 
 | Namespace  | Description | Preview | Data Source |
 | ------------- | ------------- |------------- |------------- |
