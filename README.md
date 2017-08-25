@@ -1,3 +1,5 @@
+<a class="twitter-timeline" href="https://twitter.com/TwitterDev/lists/mithaystack">A Twitter List by TwitterDev</a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
 <p align="left">
   <img alt="Scikit Data Access" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/skdaccess_logo360x100.png"/>
 </p>
