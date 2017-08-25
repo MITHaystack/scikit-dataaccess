@@ -56,7 +56,7 @@ We acknowledge support from NASA AISTNNX15AG84G, NSF ACI1442997, and NSF AGS-134
 
 ## Examples
 
-Code examples (Jupyter notebooks) for all datasets: [/skdaccess/examples](https://github.com/MITHaystack/scikit-dataaccess/tree/master/skdaccess/examples)
+Code examples (Jupyter notebooks) for all datasets listed above are available at: [/skdaccess/examples](https://github.com/MITHaystack/scikit-dataaccess/tree/master/skdaccess/examples)
 
 <p align="center">
   <img alt="Scikit Data Access Overview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/skdaccess-quickexamples-combined.png"/>
