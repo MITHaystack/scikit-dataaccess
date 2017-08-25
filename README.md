@@ -47,7 +47,7 @@ pip install scikit-dataaccess
 Project lead: [Victor Pankratius (MIT)](http://www.victorpankratius.com)<br>
 Project developers: Cody M. Rude, Justin D. Li, David M. Blair, Michael G. Gowanlock, Victor Pankratius
 
-Contact <img src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/skdaccess_cont.png" /> to add interface code for your own datasets.
+New contributors welcome! Contact <img src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/skdaccess_cont.png" /> to contribute and add interface code for your own datasets :smile:
 
   
 ### Acknowledgements
