@@ -44,6 +44,8 @@ See <https://github.com/MITHaystack/scikit-dataaccess/tree/master/skdaccess/docs
 Project lead: [Victor Pankratius (MIT)](http://www.victorpankratius.com)<br>
 Project developers: Cody M. Rude, Justin D. Li, David M. Blair, Michael G. Gowanlock, Victor Pankratius
 
+Contact: <img src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/skdaccess_cont.png" />
+
 ### Acknowledgements
 
 We acknowledge support from NASA AISTNNX15AG84G, NSF ACI1442997, and NSF AGS-1343967.
