@@ -16,7 +16,10 @@
 </p>
 
 Supported data sets<br>
-<sup>For updates, follow https://twitter.com/mithaystack</sup>
+<sup>For updates, follow </sup>
+  - <sup>https://twitter.com/scikit_data</sup> 
+  - <sup>https://twitter.com/mithaystack</sup>
+</sup>
 
 | Namespace  | Description | Preview | Data Source |
 | ------------- | ------------- |------------- |------------- |
