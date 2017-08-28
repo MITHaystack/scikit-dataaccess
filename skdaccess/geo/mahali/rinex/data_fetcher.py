@@ -26,7 +26,7 @@
 # Skdaccess imports
 from skdaccess.framework.data_class import DataFetcherCache
 from skdaccess.framework.param_class import *
-from skdaccess.geo.mahali.data_wrapper import DataWrapper
+from skdaccess.geo.mahali.rinex.data_wrapper import DataWrapper
 from pkg_resources import resource_filename
 
 
@@ -139,13 +139,13 @@ class DataFetcher(DataFetcherCache):
                 
                 
         # Get currently downloaded files
-        file_list = glob(os.path.join(data_location,'*',))
+        file_list = glob(os.path.join(data_location,'*.*n',)) + glob(os.path.join(data_location,'*.*o',))
         file_list = set(file.split(os.sep)[-1] for file in file_list)
         
         
         # Get a list of all needed filenames
-        data_list_obs = data_list.Site + data_list.Date.apply(lambda x: x.strftime('%j.%yO'))
-        data_list_nav = data_list.Site + data_list.Date.apply(lambda x: x.strftime('%j.%yN'))
+        data_list_obs = data_list.Site + data_list.Date.apply(lambda x: x.strftime('%j0.%yo'))
+        data_list_nav = data_list.Site + data_list.Date.apply(lambda x: x.strftime('%j0.%yn'))
         
         data_set_filenames = set(pd.concat([data_list_obs, data_list_nav]))
 
@@ -155,9 +155,9 @@ class DataFetcher(DataFetcherCache):
         # Get locations of all files to download
         def getFileLocation(in_file):
             day = in_file[4:7]
-            if in_file[-1] == 'N':
+            if in_file[-1] == 'n':
                 data_folder = 'nav'
-            elif in_file[-1] == 'O':
+            elif in_file[-1] == 'o':
                 data_folder = 'obs'
             else:
                 raise ValueError('Could not parse in_file')
@@ -168,7 +168,7 @@ class DataFetcher(DataFetcherCache):
         
         # Key function to sort rinex files by date, then
         # station, then type (NAV or OBS)
-        key_func = lambda x: x[-3:-1] + x[-7:-4] + x[-11:-7] + x[-1]
+        key_func = lambda x: x[-3:-1] + x[-8:-5] + x[-12:-8] + x[-1]
         
         missing_files = list(missing_files)
         missing_files.sort()
@@ -204,8 +204,8 @@ class DataFetcher(DataFetcherCache):
         nav_files, obs_files = self.cacheData()
         
         def getSiteAndDate(in_filename):
-            date = pd.to_datetime('2015' + in_filename[-7:-4], format='%Y%j')
-            return in_filename[-11:-7], date
+            date = pd.to_datetime('2015' + in_filename[-8:-5], format='%Y%j')
+            return in_filename[-12:-8], date
   
         
         data_list = []
