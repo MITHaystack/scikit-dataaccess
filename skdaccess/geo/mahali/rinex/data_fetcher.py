@@ -28,6 +28,7 @@ from skdaccess.framework.data_class import DataFetcherCache
 from skdaccess.framework.param_class import *
 from skdaccess.geo.mahali.rinex.data_wrapper import DataWrapper
 from pkg_resources import resource_filename
+from skdaccess.utilities.mahali_util import convert_date
 
 
 # Standard library imports
@@ -55,18 +56,6 @@ class DataFetcher(DataFetcherCache):
         @param end_date: Ending date for selecting data (Defaults to end of available data)
         '''
         
-        def convert_date(in_date):
-            if isinstance(start_date,str):
-                try:
-                    return pd.to_datetime(in_date)
-                except ValueError as e: 
-                    return pd.to_datetime(in_date, format='%Y%j')
-                
-            else:
-                return in_date
-                   
- 
-                    
         if start_date == None:
             self.start_date = pd.to_datetime('2015232', format='%Y%j')
         else:
