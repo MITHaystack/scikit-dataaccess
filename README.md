@@ -1,5 +1,5 @@
 <p align="left">
-  <img alt="Scikit Data Access" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess_logo360x100.png"/>
+  <img alt="Scikit Data Access" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/skdaccess_logo360x100.png"/>
 </p>
 
 - Import scientific data from various sources through one easy Python API.
@@ -12,20 +12,21 @@
 - Open source (MIT License)
 
 <p align="center">
-  <img alt="Scikit Data Access Overview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess_overviewdiag.png" width="810"/>
+  <img alt="Scikit Data Access Overview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/skdaccess_overviewdiag.png" width="810"/>
 </p>
 
-Supported data sets:
+Supported data sets <sub>(For updates, follow https://twitter.com/scikit_data and https://twitter.com/mithaystack)</sub>
 
-| Namespace  | Description | Data Source |
-| ------------- | ------------- |------------- |
-| <sup> skdaccess.astro.kepler</sup>   | <sup> Light curves for stars imaged by the Kepler Space Telescope</sup>   | <sup> https://keplerscience.arc.nasa.gov </sup> |
-|<sup> skdaccess.geo.groundwater </sup> | <sup> United States groundwater monitoring wells measuring the depth to water level </sup> | <sup> https://waterservices.usgs.gov </sup> |
-| <sup> skdaccess.geo.pbo </sup> | <sup> Daily GPS displacement time series measurements throughout the United States </sup> | <sup> http://www.unavco.org/projects/major-projects/pbo/pbo.html</sup> |
-|<sup> skdaccess.geo.grace </sup> | <sup> GRACE Tellus Monthly Mass Grids. 30-day measurements of changes in Earth’s gravity field to quantify equivalent water thickness </sup> | <sup> https://grace.jpl.nasa.gov/data/get-data/monthly-mass-grids-land </sup> |
-| <sup> skdaccess.geo.gldas </sup>  | <sup> Land hydrology model produced by NASA. This version of the data is generated to match the GRACE temporal and spatial characteristics and is available as a complementary data product </sup> | <sup> https://grace.jpl.nasa.gov/data/get-data/land-water-content </sup> |
-| <sup> skdaccess.geo.modis </sup> | <sup> Spectroradiometer aboard the NASA Terra and Aqua image satellites. Generates approximately daily images of the Earth’s surface </sup> | <sup> https://modis.gsfc.nasa.gov </sup> |
-| <sup> skdaccess.geo.mahali </sup> | <sup> MIT led NSF project studying the Earth’s ionosphere with GPS </sup> | <sup> http://mahali.mit.edu </sup> |
+
+| Namespace  | Description | Preview | Data Source |
+| ------------- | ------------- |------------- |------------- |
+| <sup> skdaccess.astro.kepler</sup>   | <img src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/icon_datasource_logo_nasa.png" /> <sup> Light curves for stars imaged by the NASA Kepler Space Telescope</sup>   | <img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/icon_skdaccess.astro.kepler.png"/>| <sup> https://keplerscience.arc.nasa.gov </sup> |
+|<sup> skdaccess.geo.groundwater </sup> | <img src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/icon_datasource_logo_usgs.png" /> <sup> United States groundwater monitoring wells measuring the depth to water level </sup> | <img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/icon_skdaccess.geo.groundwater.png"/>|<sup> https://waterservices.usgs.gov </sup> |
+| <sup> skdaccess.geo.pbo </sup> | <img src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/icon_datasource_logo_unavco.png" /> <sup> EarthScope - Plate Boundary Observatory (PBO): Daily GPS displacement time series measurements throughout the United States </sup> | <img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/icon_skdaccess.geo.pbo.png"/>|<sup> http://www.unavco.org/projects/major-projects/pbo/pbo.html</sup> |
+|<sup> skdaccess.geo.grace </sup> | <img src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/icon_datasource_logo_nasa.png" /> <sup> NASA GRACE Tellus Monthly Mass Grids. 30-day measurements of changes in Earth’s gravity field to quantify equivalent water thickness </sup> | <img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/icon_skdaccess.geo.grace.png"/>|<sup> https://grace.jpl.nasa.gov/data/get-data/monthly-mass-grids-land </sup> |
+| <sup> skdaccess.geo.gldas </sup>  | <img src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/icon_datasource_logo_nasa.png" /> <sup> Land hydrology model produced by NASA. This version of the data is generated to match the GRACE temporal and spatial characteristics and is available as a complementary data product </sup> | <img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/icon_skdaccess.geo.gldas.png"/>|<sup> https://grace.jpl.nasa.gov/data/get-data/land-water-content </sup> |
+| <sup> skdaccess.geo.modis </sup> | <img src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/icon_datasource_logo_nasa.png" /> <sup> Spectroradiometer aboard the NASA Terra and Aqua image satellites. Generates approximately daily images of the Earth’s surface </sup> | <img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/icon_skdaccess.geo.modis.png"/>|<sup> https://modis.gsfc.nasa.gov </sup> |
+| <sup> skdaccess.geo.mahali </sup> | <img src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/icon_datasource_logo_mit.png" /> <img src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/icon_datasource_logo_nsf.png" /> <sup> MIT led NSF project studying the Earth’s ionosphere with GPS </sup> | .|<sup> http://mahali.mit.edu </sup> |
 
 
 
@@ -36,7 +37,10 @@ pip install scikit-dataaccess
 
 ### Documentation
 
-See <https://github.com/MITHaystack/scikit-dataaccess/tree/master/skdaccess/docs>
+- User Manual: [/docs/skdaccess_manual.pdf](https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess_manual.pdf)<br>
+- Code documentation (Doxygen): [/docs/skdaccess_doxygen.pdf](https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess_doxygen.pdf)
+- Code visualization (treemap): [/docs/skdaccess_treemap.png](https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess_treemap.png)
+- Code class diagrams: [/docs/class_diagrams](https://github.com/MITHaystack/scikit-dataaccess/tree/master/skdaccess/docs/class_diagrams)
 
 
 ### Contributors
@@ -44,14 +48,17 @@ See <https://github.com/MITHaystack/scikit-dataaccess/tree/master/skdaccess/docs
 Project lead: [Victor Pankratius (MIT)](http://www.victorpankratius.com)<br>
 Project developers: Cody M. Rude, Justin D. Li, David M. Blair, Michael G. Gowanlock, Victor Pankratius
 
+New contributors welcome! Contact <img src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/skdaccess_cont.png" /> to contribute and add interface code for your own datasets :smile:
+
+  
 ### Acknowledgements
 
 We acknowledge support from NASA AISTNNX15AG84G, NSF ACI1442997, and NSF AGS-1343967.
 
 ## Examples
 
-Code available at [/skdaccess/examples](https://github.com/MITHaystack/scikit-dataaccess/tree/master/skdaccess/examples)
+Code examples (Jupyter notebooks) for all datasets listed above are available at: [/skdaccess/examples](https://github.com/MITHaystack/scikit-dataaccess/tree/master/skdaccess/examples)
 
 <p align="center">
-  <img alt="Scikit Data Access Overview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess-quickexamples-combined.png"/>
+  <img alt="Scikit Data Access Overview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/skdaccess-quickexamples-combined.png"/>
 </p>
