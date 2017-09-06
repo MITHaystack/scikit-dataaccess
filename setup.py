@@ -38,7 +38,9 @@ setup(name     = package_name,
       package_data={'skdaccess': ['examples/terminal_groundwater_example.py', 'examples/Demo_Grace.ipynb',
                                   'examples/Demo_Groundwater.ipynb', 'examples/Demo_Kepler.ipynb',
                                   'examples/Demo_PBO.ipynb','docs/skdaccess_doxygen.pdf',
-                                  'docs/skdaccess_manual.pdf','support/mahali_data_info.hdf']},
+                                  'docs/skdaccess_manual.pdf','support/mahali_data_info.hdf',
+                                  'support/mahali_temperature_info.txt', 'support/mahali_tec_info.hdf',
+                                  'support/usgs_geomagnetism_observatories.txt']},
 
       entry_points = {'console_scripts': [
           'skdaccess = skdaccess.bin.skdaccess:skdaccess_script'
