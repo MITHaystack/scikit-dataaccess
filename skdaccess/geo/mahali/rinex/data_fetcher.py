@@ -47,13 +47,14 @@ class DataFetcher(DataFetcherCache):
     Data Fetcher for Mahali Data
     '''
     
-    def __init__(self, ap_paramList=[], start_date=None, end_date=None):
+    def __init__(self, ap_paramList=[], start_date=None, end_date=None, generate_links = False):
         '''
         Initialize Mahali Data Fetcher
 
         @param ap_paramList[stations]: Autolist of stations (Defaults to all stations)
         @param start_date: Starting date for seelcting data (Defaults to beginning of available data)
         @param end_date: Ending date for selecting data (Defaults to end of available data)
+        @param generate_links: Generate links to data instead of downloading data
         '''
         
         if start_date == None:
@@ -82,6 +83,9 @@ class DataFetcher(DataFetcherCache):
                 'mh13',
             ]
             ap_paramList = [ AutoList(station_list) ]
+
+
+        self.generate_links = generate_links
         
         super(DataFetcher, self).__init__(ap_paramList)
             
@@ -90,13 +94,6 @@ class DataFetcher(DataFetcherCache):
         ''' 
         Downloads all needed data. Called by output().
         '''
-        
-        data_location = DataFetcher.getDataLocation('mahali')
-
-        if data_location == None:
-            data_location = os.path.join(os.path.expanduser('~'), '.skdaccess','mahali')
-            os.makedirs(data_location, exist_ok=True)
-
         station_list = self.ap_paramList[0]()
 
         remote_location = '/data/mahali_UAF_data/cloud/rinex/obs'
@@ -127,10 +124,6 @@ class DataFetcher(DataFetcherCache):
             data_list = pd.concat([data_list, pd.DataFrame({'Site':station,'Date':common_dates})])
                 
                 
-        # Get currently downloaded files
-        file_list = glob(os.path.join(data_location,'*.*n',)) + glob(os.path.join(data_location,'*.*o',))
-        file_list = set(file.split(os.sep)[-1] for file in file_list)
-        
         
         # Get a list of all needed filenames
         data_list_obs = data_list.Site + data_list.Date.apply(lambda x: x.strftime('%j0.%yo'))
@@ -138,8 +131,6 @@ class DataFetcher(DataFetcherCache):
         
         data_set_filenames = set(pd.concat([data_list_obs, data_list_nav]))
 
-        # Select files that are wanted but not yet downloaded
-        missing_files = data_set_filenames.difference(file_list)
         
         # Get locations of all files to download
         def getFileLocation(in_file):
@@ -154,35 +145,58 @@ class DataFetcher(DataFetcherCache):
             return 'rinex/' + data_folder + '/2015/' + day + '/' + in_file
 
 
-        
+
         # Key function to sort rinex files by date, then
         # station, then type (NAV or OBS)
         key_func = lambda x: x[-3:-1] + x[-8:-5] + x[-12:-8] + x[-1]
+
+        # Base url of data
+        base_url = 'http://apollo.haystack.mit.edu/mahali-data/'
         
-        missing_files = list(missing_files)
-        missing_files.sort()
-        file_location_list = [getFileLocation(filename) for filename in missing_files]
+
+        # Download files to disk
+        if not self.generate_links:
+            data_location = DataFetcher.getDataLocation('mahali')
+
+            if data_location == None:
+                data_location = os.path.join(os.path.expanduser('~'), '.skdaccess','mahali')
+                os.makedirs(data_location, exist_ok=True)
+
+            # Get currently downloaded files
+            file_list = glob(os.path.join(data_location,'*.*n',)) + glob(os.path.join(data_location,'*.*o',))
+            file_list = set(file.split(os.sep)[-1] for file in file_list)
+
+            # Select files that are wanted but not yet downloaded
+            missing_files = data_set_filenames.difference(file_list)
+
+            missing_files = list(missing_files)
+            missing_files.sort()
+            file_location_list = [getFileLocation(filename) for filename in missing_files]
+
+
+            if len(file_location_list) > 0:
+                print('Downloading mahali data')
+                sys.stdout.flush()
+                for url_path, filename in tqdm(zip(file_location_list, missing_files), total=len(missing_files)):
+                    with  open(os.path.join(data_location, filename), 'wb') as data_file:
+                        shutil.copyfileobj(urlopen(base_url+ url_path), data_file)
+
+            # return the appropriate list of files to load
+
+            obs_file_list = [os.path.join(data_location, file) for file in data_list_obs]
+            nav_file_list = [os.path.join(data_location, file) for file in data_list_nav]
 
         
-        if len(file_location_list) > 0:
-            base_url = 'http://apollo.haystack.mit.edu/mahali-data/'
-            print('Downloading mahali data')
-            sys.stdout.flush()
-            for url_path, filename in tqdm(zip(file_location_list, missing_files), total=len(missing_files)):
-                with  open(os.path.join(data_location, filename), 'wb') as data_file:
-                    shutil.copyfileobj(urlopen(base_url+ url_path), data_file)
-                
-        # return the appropriate list of files to load
-        
-        obs_file_list = [os.path.join(data_location, file) for file in data_list_obs]
-        nav_file_list = [os.path.join(data_location, file) for file in data_list_nav]
+        # Not downloading data, just generating links to where data is located
+        else:
+            obs_file_list = [base_url + getFileLocation(location) for location in data_list_obs]
+            nav_file_list = [base_url + getFileLocation(location) for location in data_list_nav]
 
-        
+
         obs_file_list.sort(key=key_func)
         nav_file_list.sort(key=key_func)
-                
+
         return nav_file_list, obs_file_list
-                                
                 
     def output(self):
         ''' 
@@ -208,5 +222,3 @@ class DataFetcher(DataFetcherCache):
             data_list.append([site,date,nav, obs])
         
         return DataWrapper(data_list)
-            
-            
