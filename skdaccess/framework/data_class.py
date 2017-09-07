@@ -26,10 +26,21 @@
 # Provides base data classes inherited by the specific data fetchers
 # """
 
-
+# Standard library imports
 import os
+import pathlib
+from glob import glob
+from urllib import request, parse
+import shutil
+
+# Compatability imports for standard library
 from six.moves import configparser
 from six.moves.configparser import NoOptionError, NoSectionError
+from six.moves.urllib.request import urlopen
+
+# 3rd party imports
+from tqdm import tqdm
+
 
             
 class DataFetcherBase(object):
@@ -195,13 +206,79 @@ class DataFetcherCache(DataFetcherLocal):
     '''
     Data fetcher base class for downloading data and caching results on hard disk
     '''
-    def cacheData(self, data_specification):
+    def cacheData(self, keyname, online_path_list):
         '''
         Download and store specified data to local disk
 
         @param data_specification: Specification of data to be retrieved
         '''
-        pass
+
+        def parseURL(data_location, in_path):
+            '''
+            This function takes the file path of saved data and determines
+            what url created it.
+
+            @param data_location: Absolute path to root directory whose path is not part of the url
+            @param path: Path to object that will be used to generate a url
+
+            @return ParseResult of url generated from in_path
+            '''
+            data_location_parts = len(pathlib.Path(data_location).parts[:])
+            path = pathlib.Path(in_path)
+            access_type = path.parts[data_location_parts]
+            if access_type != 'file':
+                access_type += '://'
+            else:
+                access_type += ':///'
+
+            url_path = pathlib.Path(*path.parts[data_location_parts+1:]).as_posix()
+            return parse.urlparse(access_type+url_path)
+
+        def generatePath(data_location, parsed_url):
+            '''
+            This function takes a parsed url (ParseResult) and
+            generates the filepath to where the data should be stored
+            stored
+
+            @param data_location: Location where data is stored
+            @param parsed_url: ParseResult generated from url
+
+            @return Local path to file
+            '''
+
+            return os.path.join(data_location, parsed_url.scheme,parsed_url.netloc, parsed_url.path[1:])
+
+
+        # Get absolute path to data directory
+        data_location = DataFetcherCache.getDataLocation(keyname)
+
+        # If it doesn't exist, create a new one
+        if data_location == None:
+            data_location = os.path.join(os.path.expanduser('~'), '.skdaccess',keyname)
+            os.makedirs(data_location, exist_ok=True)
+
+        # Get currently downloaded files
+        downloaded_full_file_paths = [filename for filename in glob(os.path.join(data_location,'**'), recursive=True) if os.path.isfile(filename)]
+        downloaded_parsed_urls = set(parseURL(data_location, file_path) for file_path in downloaded_full_file_paths)
+
+
+        # Determine which files are missing
+        parsed_http_paths = [parse.urlparse(online_path) for online_path in online_path_list]
+        missing_files = list(set(parsed_http_paths).difference(downloaded_parsed_urls))
+
+        missing_files.sort()
+
+        # Download missing files
+        if len(missing_files) > 0:
+            for parsed_url in tqdm(missing_files):
+                out_filename = generatePath(data_location, parsed_url)
+                os.makedirs(os.path.split(out_filename)[0],exist_ok=True)
+                with open(out_filename, 'wb') as data_file:
+                    shutil.copyfileobj(urlopen(parsed_url.geturl()), data_file)
+
+        # Return a list of file locations for parsing
+        return [generatePath(data_location, parsed_url) for parsed_url in parsed_http_paths]
+
 
     def multirun_enabled(self):
         '''
