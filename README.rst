@@ -170,7 +170,9 @@ Contributors
 | Project lead: `Victor Pankratius (MIT) <http://www.victorpankratius.com>`_ 
 | Project developers: Cody M. Rude, Justin D. Li, David M. Blair, Michael G. Gowanlock, Victor Pankratius
 |
-| New contributors welcome! Contact |skdaccess_contact| to contribute and add interface code for your own datasets ☺
+| New contributors welcome! Contact |skdaccess_contact| to contribute and add interface code for your own datasets |smiley|
+
+.. |smiley| unicode:: 0x1F604
 
 .. |skdaccess_contact| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/skdaccess_cont.png
 
