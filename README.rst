@@ -33,6 +33,7 @@ Supported data sets |contact|
    :header: "Namespace", "Description", "Preview", "Data Source"
 
         :sup:`skdaccess.astro.kepler`          , |nasa_logo|  	       |kepler_desc|            , |kepler_preview|            , |kepler_url|
+        :sup:`skdaccess.astro.sdo`             , |nasa_logo|  	       |sdo_desc|               , |sdo_preview|               , |sdo_url|
         :sup:`skdaccess.geo.groundwater`       , |usgs_logo|	       |groundwater_desc|       , |groundwater_preview|	      , |groundwater_url|
         :sup:`skdaccess.geo.pbo`               , |unavaco_logo|	       |pbo_desc|               , |pbo_preview|		      , |pbo_url|
         :sup:`skdaccess.geo.grace`             , |nasa_logo|	       |grace_desc|             , |grace_preview|	      , |grace_url|
@@ -53,6 +54,7 @@ Supported data sets |contact|
 
 .. Preview images
 .. |kepler_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.astro.kepler.png
+.. |sdo_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.astro.sdo.png
 .. |groundwater_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.geo.groundwater.png
 .. |pbo_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.geo.pbo.png
 .. |grace_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.geo.grace.png
@@ -67,6 +69,10 @@ Supported data sets |contact|
 .. |kepler_url| raw:: html
 
 	<sup> <a href=https://keplerscience.arc.nasa.gov> https://keplerscience.arc.nasa.gov </a> </sup>
+
+.. |sdo_url| raw:: html
+
+	<sup> <a href=https://keplerscience.arc.nasa.gov> https://sdo.gsfc.nasa.gov/ </a></sup>
 
 .. |groundwater_url| raw:: html
 
@@ -104,6 +110,11 @@ Supported data sets |contact|
 .. |kepler_desc| replace::
 
 		 :sub:`Light curves for stars imaged by the NASA Kepler Space Telescope`
+
+
+.. |sdo_desc| replace::
+
+		 :sub:`Images from the Solar Dynamics Observatory`
 
 .. |groundwater_desc| replace::
 
