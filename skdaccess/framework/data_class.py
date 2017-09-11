@@ -32,6 +32,8 @@ import pathlib
 from glob import glob
 from urllib import request, parse
 import shutil
+from collections import OrderedDict
+import warnings
 
 # Compatability imports for standard library
 from six.moves import configparser
@@ -40,7 +42,8 @@ from six.moves.urllib.request import urlopen
 
 # 3rd party imports
 from tqdm import tqdm
-
+from skimage.io import imread
+from astropy.io import fits
 
             
 class DataFetcherBase(object):
@@ -185,13 +188,51 @@ class DataFetcherStream(DataFetcherBase):
     '''
     def retrieveOnlineData(self, data_specification):
         '''
-        Abstract class for downloading data into memory
+        Method for downloading data into memory
 
-        @param data_specification: Data to be retrieved
+        @param data_specification: Url list of data to be retrieved
 
         @return Retrieved data
         '''
-        pass
+
+        # Dictionary to store results
+        data_dict = OrderedDict()
+        metadata_dict = OrderedDict()
+
+
+        # Parse data
+        for url in data_specification:
+
+            # Get http data type
+            with urlopen(url) as url_access:
+                content_type = url_access.info().get_content_type()
+
+            # Access fits file
+            if content_type == 'application/fits':
+
+                # Do not want caching to avoid issues when running multiple pipelines
+                with warnings.catch_warnings(), fits.open(url, cache=False) as hdu_list:
+                    warnings.simplefilter("ignore", fits.verify.VerifyWarning)
+
+                    # Need to fix header otherwise astropy can fail to read data
+                    hdu_list.verify('fix')
+
+                    data_dict[url] = hdu_list[1].data
+                    metadata_dict[url] = hdu_list[1].header
+
+            # Access jpg file
+            elif content_type == 'image/jpeg':
+                print( 'Downloading ' + url,end=' ')
+                data_dict[url] = imread(url)
+                metadata_dict[url] = None
+                print('[Done]')
+
+            # Throw warning if content_type not understood
+            else:
+                raise RuntimeError('Did not understand content type: ' + content_type)
+
+        return metadata_dict, data_dict
+
 
     def multirun_enabled(self):
         '''
