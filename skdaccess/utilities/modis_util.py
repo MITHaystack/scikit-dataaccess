@@ -1,19 +1,17 @@
 # skdaccess imports 
-from .map_util import wgs84_distance
-from skdaccess.framework.data_class import ImageWrapper
-
 # Standard library imports
 import ast
+import os
 import xml.etree.ElementTree as ET
 from collections import OrderedDict
-import os
 
+import numpy as np
+from netCDF4 import Dataset
 # 3rd party imports
 from scipy.interpolate import RectBivariateSpline
 from scipy.optimize import brute
-import numpy as np
 from six.moves.urllib.request import urlopen
-from netCDF4 import Dataset
+from skdaccess.framework.data_class import ImageWrapper
 
 def getImageType(in_data):
     '''
@@ -110,25 +108,6 @@ def calibrateModis(data, metadata):
 
     return new_data
 
-
-def gps2pixel(gpsmethod, gps_coord,bounds):
-    """
-    Function for finding the pixel coordinate associated with a gps coordinate
-    
-    @param gpsmethod: GPS coordinate mapping function from above
-    @param gps_coord: GPS coordinate to match, as (lat,lon)
-    @param bounds: Pixel bounds to search within ((y_low,y_high),(x_low,x_high))
-    
-    @return Nearest integer pixel value
-    
-    """
-    
-    # map_ops great circle distance
-    func = lambda imgxy: wgs84_distance(gpsmethod(imgxy[0],imgxy[1]),(gps_coord[0],gps_coord[1]))
-    res = brute(func,bounds)
-    
-    # return np.array([int(round(cc)) for cc in res])
-    return np.array(res)
 
 def rescale(in_array, max_val=0.9,min_val = -0.01):
     '''

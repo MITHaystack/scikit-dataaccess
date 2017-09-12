@@ -26,26 +26,23 @@
 # Provides classes for accessing MODIS data.
 # """
 
-# mithagi imports
-from skdaccess.framework.data_class import DataFetcherStream, ImageWrapper
-from skdaccess.utilities.map_util import wgs84_distance
-from skdaccess.utilities.modis_util import getImageType, createGrid, getFileURLs, readMODISData, getFileURLs, getFileIDs
-
 # Standard library imports
 from collections import OrderedDict
-from six.moves.urllib.request import urlopen
-import ast
 from pathlib import Path
-import re
 from shutil import copyfileobj
 import os
-
+import re
 
 # 3rd party package imports
 import pandas as pd
-import numpy as np
-from tqdm import tqdm
 from scipy.optimize import brute
+from six.moves.urllib.request import urlopen
+import numpy as np
+
+# mithagi imports
+from skdaccess.framework.data_class import DataFetcherStream, ImageWrapper
+from skdaccess.utilities.modis_util import getImageType, createGrid, getFileURLs, readMODISData, getFileURLs, getFileIDs
+from tqdm import tqdm
 
 
 class DataFetcher(DataFetcherStream):
