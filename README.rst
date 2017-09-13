@@ -33,6 +33,7 @@ Supported data sets |contact|
    :header: "Namespace", "Description", "Preview", "Data Source"
 
         :sup:`skdaccess.astro.kepler`          , |nasa_logo|  	       |kepler_desc|            , |kepler_preview|            , |kepler_url|
+        :sup:`skdaccess.astro.voyager`         , |nasa_logo|  	       |voyager_desc|           , |voyager_preview|           , |voyager_url|
         :sup:`skdaccess.astro.sdo`             , |nasa_logo|  	       |sdo_desc|               , |sdo_preview|               , |sdo_url|
         :sup:`skdaccess.geo.groundwater`       , |usgs_logo|	       |groundwater_desc|       , |groundwater_preview|	      , |groundwater_url|
         :sup:`skdaccess.geo.pbo`               , |unavaco_logo|	       |pbo_desc|               , |pbo_preview|		      , |pbo_url|
@@ -54,7 +55,8 @@ Supported data sets |contact|
 
 .. Preview images
 .. |kepler_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.astro.kepler.png
-.. |sdo_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.astro.sdo.png
+.. |voyager_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.astro.voyager.png
+.. |sdo_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.solar.sdo.png
 .. |groundwater_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.geo.groundwater.png
 .. |pbo_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.geo.pbo.png
 .. |grace_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.geo.grace.png
@@ -70,9 +72,13 @@ Supported data sets |contact|
 
 	<sup> <a href=https://keplerscience.arc.nasa.gov> https://keplerscience.arc.nasa.gov </a> </sup>
 
+.. |voyager_url| raw:: html
+
+	<sup> <a href=https://spdf.gsfc.nasa.gov/> https://spdf.gsfc.nasa.gov/ </a> </sup>
+
 .. |sdo_url| raw:: html
 
-	<sup> <a href=https://keplerscience.arc.nasa.gov> https://sdo.gsfc.nasa.gov/ </a></sup>
+	<sup> <a href=https://sdo.gsfc.nasa.gov/> https://sdo.gsfc.nasa.gov/ </a></sup>
 
 .. |groundwater_url| raw:: html
 
@@ -111,6 +117,9 @@ Supported data sets |contact|
 
 		 :sub:`Light curves for stars imaged by the NASA Kepler Space Telescope`
 
+.. |voyager_desc| replace::
+
+		 :sub:`Data from the Voyager mission`
 
 .. |sdo_desc| replace::
 
