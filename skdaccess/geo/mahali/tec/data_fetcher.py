@@ -56,7 +56,7 @@ class DataFetcher(DataFetcherCache):
 
         # Get start date
         if start_date == None:
-            self.start_date = pd.to_datetime('201275', format='%Y%j')
+            self.start_date = pd.to_datetime('2015275', format='%Y%j')
         else:
             self.start_date = convert_date(start_date)
                                            
