@@ -156,10 +156,10 @@ class DataFetcher(DataFetcherCache):
 
         # Download files to disk
         if not self.generate_links:
-            data_location = DataFetcher.getDataLocation('mahali')
+            data_location = DataFetcher.getDataLocation('mahali_rinex')
 
             if data_location == None:
-                data_location = os.path.join(os.path.expanduser('~'), '.skdaccess','mahali')
+                data_location = os.path.join(os.path.expanduser('~'), '.skdaccess','mahali_rinex')
                 os.makedirs(data_location, exist_ok=True)
 
             # Get currently downloaded files
