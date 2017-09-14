@@ -1,7 +1,7 @@
 # The MIT License (MIT)
 # Copyright (c) 2017 Massachusetts Institute of Technology
 #
-# Authors: Cody Rude, Dave Blair
+# Authors: Cody Rude
 # This software has been created in projects supported by the US National
 # Science Foundation and NASA (PI: Pankratius)
 #
