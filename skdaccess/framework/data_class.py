@@ -252,6 +252,8 @@ class DataFetcherCache(DataFetcherLocal):
         Download and store specified data to local disk
 
         @param data_specification: Specification of data to be retrieved
+
+        @return List of downloaded file locations
         '''
 
         def parseURL(data_location, in_path):
