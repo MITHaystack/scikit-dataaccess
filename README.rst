@@ -21,29 +21,30 @@
 	   :width: 810
 
 
-Supported data sets |contact|
-
-.. |contact| raw:: html
-
-	<sub> (For updates, follow <a href=https://twitter.com/scikit_data> https://twitter.com/scikit_data </a>
-	and <a href=https://twitter.com/mithaystack> https://twitter.com/mithaystack </a>)</sub>
+Supported data sets (For updates, follow https://twitter.com/scikit_data and https://twitter.com/mithaystack)
 
 
 .. csv-table::
    :header: "Namespace", "Description", "Preview", "Data Source"
 
-        :sup:`skdaccess.astro.kepler`          , |nasa_logo|  	       |kepler_desc|            , |kepler_preview|            , |kepler_url|
-        :sup:`skdaccess.astro.voyager`         , |nasa_logo|  	       |voyager_desc|           , |voyager_preview|           , |voyager_url|
-        :sup:`skdaccess.astro.sdo`             , |nasa_logo|  	       |sdo_desc|               , |sdo_preview|               , |sdo_url|
-        :sup:`skdaccess.geo.groundwater`       , |usgs_logo|	       |groundwater_desc|       , |groundwater_preview|	      , |groundwater_url|
-        :sup:`skdaccess.geo.pbo`               , |unavaco_logo|	       |pbo_desc|               , |pbo_preview|		      , |pbo_url|
-        :sup:`skdaccess.geo.grace`             , |nasa_logo|	       |grace_desc|             , |grace_preview|	      , |grace_url|
-        :sup:`skdaccess.geo.gldas`             , |nasa_logo|	       |gldas_desc|             , |gldas_preview|	      , |gldas_url|
-        :sup:`skdaccess.geo.modis`             , |nasa_logo|	       |modis_desc|             , |modis_preview|	      , |modis_url|
-        :sup:`skdaccess.geo.magnetometer`      , |usgs_logo|	       |magnetometer_desc|      , |magnetometer_preview|      , |magnetometer_url|
-        :sup:`skdaccess.geo.mahali.rinex`      , |mit_logo| |nsf_logo| |mahali_rinex_desc|      , |mahali_rinex_preview|      , |mahali_url|
-        :sup:`skdaccess.geo.mahali.tec`        , |mit_logo| |nsf_logo| |mahali_tec_desc|        , |mahali_tec_preview|	      , |mahali_url|
-        :sup:`skdaccess.geo.mahali.temperature`, |mit_logo| |nsf_logo| |mahali_temperature_desc|, |mahali_temperature_preview|, |mahali_url|
+        |astro_icon| astro.kepler          , |nasa_logo|  	   |kepler_desc|            , |kepler_preview|            , |kepler_url|
+        |astro_icon| astro.voyager         , |nasa_logo|  	   |voyager_desc|           , |voyager_preview|           , |voyager_url|
+        |geo_icon|   geo.groundwater       , |usgs_logo|	   |groundwater_desc|       , |groundwater_preview|	  , |groundwater_url|
+        |geo_icon|   geo.pbo               , |unavaco_logo|	   |pbo_desc|               , |pbo_preview|		  , |pbo_url|
+        |geo_icon|   geo.grace             , |nasa_logo|	   |grace_desc|             , |grace_preview|	          , |grace_url|
+        |geo_icon|   geo.gldas             , |nasa_logo|	   |gldas_desc|             , |gldas_preview|	          , |gldas_url|
+        |geo_icon|   geo.modis             , |nasa_logo|	   |modis_desc|             , |modis_preview|	          , |modis_url|
+        |geo_icon|   geo.magnetometer      , |usgs_logo|	   |magnetometer_desc|      , |magnetometer_preview|      , |magnetometer_url|
+        |geo_icon|   geo.mahali.rinex      , |mit_logo| |nsf_logo| |mahali_rinex_desc|      , |mahali_rinex_preview|      , |mahali_url|
+        |geo_icon|   geo.mahali.tec        , |mit_logo| |nsf_logo| |mahali_tec_desc|        , |mahali_tec_preview|        , |mahali_url|
+        |geo_icon|   geo.mahali.temperature, |mit_logo| |nsf_logo| |mahali_temperature_desc|, |mahali_temperature_preview|, |mahali_url|
+        |solar_icon| solar.sdo             , |nasa_logo|  	   |sdo_desc|               , |sdo_preview|               , |sdo_url|
+
+.. Data type icons
+.. |astro_icon| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_astro.png
+.. |geo_icon| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_geo.png
+.. |solar_icon| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_solar.png
+
 
 
 .. Logos
@@ -55,111 +56,131 @@ Supported data sets |contact|
 
 .. Preview images
 .. |kepler_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.astro.kepler.png
+	           :target: https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_Kepler.ipynb
+
 .. |voyager_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.astro.voyager.png
+		    :target: https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_Voyager.ipynb
+
 .. |sdo_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.solar.sdo.png
+		:target: https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_SDO.ipynb
+
 .. |groundwater_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.geo.groundwater.png
+                        :target: https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_Groundwater.ipynb
+
 .. |pbo_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.geo.pbo.png
+                :target: https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_PBO.ipynb
+
 .. |grace_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.geo.grace.png
+                 :target: https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_GRACE.ipynb
+
 .. |gldas_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.geo.gldas.png
+                  :target: https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_GLDAS.ipynb
+
 .. |modis_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.geo.modis.png
+                  :target: https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_MODIS.ipynb
+
 .. |magnetometer_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.geo.magnetometer.png
+                         :target: https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_Magnetometer.ipynb
+
 .. |mahali_rinex_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.geo.mahali.rinex.png
+                         :target: https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_Mahali_Rinex.ipynb
+
 .. |mahali_tec_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.geo.mahali.tec.png
+                       :target: https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_Mahali_TEC.ipynb
+
 .. |mahali_temperature_preview| image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.geo.mahali.temperature.png
+                               :target: https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_Temperature.ipynb
 
 .. URLS
-.. |kepler_url| raw:: html
+.. |kepler_url| replace::
 
-	<sup> <a href=https://keplerscience.arc.nasa.gov> https://keplerscience.arc.nasa.gov </a> </sup>
+	https://keplerscience.arc.nasa.gov
 
-.. |voyager_url| raw:: html
+.. |voyager_url| replace::
 
-	<sup> <a href=https://spdf.gsfc.nasa.gov/> https://spdf.gsfc.nasa.gov/ </a> </sup>
+	https://spdf.gsfc.nasa.gov
 
-.. |sdo_url| raw:: html
+.. |sdo_url| replace::
 
-	<sup> <a href=https://sdo.gsfc.nasa.gov/> https://sdo.gsfc.nasa.gov/ </a></sup>
+	https://sdo.gsfc.nasa.gov
 
-.. |groundwater_url| raw:: html
+.. |groundwater_url| replace::
 
-	<sup> <a href=https://waterservices.usgs.gov> https://waterservices.usgs.gov </a> </sup>
+	https://waterservices.usgs.gov
 
-.. |pbo_url| raw:: html
+.. |pbo_url| replace::
 
-	<sup> <a href=http://www.unavco.org/projects/major-projects/pbo/pbo.html>
-	http://www.unavco.org/projects/major-projects/pbo/pbo.html </a> </sup>
+	http://www.unavco.org/projects/major-projects/pbo/pbo.html
 
-.. |grace_url| raw:: html
+.. |grace_url| replace::
 
-	<sup> <a href=https://grace.jpl.nasa.gov/data/get-data/monthly-mass-grids-land>
-	https://grace.jpl.nasa.gov/data/get-data/monthly-mass-grids-land  </a> </sup>
+	https://grace.jpl.nasa.gov/data/get-data/monthly-mass-grids-land
 
-.. |gldas_url| raw:: html
+.. |gldas_url| replace::
 
-	<sup> <a href=https://grace.jpl.nasa.gov/data/get-data/land-water-content>
-	https://grace.jpl.nasa.gov/data/get-data/land-water-content </a> </sup>
+	https://grace.jpl.nasa.gov/data/get-data/land-water-content
 
-.. |modis_url| raw:: html
+.. |modis_url| replace::
 
-	<sup> <a href=https://modis.gsfc.nasa.gov> https://modis.gsfc.nasa.gov </a> </sup>
+	https://modis.gsfc.nasa.gov
 
-.. |magnetometer_url| raw:: html
+.. |magnetometer_url| replace::
 
-	<sup> <a href=https://geomag.usgs.gov> https://geomag.usgs.gov </a> </sup>
+	https://geomag.usgs.gov
 
-.. |mahali_url| raw:: html
+.. |mahali_url| replace::
 
-	<sup> <a href=http://mahali.mit.edu> http://mahali.mit.edu </a> </sup>
+	http://mahali.mit.edu
 
 
 .. Descriptions
 .. |kepler_desc| replace::
 
-		 :sub:`Light curves for stars imaged by the NASA Kepler Space Telescope`
+		 Light curves for stars imaged by the NASA Kepler Space Telescope
 
 .. |voyager_desc| replace::
 
-		 :sub:`Data from the Voyager mission`
+		 Data from the Voyager mission
 
 .. |sdo_desc| replace::
 
-		 :sub:`Images from the Solar Dynamics Observatory`
+		 Images from the Solar Dynamics Observatory
 
 .. |groundwater_desc| replace::
 
-		      :sub:`United States groundwater monitoring wells measuring the depth to water level`
+		      United States groundwater monitoring wells measuring the depth to water level
 
 .. |pbo_desc| replace::
 
-	      :sub:`EarthScope - Plate Boundary Observatory (PBO): Daily GPS displacement time series measurements throughout the United States`
+	      EarthScope - Plate Boundary Observatory (PBO): Daily GPS displacement time series measurements throughout the United States
 
 .. |grace_desc| replace::
 
-		:sub:`NASA GRACE Tellus Monthly Mass Grids. 30-day measurements of changes in Earth’s gravity field to quantify equivalent water thickness`
+		NASA GRACE Tellus Monthly Mass Grids. 30-day measurements of changes in Earth’s gravity field to quantify equivalent water thickness
 
 .. |gldas_desc| replace::
 
-		:sub:`Land hydrology model produced by NASA. This version of the data is generated to match the GRACE temporal and spatial characteristics and is available as a complementary data product`
+		Land hydrology model produced by NASA. This version of the data is generated to match the GRACE temporal and spatial characteristics and is available as a complementary data product
 
 .. |modis_desc| replace::
 
-		:sub:`Spectroradiometer aboard the NASA Terra and Aqua image satellites. Generates approximately daily images of the Earth’s surface`
+		Spectroradiometer aboard the NASA Terra and Aqua image satellites. Generates approximately daily images of the Earth’s surface
 
 .. |magnetometer_desc| replace::
 
-		      :sub:`Data collected at magnetic observatories operated by the U.S. Geological Survey`
+		      Data collected at magnetic observatories operated by the U.S. Geological Survey
 
 .. |mahali_rinex_desc| replace::
 
-		       :sub:`Rinex files from the MIT led NSF project studying the Earth’s ionosphere with GPS`
+		       Rinex files from the MIT led NSF project studying the Earth’s ionosphere with GPS
 
 .. |mahali_tec_desc| replace::
 
-		     :sub:`Total Electron Content from the MIT led NSF project studying the Earth’s ionosphere with GPS`
+		     Total Electron Content from the MIT led NSF project studying the Earth’s ionosphere with GPS
 
 .. |mahali_temperature_desc| replace::
 
-			     :sub:`Temperature data from the MIT led NSF project studying the Earth’s ionosphere with GPS`
+			     Temperature data from the MIT led NSF project studying the Earth’s ionosphere with GPS
 
 Install
 ~~~~~~~
