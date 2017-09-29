@@ -15,6 +15,9 @@ class FileBrowser(object):
         self.files = list()
         self.dirs = list()
         if(os.path.isdir(self.path)):
+
+            self.dirs.append('..')
+
             for f in os.listdir(self.path):
                 ff = os.path.join(self.path, f)
                 if os.path.isdir(ff):
@@ -39,10 +42,6 @@ class FileBrowser(object):
 
         buttons = []
 
-        button = widgets.Button(description='..', background_color='#d0d0ff', layout=widgets.Layout(width='50%'))
-        button.on_click(on_click)
-        buttons.append(button)
-
         for f in self.dirs:
             button = widgets.Button(description=f, background_color='#d0d0ff', layout=widgets.Layout(width='50%'))
             button.on_click(on_click)
@@ -52,6 +51,7 @@ class FileBrowser(object):
             button.style.button_color = 'powderblue'
             button.on_click(on_click)
             buttons.append(button)
+
         box.children = tuple([widgets.HTML("%s" % (self.path,))] + buttons)
 
 
