@@ -36,12 +36,13 @@ class FileBrowser(object):
                 self.path = os.path.join(self.path, b.description)
             self._update_files()
             self._update(box)
-        
+
         buttons = []
-        if self.files:
-            button = widgets.Button(description='..', background_color='#d0d0ff', layout=widgets.Layout(width='50%'))
-            button.on_click(on_click)
-            buttons.append(button)
+
+        button = widgets.Button(description='..', background_color='#d0d0ff', layout=widgets.Layout(width='50%'))
+        button.on_click(on_click)
+        buttons.append(button)
+
         for f in self.dirs:
             button = widgets.Button(description=f, background_color='#d0d0ff', layout=widgets.Layout(width='50%'))
             button.on_click(on_click)
