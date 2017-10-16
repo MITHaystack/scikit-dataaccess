@@ -58,7 +58,7 @@ New contributors welcome! Contact <img src="https://github.com/MITHaystack/sciki
   
 ### Acknowledgements
 
-We acknowledge support from NASA AISTNNX15AG84G, NSF ACI1442997, and NSF AGS-1343967.
+We acknowledge support from NASA AIST14-NNX15AG84G, NASA AIST16-80NSSC17K0125, NSF ACI-1442997, and NSF AGS-1343967.
 
 ## Examples
 
