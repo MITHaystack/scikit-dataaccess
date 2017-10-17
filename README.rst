@@ -209,7 +209,7 @@ Contributors
 ~~~~~~~~~~~~
 
 | Project lead: `Victor Pankratius (MIT) <http://www.victorpankratius.com>`_ 
-| Project developers: Cody M. Rude, Justin D. Li, David M. Blair, Michael G. Gowanlock, Victor Pankratius
+| Contributors: Cody M. Rude, Justin D. Li, David M. Blair, Michael G. Gowanlock, Victor Pankratius
 |
 | New contributors welcome! Contact |skdaccess_contact| to contribute and add interface code for your own datasets |smiley|
 
@@ -220,8 +220,7 @@ Contributors
 Acknowledgements
 ~~~~~~~~~~~~~~~~
 
-We acknowledge support from NASA AISTNNX15AG84G, NSF ACI1442997, and NSF
-AGS-1343967.
+We acknowledge support from NASA AIST14-NNX15AG84G, NASA AIST16-80NSSC17K0125, NSF ACI-1442997, and NSF AGS-1343967.
 
 Examples
 --------
