@@ -56,7 +56,8 @@ class DataFetcher(DataFetcherStorage):
     
     def __init__(self, start_time, end_time, ap_paramList, mdyratio=.5,
                  default_columns = ['dN','dE','dU'],
-                 default_error_columns = ['Sn', 'Se', 'Su']):
+                 default_error_columns = ['Sn', 'Se', 'Su'],
+                 use_progress_bar = True):
         ''' 
         Initialize a DataFetcher
 
@@ -75,6 +76,7 @@ class DataFetcher(DataFetcherStorage):
         self._mdyratio = mdyratio
         self.default_columns = default_columns
         self.default_error_columns = default_error_columns
+        self.use_progress_bar = use_progress_bar
 
         self.antenna_info = DataFetcher.getAntennaLogs()
         
@@ -110,7 +112,8 @@ class DataFetcher(DataFetcherStorage):
             storeData = pd.HDFStore(storeData_fn)
             mdyratio = self._mdyratio
             
-            smSet_all, smHdr_all = pbo_util.nostab_sys(storeName,storeData,[self._start_time,self._end_time],indx=keyList,mdyratio=mdyratio)
+            smSet_all, smHdr_all = pbo_util.nostab_sys(storeName,storeData,[self._start_time,self._end_time],indx=keyList,mdyratio=mdyratio,
+                                                       use_progress_bar = self.use_progress_bar)
     
             self._smSet_all = smSet_all
             self._smHdr_all = smHdr_all
@@ -172,7 +175,6 @@ class DataFetcher(DataFetcherStorage):
                                 default_error_columns = self.default_error_columns))
     
         else:
-            print('... Invalid geographic region -- no stations within these bounds ...')
             return TableWrapper(dict(), default_columns=self.default_columns,
                                 default_error_columns = self.default_error_columns)
 

@@ -31,7 +31,7 @@ import numpy as np
 import pandas as pd
 import warnings
 from datetime import datetime
-import tqdm
+from .support import progress_bar
 
 def getStationCoords( pbo_info, station_list):
     '''
@@ -282,7 +282,7 @@ def propagateErrors(R,sc,stationCovs):
     oldCs[:,0:3] *= 1000
 
 
-def nostab_sys(allH,allD,timerng,indx=1,mdyratio=.7):
+def nostab_sys(allH,allD,timerng,indx=1,mdyratio=.7, use_progress_bar = True):
     '''
     Do not apply stabilization and simply returns stations after checking for sufficient amount of data
 
@@ -308,7 +308,7 @@ def nostab_sys(allH,allD,timerng,indx=1,mdyratio=.7):
     #grab specified sites from the given list of data, or defaults to using all of the sites
     if indx == 1:
         indx = list(allH.keys())
-    for ii in tqdm.tqdm(indx):
+    for ii in progress_bar(indx,enabled = use_progress_bar):
         dCheck = allD['data_' + ii][timerng[0]:timerng[1]].shape[0]
         if dCheck>mindays:
             # requires the minimum amount of data to be present
