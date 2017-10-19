@@ -15,7 +15,7 @@
   <img alt="Scikit Data Access Overview" src="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/images/skdaccess_overviewdiag.png" width="810"/>
 </p>
 
-Supported data sets <sub>(For updates, follow https://twitter.com/scikit_data and https://twitter.com/mithaystack)</sub>
+Supported data sets <sub>(for updates, follow https://twitter.com/scikit_data)</sub>
 
 
 | Namespace     | Description | Preview | Data Source |
