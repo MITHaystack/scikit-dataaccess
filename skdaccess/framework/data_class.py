@@ -34,11 +34,17 @@ from urllib import request, parse
 import shutil
 from collections import OrderedDict
 import warnings
+from urllib.request import HTTPPasswordMgrWithDefaultRealm
+from urllib.request import HTTPBasicAuthHandler
+from urllib.request import HTTPCookieProcessor
+from urllib.request import build_opener, install_opener, urlopen
+from io import BytesIO
+from http.cookiejar import CookieJar
+
 
 # Compatability imports for standard library
 from six.moves import configparser
 from six.moves.configparser import NoOptionError, NoSectionError
-from six.moves.urllib.request import urlopen
 
 # 3rd party imports
 from tqdm import tqdm
