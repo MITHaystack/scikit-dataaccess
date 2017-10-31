@@ -37,15 +37,30 @@ import numpy as np
 class DataFetcher(DataFetcherCache):
     ''' Data Fetcher for UAVSAR data '''
 
-    def __init__(self, filename_list, metadata_filename_list, llh_filename, memmap):
+    def __init__(self, slc_url_list, metadata_url_list, llh_url, memmap):
+        '''
+        Initialize UAVSAR data fetcher
 
-        self.filename_list = filename_list
-        self.metadata_filename_list = metadata_filename_list
-        self.llh_filename = llh_filename
+        @param slc_url_list: List of slc urls
+        @param metadata_Url_list: List of metadata urls
+        @param llh_url: Latitude Longitude Height url
+        @param memmap: Open files using a memory map
+        '''
+
+        self.slc_url_list = slc_url_list
+        self.metadata_url_list = metadata_url_list
+        self.llh_url = llh_url
         self.memmap = memmap
 
 
     def _parseFilename(self, in_filename):
+        '''
+        Retrive information about UAVSAR data from filename
+
+        @param in_filename: Input filename
+
+        @return information obtained from filename
+        '''
 
         filename = os.path.basename(in_filename)
 
@@ -85,6 +100,15 @@ class DataFetcher(DataFetcherCache):
         return filename_info
 
     def _readUAVSARData(self, filename, metadata, memmap = False):
+        '''
+        Load UAVSAR data
+
+        @param filename: Input filename
+        @param metadata: UAVSAR metadata
+        @param memeap: Open file using a memory map
+
+        @return numpy array of data
+        '''
 
         filename_info = self._parseFilename(filename)
 
@@ -116,13 +140,22 @@ class DataFetcher(DataFetcherCache):
 
 
     def output(self):
+        '''
+        Output data as a data wrapper
+
+        @return Imagewrapper of data
+        '''
+
+        llh_filename = self.cacheData('uavsar', [self.llh_url])
+        filename_list = self.cacheData('uavsar', self.slc_url_list)
+        metadata_filename_list = self.cacheData('uavsar', self.metadata_url_list)
 
 
-        llh,llh_info = self._readUAVSARData(self.llh_filename,
-                                            readUAVSARMetadata(self.metadata_filename_list[0]))
+        llh,llh_info = self._readUAVSARData(llh_filename[0],
+                                            readUAVSARMetadata(metadata_filename_list[0]))
         metadata_dict = OrderedDict()
         data_dict = OrderedDict()
-        for filename, metadata_filename in zip(self.filename_list, self.metadata_filename_list):
+        for filename, metadata_filename in zip(filename_list, metadata_filename_list):
             filename_key = os.path.basename(filename)
             metadata_dict[filename_key] = OrderedDict()
 
@@ -133,6 +166,7 @@ class DataFetcher(DataFetcherCache):
             metadata_dict[filename_key]['metadata'] = data_metadata
             metadata_dict[filename_key]['Latitude'] = llh['Latitude']
             metadata_dict[filename_key]['Longitude'] = llh['Longitude']
+            metadata_dict[filename_key]['Height'] = llh['Height']
 
 
             data_dict[filename_key] = data
