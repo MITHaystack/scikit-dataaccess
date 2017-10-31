@@ -23,6 +23,7 @@ setup(name     = package_name,
                           'setuptools',
                           'astropy>=1.1.0',
                           'netCDF4',
+                          'atomicwrites',
       ],
       
       description = 'Scikit Data Access Package for accessing scientific data sets.',
