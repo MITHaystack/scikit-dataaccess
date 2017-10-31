@@ -242,13 +242,13 @@ class DataFetcherStream(DataFetcherBase):
         @return Boolean indicating whether or not this data fetcher is multirun enabled
         '''
         return True
-    
-    
+
+
 class DataFetcherCache(DataFetcherLocal):
     '''
     Data fetcher base class for downloading data and caching results on hard disk
     '''
-    def cacheData(self, keyname, online_path_list):
+    def cacheData(self, keyname, online_path_list, username=None, password=None, authentication_url=None):
         '''
         Download and store specified data to local disk
 
@@ -290,8 +290,12 @@ class DataFetcherCache(DataFetcherLocal):
             @return Local path to file
             '''
 
-            return os.path.join(data_location, parsed_url.scheme,parsed_url.netloc, parsed_url.path[1:])
+            if parsed_url.query == '':
+                return os.path.join(data_location, parsed_url.scheme,parsed_url.netloc, parsed_url.path[1:])
 
+            else:
+                return os.path.join(data_location, parsed_url.scheme,parsed_url.netloc,
+                                    parsed_url.path[1:] + '?' + parsed_url.query)
 
         # Get absolute path to data directory
         data_location = DataFetcherCache.getDataLocation(keyname)
@@ -312,6 +316,21 @@ class DataFetcherCache(DataFetcherLocal):
         missing_files = list(set(parsed_http_paths).difference(downloaded_parsed_urls))
 
         missing_files.sort()
+
+
+        # Deal with password protected urls
+        if username != None or password != None:
+            password_manager = HTTPPasswordMgrWithDefaultRealm()
+            if authentication_url == None:
+                authentication_url = [parsed_url.geturl() for parsed_url in missing_files]
+            password_manager.add_password(None, authentication_url, username, password)
+            handler = HTTPBasicAuthHandler(password_manager)
+
+            cookiejar = CookieJar()
+            cookie_processor = HTTPCookieProcessor(cookiejar)
+
+            install_opener(build_opener(cookie_processor, handler))
+
 
         # Download missing files
         if len(missing_files) > 0:
