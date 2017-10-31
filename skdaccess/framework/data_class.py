@@ -11,7 +11,7 @@
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -52,23 +52,25 @@ from skimage.io import imread
 from astropy.io import fits
 from atomicwrites import atomic_write
 
-            
+
+
+
 class DataFetcherBase(object):
     '''
     Base class for all data fetchers
     '''
     def __init__(self, ap_paramList=[]):
-        ''' 
+        '''
         Initialize data fetcher with parameter list
-        
+
         @param ap_paramList: List of parameters
         '''
 
         self.ap_paramList = ap_paramList
 
     def output(self):
-        ''' 
-        Output data wrapper 
+        '''
+        Output data wrapper
 
         @return Datawrapper
         '''
@@ -78,7 +80,7 @@ class DataFetcherBase(object):
         '''Perturb parameters'''
         for param in self.ap_paramList:
             param.perturb()
-            
+
     def reset(self):
         '''Set all parameters to initial value'''
         for param in self.ap_paramList:
@@ -87,7 +89,7 @@ class DataFetcherBase(object):
     def __str__(self):
         ''' Generate string description'''
         return str( [ str(item) for item in self.ap_paramList ] )
-            
+
     def getMetadata(self):
         '''
         Return metadata about Data Fetcher
@@ -102,7 +104,7 @@ class DataFetcherBase(object):
 
         @return configParser.ConfigParser object of configuration
         '''
-        
+
         config_location = os.path.join(os.path.expanduser('~'), '.skdaccess.conf')
 
         conf = configparser.ConfigParser()
@@ -126,14 +128,14 @@ class DataFetcherBase(object):
         Returns whether or not this data fetcher is multirun enabled.
 
         @return Boolean indicating whether or not this data fetcher is multirun enabled
-        ''' 
+        '''
         pass
 
-    
+
 class DataFetcherLocal(DataFetcherBase):
 
     def getDataLocation(data_name):
-        ''' 
+        '''
         Get the location of data set
 
         @param data_name: Name of data set
@@ -148,7 +150,7 @@ class DataFetcherLocal(DataFetcherBase):
         except (NoOptionError, NoSectionError):
             return None
 
-        
+
     def setDataLocation(data_name, location, key='data_location'):
         '''
         Set the location of a data set
@@ -160,13 +162,14 @@ class DataFetcherLocal(DataFetcherBase):
 
         conf = DataFetcherLocal.getConfig()
 
+
         if not conf.has_section(data_name):
             conf.add_section(data_name)
 
         conf.set(data_name, key, location)
         DataFetcherLocal.writeConfig(conf)
 
-        
+
 class DataFetcherStorage(DataFetcherLocal):
     ''' Data fetcher base class for use when entire data set is downloaded'''
     @classmethod
@@ -186,7 +189,7 @@ class DataFetcherStorage(DataFetcherLocal):
         Returns whether or not this data fetcher is multirun enabled.
 
         @return Boolean indicating whether or not this data fetcher is multirun enabled
-        ''' 
+        '''
         return True
 
 class DataFetcherStream(DataFetcherBase):
@@ -405,7 +408,7 @@ class DataWrapperBase(object):
         @return Stored data
         '''
         return self.data
-    
+
     def getResults(self):
         '''
         Retrieve accumulated results, if any.
@@ -413,7 +416,7 @@ class DataWrapperBase(object):
         @return store results
         '''
         return self.results
-        
+
     def addResult(self,rkey,rres):
         '''
         Add a result to the data wrapper
@@ -422,7 +425,7 @@ class DataWrapperBase(object):
         @param rres: Result
         '''
         self.results[rkey] = rres
-    
+
     def reset(self):
         ''' Reset data back to original state '''
         self.results = dict()
@@ -439,7 +442,7 @@ class DataWrapperBase(object):
             return self.meta_data[key]
 
     def getIterator(self):
-        ''' 
+        '''
         Get an iterator to the data
 
         @return iterator to data
@@ -464,21 +467,21 @@ class SeriesWrapper(DataWrapperBase):
         @param run_id: ID of run
         '''
 
-        
+
         self.data_names = data_names
         self.error_names = error_names
-        
+
         super(SeriesWrapper, self).__init__(obj_wrap, run_id, meta_data)
 
     def getIterator(self):
-        ''' 
+        '''
         Get an iterator to the data
 
         @return Iterator (label, data, errors) that will cycle over data and error names
         '''
 
         if self.error_names != None:
-        
+
             for frame in self.data.minor_axis:
                 for data_index,error_index in zip(self.data_names, self.error_names):
                     yield data_index, self.data.loc[data_index, :, frame], self.data.loc[error_index, :, frame]
@@ -487,16 +490,16 @@ class SeriesWrapper(DataWrapperBase):
             for frame in self.data.minor_axis:
                 for data_index in self.data_names:
                     yield data_index, self.data.loc[data_index, :, frame], None
-            
-                    
+
+
 
     def getIndices(self):
-        ''' 
+        '''
         Get the indicies of the data
-        
+
         @return index of data
         '''
-        
+
         return (list(self.data.minor_axis), self.data_names)
 
 
@@ -507,21 +510,21 @@ class SeriesWrapper(DataWrapperBase):
         @return Number of series iterator will traverse over
         '''
         return self.data.shape[2]*len(self.data_names)
-                
+
 class SeriesDictionaryWrapper(SeriesWrapper):
     '''
     Data wrapper for series data using a dictionary of data frames
     '''
-    
+
     def getIterator(self):
-        ''' 
+        '''
         Get an iterator to the data
 
         @return Iterator (label, data, errors) that will cycle over data and error names
         '''
-        
+
         if self.error_names != None:
-        
+
             for frame in self.data.keys():
                 for data_index,error_index in zip(self.data_names, self.error_names):
                     yield data_index, self.data[frame].loc[:, data_index], self.data[frame].loc[:, error_index]
@@ -530,7 +533,7 @@ class SeriesDictionaryWrapper(SeriesWrapper):
             for frame in self.data.keys():
                 for data_index in self.data_names:
                     yield data_index, self.data[frame].loc[:, data_index], None
-        
+
 
     def getIndices(self):
         '''
@@ -548,9 +551,9 @@ class SeriesDictionaryWrapper(SeriesWrapper):
 
         @return Number of series iterator will traverse over
         '''
-        
+
         return len(self.data) * len(self.data_names)
-    
+
 
 class TableWrapper(DataWrapperBase):
     '''
@@ -558,7 +561,7 @@ class TableWrapper(DataWrapperBase):
     '''
     def __init__(self, obj_wrap, run_id = -1, meta_data = None, default_columns = None, default_error_columns = None):
         '''
-        Construct object from input data. 
+        Construct object from input data.
 
         @param obj_wrap: Data to be wrapped
         @param run_id: ID of the run
@@ -569,13 +572,13 @@ class TableWrapper(DataWrapperBase):
         self.default_columns = default_columns
         self.default_error_columns = default_error_columns
         super(TableWrapper, self).__init__(obj_wrap, run_id, meta_data)
-    
+
     def getIterator(self):
         '''
         Iterator access to data.
 
         @return iterator to (label, data frame) from Dictionary
-        '''        
+        '''
         for label,frame in self.data.items():
             yield label,frame
 
@@ -596,7 +599,7 @@ class TableWrapper(DataWrapperBase):
         @param column_names: Names of columns to update
         @param new_data: Data to replace the old data
         '''
-        
+
         self.data[label].loc[index, column_names] = new_data
 
     def addColumn(self, label, column_names, new_data):
@@ -607,9 +610,9 @@ class TableWrapper(DataWrapperBase):
         @param column_names: Names of columns to update
         @param new_data: New data to add
         '''
-        
+
         self.data[label].loc[:,column_names] = new_data
-    
+
     def getDefaultColumns(self):
         '''
         Get the default columns of data
@@ -627,7 +630,7 @@ class TableWrapper(DataWrapperBase):
         return self.default_error_columns
 
     def removeFrames(self,label_list):
-        ''' 
+        '''
         Remove Data Frames from wrapper
 
         @param label_list: List of labels to remove
@@ -639,7 +642,7 @@ class TableWrapper(DataWrapperBase):
     def updateFrames(self,label_list,frame_list):
         '''
         Update data frames
-        
+
         @param label_list: List of labels to update
         @param frame_list: List of updated frames
         '''
@@ -669,15 +672,14 @@ class ImageWrapper(DataWrapperBase):
         @param label: Label of data to be changed
         @param new_data: New data to replace old data
         '''
-        
+
         self.data[label] = new_data
 
-        
+
     def deleteData(self, label):
         '''
         Delete image
 
         @param label: Delete image with label
-        ''' 
+        '''
         del self.data[label]
-    
