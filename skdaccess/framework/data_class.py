@@ -351,35 +351,47 @@ class DataFetcherCache(DataFetcherLocal):
         @return Boolean indicating whether or not this data fetcher is multirun enabled
         '''
         return False
-    
+
+    def getHDFStorage(self, keyname):
+
+        data_location = DataFetcherCache.getDataLocation(keyname)
+        if data_location == None:
+            data_location = os.path.join(os.path.expanduser('~'),'.skdaccess',keyname)
+            os.makedirs(data_location, exist_ok=True)
+            data_location = os.path.join(data_location, keyname + '_data.h5')
+            DataFetcher.setDataLocation(keyname, data_location)
+
+        return pd.HDFStore(data_location)
+
+
 
 class DataWrapperBase(object):
     ''' Base class for wrapping data for use in DiscoveryPipeline '''
 
     def __init__(self, obj_wrap, run_id = -1, meta_data = None):
         '''
-        Construct wrapper from input data. 
+        Construct wrapper from input data.
 
         @param obj_wrap: Data to be wrapped
         @param run_id: ID of the run
         @param meta_data: Metadata to store with data
         '''
-        
+
         self.data = obj_wrap
         self.results = dict()
         self.constants = dict()
         self.run_id = run_id
         self.meta_data = meta_data
-        
-        
+
+
     def update(self, obj):
-        ''' 
-        Updated wrapped data 
+        '''
+        Updated wrapped data
 
         @param obj: New data for wrapper
         '''
         self.data = obj
-        
+
     def get(self):
         '''
         Retrieve stored data.
