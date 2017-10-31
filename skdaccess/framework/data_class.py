@@ -300,6 +300,7 @@ class DataFetcherCache(DataFetcherLocal):
         if data_location == None:
             data_location = os.path.join(os.path.expanduser('~'), '.skdaccess',keyname)
             os.makedirs(data_location, exist_ok=True)
+            DataFetcherCache.setDataLocation(keyname, data_location)
 
         # Get currently downloaded files
         downloaded_full_file_paths = [filename for filename in glob(os.path.join(data_location,'**'), recursive=True) if os.path.isfile(filename)]
