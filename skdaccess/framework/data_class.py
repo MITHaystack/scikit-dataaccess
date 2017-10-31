@@ -44,6 +44,7 @@ from six.moves.urllib.request import urlopen
 from tqdm import tqdm
 from skimage.io import imread
 from astropy.io import fits
+from atomicwrites import atomic_write
 
             
 class DataFetcherBase(object):
@@ -316,7 +317,7 @@ class DataFetcherCache(DataFetcherLocal):
             for parsed_url in tqdm(missing_files):
                 out_filename = generatePath(data_location, parsed_url)
                 os.makedirs(os.path.split(out_filename)[0],exist_ok=True)
-                with open(out_filename, 'wb') as data_file:
+                with atomic_write(out_filename, mode='wb') as data_file:
                     shutil.copyfileobj(urlopen(parsed_url.geturl()), data_file)
 
         # Return a list of file locations for parsing
