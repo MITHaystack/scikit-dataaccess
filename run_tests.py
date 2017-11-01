@@ -47,7 +47,7 @@ for test in test_list:
     with TemporaryDirectory() as tmpdir:
         try:
             print("Running:", test, end=' ', flush=True)
-            res = check_call([jupyter,'nbconvert','--output=' + os.path.join(tmpdir, 'test_output'), '--ExecutePreprocessor.timeout=180',
+            res = check_call([jupyter,'nbconvert','--output=' + os.path.join(tmpdir, 'test_output'), '--ExecutePreprocessor.timeout=2000',
                               '--ExecutePreprocessor.enabled=True', test],
                              stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 
