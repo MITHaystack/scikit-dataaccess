@@ -8,7 +8,7 @@ def average_dates(dates, round_nearest_day = False):
     '''
     Compute the average of a pandas series of timestamps
 
-    @param dates: List of pandas datetime objects
+    @param dates: Pandas series of pandas datetime objects
     @param round_nearest_day: Round to the nearest day
 
     @return Average of dates
