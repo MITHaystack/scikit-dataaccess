@@ -449,6 +449,14 @@ class DataWrapperBase(object):
         '''
         pass
 
+    def __len__(self):
+        '''
+        Get length of wrapped data
+
+        @return length of wrapped data
+        '''
+
+        return len(self.data)
 
 
 class SeriesWrapper(DataWrapperBase):
@@ -661,9 +669,8 @@ class ImageWrapper(DataWrapperBase):
         @return Iterator yielding (label, image_data)
         '''
 
-        for key in self.data:
-            # Yielding label and data
-            yield key, self.data[key]
+        return iter(self.data.items())
+
 
     def updateData(self, label, new_data):
         '''
