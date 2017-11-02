@@ -52,6 +52,7 @@ class DataFetcher(DataFetcherCache):
         self.llh_url = llh_url
         self.memmap = memmap
 
+        super(DataFetcher, self).__init__()
 
     def _parseFilename(self, in_filename):
         '''
