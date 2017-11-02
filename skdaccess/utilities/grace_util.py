@@ -4,7 +4,7 @@ from itertools import combinations
 from netCDF4 import Dataset, num2date
 
 
-def average_dates(dates, round_nearest_day = False):
+def averageDates(dates, round_nearest_day = False):
     '''
     Compute the average of a pandas series of timestamps
 
@@ -35,7 +35,7 @@ def dateMismatch(dates, days=10):
             return True
     return False
 
-def compute_ewd(grace_data, scale_factor, round_nearest_day=False):
+def computeEWD(grace_data, scale_factor, round_nearest_day=False):
     '''
     Compute scale corrected equivalent water depth
 
@@ -50,7 +50,7 @@ def compute_ewd(grace_data, scale_factor, round_nearest_day=False):
             the average GFZ, JPL and CSR.
     '''
     
-    def cut_missing_data(in_data, reverse=False):
+    def cutMissingData(in_data, reverse=False):
         ''' Removes data from the beginning (or ending if reverse=True) so that
         data exists for all 3 sources (GFZ, JPL, and CSR). 
 
@@ -97,8 +97,8 @@ def compute_ewd(grace_data, scale_factor, round_nearest_day=False):
     offsets = grace_data[grace_data.isnull().any(axis=1)]
 
     # Starting and ending months if they don't have valid data for all 3 data sets
-    offsets,cut_date1 = cut_missing_data(offsets)
-    offsets,cut_date2 = cut_missing_data(offsets, reverse=True)
+    offsets,cut_date1 = cutMissingData(offsets)
+    offsets,cut_date2 = cutMissingData(offsets, reverse=True)
 
     # If beginning data has been cut, update data accordingly
     if cut_date1 != None:
@@ -131,7 +131,7 @@ def compute_ewd(grace_data, scale_factor, round_nearest_day=False):
             raise ValueError('Different dates are not within 10 days of each other')
 
         # Determine new index and average value of data  
-        new_index.append(average_dates(dates, round_nearest_day))
+        new_index.append(averageDates(dates, round_nearest_day))
         new_measurements.append(np.mean([c_v, g_v, j_v])) 
 
     # Create series from averaged results
@@ -162,7 +162,7 @@ def compute_ewd(grace_data, scale_factor, round_nearest_day=False):
     return ewt
 
 
-def read_grace_data(filename, lat_name, lon_name, data_name, time=None):
+def readGraceData(filename, lat_name, lon_name, data_name, time=None):
     ''' 
     This function reads in netcdf data provided by GRACE Tellus
 

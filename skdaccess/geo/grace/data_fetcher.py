@@ -28,7 +28,7 @@
 
 # mithagi required Base imports
 from skdaccess.framework.data_class import DataFetcherStorage, TableWrapper
-from skdaccess.utilities.grace_util import read_grace_data
+from skdaccess.utilities.grace_util import readGraceData
 
 # standard library imports
 import re
@@ -84,14 +84,14 @@ class DataFetcher(DataFetcherStorage):
             raise exc
 
 
-        csr_data = read_grace_data(os.path.join(data_location, csr_filename), 'lat','lon','lwe_thickness','time')
-        jpl_data = read_grace_data(os.path.join(data_location, jpl_filename), 'lat','lon','lwe_thickness','time')
-        gfz_data = read_grace_data(os.path.join(data_location, gfz_filename), 'lat','lon','lwe_thickness','time')
+        csr_data = readGraceData(os.path.join(data_location, csr_filename), 'lat','lon','lwe_thickness','time')
+        jpl_data = readGraceData(os.path.join(data_location, jpl_filename), 'lat','lon','lwe_thickness','time')
+        gfz_data = readGraceData(os.path.join(data_location, gfz_filename), 'lat','lon','lwe_thickness','time')
 
         
-        scale_factor = read_grace_data(os.path.join(data_location, scale_factor_filename), 'Latitude', 'Longitude', 'SCALE_FACTOR')
-        leakage_error = read_grace_data(os.path.join(data_location, scale_factor_filename), 'Latitude', 'Longitude', 'LEAKAGE_ERROR')
-        measurement_error = read_grace_data(os.path.join(data_location, scale_factor_filename), 'Latitude', 'Longitude', 'MEASUREMENT_ERROR')        
+        scale_factor = readGraceData(os.path.join(data_location, scale_factor_filename), 'Latitude', 'Longitude', 'SCALE_FACTOR')
+        leakage_error = readGraceData(os.path.join(data_location, scale_factor_filename), 'Latitude', 'Longitude', 'LEAKAGE_ERROR')
+        measurement_error = readGraceData(os.path.join(data_location, scale_factor_filename), 'Latitude', 'Longitude', 'MEASUREMENT_ERROR')
             
         geo_point_list = self.ap_paramList[0]()
 
