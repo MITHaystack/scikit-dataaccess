@@ -1,7 +1,7 @@
 # The MIT License (MIT)
 # Copyright (c) 2016 Massachusetts Institute of Technology
 #
-# Authors: Victor Pankratius, Justin Li, Cody Rude#
+# Authors: Victor Pankratius, Justin Li, Cody Rude
 # This software has been created in projects supported by the US National
 # Science Foundation and NASA (PI: Pankratius)
 #
