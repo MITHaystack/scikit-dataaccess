@@ -30,9 +30,9 @@ import os
 import xml.etree.ElementTree as ET
 from collections import OrderedDict
 
+# 3rd party imports
 import numpy as np
 from netCDF4 import Dataset
-# 3rd party imports
 from scipy.interpolate import RectBivariateSpline
 from scipy.optimize import brute
 from six.moves.urllib.request import urlopen
