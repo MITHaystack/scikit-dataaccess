@@ -133,7 +133,7 @@ class DataFetcherBase(object):
 
 
 class DataFetcherLocal(DataFetcherBase):
-
+    ''' Data fetcher base class for use when storing data locally'''
     def getDataLocation(data_name):
         '''
         Get the location of data set

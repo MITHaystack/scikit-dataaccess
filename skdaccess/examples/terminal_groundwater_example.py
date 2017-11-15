@@ -59,11 +59,11 @@ try:
     plt.figure().set_size_inches(14,4)
     plt.ylabel('Median Depth to Water Level')
     plt.title(label_1)
-    plt.plot(data_1['Median Water Depth']);
+    plt.plot(data_1['Median Depth to Water']);
     plt.figure().set_size_inches(14,4)
     plt.ylabel('Median Depth to Water Level')
     plt.title(label_2);
-    plt.plot(data_2['Median Water Depth'],color='red')
+    plt.plot(data_2['Median Depth to Water'],color='red')
 
     plt.show()
 

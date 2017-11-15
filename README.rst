@@ -230,4 +230,4 @@ Code examples (Jupyter notebooks) for all datasets listed above are available at
 
 .. image:: https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/skdaccess-quickexamples-combined.png
            :alt: Scikit Data Access Overview
-	   :width: 810		 
+	   :width: 500

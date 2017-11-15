@@ -28,7 +28,7 @@
 
 # mithagi required Base imports
 from skdaccess.framework.data_class import DataFetcherStorage, TableWrapper
-from skdaccess.utilities.grace_util import read_grace_data
+from skdaccess.utilities.grace_util import readGraceData
 
 
 # Standard library imports
@@ -74,7 +74,7 @@ class DataFetcher(DataFetcherStorage):
 
         geo_point_list = self.ap_paramList[0]()
 
-        full_data = read_grace_data(data_file, 'Latitude','Longitude','Water_Thickness','Time')
+        full_data = readGraceData(data_file, 'Latitude','Longitude','Water_Thickness','Time')
         
         # Get appropriate time range
         start_date = self.start_date
