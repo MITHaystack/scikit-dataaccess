@@ -194,11 +194,9 @@ class LatLon(object):
             x = np.arange(sublat.shape[1])
 
             # Interpolation between pixels
-            alat = RectBivariateSpline(y, x, sublat)
-            alon = RectBivariateSpline(y, x, sublon)
+            self.alat = RectBivariateSpline(y, x, sublat)
+            self.alon = RectBivariateSpline(y, x, sublon)
 
-            self.alat = np.vectorize(alat)
-            self.alon = np.vectorize(alon)
 
         else:
             # lat and lon grids don't match size of data
@@ -225,7 +223,7 @@ class LatLon(object):
                     raise RuntimeError('Cannot parse lat/lon Metadata')
                     
 
-            # seems information to to start indexing at 1
+            # seems information starts indexing at 1
             lat_x_sampling[0] = lat_x_sampling[0] - 1
             lat_y_sampling[0] = lat_y_sampling[0] - 1
             lon_x_sampling[0] = lon_x_sampling[0] - 1
@@ -239,11 +237,8 @@ class LatLon(object):
 
 
             # Interpolation
-            alat = RectBivariateSpline(laty,latx,sublat)
-            alon = RectBivariateSpline(lony,lonx,sublon)
-
-            self.alat = np.vectorize(alat)
-            self.alon = np.vectorize(alon)
+            self.alat = RectBivariateSpline(laty,latx,sublat)
+            self.alon = RectBivariateSpline(lony,lonx,sublon)
 
 
     def __call__(self, y, x):
@@ -260,12 +255,12 @@ class LatLon(object):
         # # If interpolation of geodata is necessary
         # if self.lat_data is None:
 
-        ret_lat = self.alat(y+self.y_offset,x+self.x_offset)
-        ret_lon = self.alon(y+self.y_offset,x+self.x_offset)
+        ret_lat = self.alat(y+self.y_offset,x+self.x_offset, grid=False)
+        ret_lon = self.alon(y+self.y_offset,x+self.x_offset, grid=False)
 
         if np.isscalar(y) and np.isscalar(x):
-            ret_lat = ret_lat[0,0]
-            ret_lon = ret_lon[0,0]
+            ret_lat = ret_lat.item()
+            ret_lon = ret_lon.item()
 
         return ret_lat, ret_lon
 
