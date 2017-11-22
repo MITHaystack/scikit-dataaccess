@@ -262,7 +262,8 @@ class DataFetcherCache(DataFetcherLocal):
     '''
     Data fetcher base class for downloading data and caching results on hard disk
     '''
-    def cacheData(self, keyname, online_path_list, username=None, password=None, authentication_url=None):
+    def cacheData(self, keyname, online_path_list, username=None, password=None, authentication_url=None,
+                  cookiejar = None):
         '''
         Download and store specified data to local disk
 
@@ -340,10 +341,19 @@ class DataFetcherCache(DataFetcherLocal):
             password_manager.add_password(None, authentication_url, username, password)
             handler = HTTPBasicAuthHandler(password_manager)
 
-            cookiejar = CookieJar()
+            # If no cookiejar was given, create a new one
+            if cookiejar == None:
+                cookiejar = CookieJar()
+
             cookie_processor = HTTPCookieProcessor(cookiejar)
 
             install_opener(build_opener(cookie_processor, handler))
+
+        # Use a cookie with no username or password
+        elif cookiejar != None:
+            cookie_processor = HTTPCookieProcessor(cookiejar)
+            install_opener(build_opener(cookie_processor))
+
 
 
         # Download missing files
