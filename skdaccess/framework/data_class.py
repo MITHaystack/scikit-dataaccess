@@ -705,3 +705,37 @@ class ImageWrapper(DataWrapperBase):
         @param label: Delete image with label
         '''
         del self.data[label]
+
+class XArrayWrapper(DataWrapperBase):
+    '''
+    Wrapper for xarrays
+    '''
+    def __init__(self, obj_wrap, index_name, run_id = -1 ):
+
+        self.index_name = index_name
+
+        super(XArrayWrapper, self).__init__(obj_wrap, run_id)
+
+
+    def getIterator(self):
+        '''
+        Get an iterator that iterators over the index
+
+        @return iterator to data
+        '''
+
+        for index in self.obj_wrap[self.index_name]:
+            yield self.obj_wrap.sel(**{index_name:index})
+
+
+    def info(self, key=None):
+        '''
+        Get information about xarray data wrapper
+
+        @return The stored metadata
+        '''
+
+        if key==None:
+            return self.obj_wrap.attrs
+        else:
+            return self.obj_wrap[key].attrs
