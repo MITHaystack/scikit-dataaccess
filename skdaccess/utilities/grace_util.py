@@ -51,7 +51,8 @@ def computeEWD(grace_data, scale_factor, round_nearest_day=False):
     '''
     
     def cutMissingData(in_data, reverse=False):
-        ''' Removes data from the beginning (or ending if reverse=True) so that
+        '''
+        Removes data from the beginning (or ending if reverse=True) so that
         data exists for all 3 sources (GFZ, JPL, and CSR). 
 
 
