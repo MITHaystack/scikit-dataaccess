@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from itertools import combinations
 from netCDF4 import Dataset, num2date
+from collections import OrderedDict
 
 
 def averageDates(dates, round_nearest_day = False):
@@ -18,7 +19,6 @@ def averageDates(dates, round_nearest_day = False):
     if round_nearest_day:
         newdate = newdate.round('D')
     return newdate
-
 
 
 def dateMismatch(dates, days=10):
@@ -163,7 +163,8 @@ def computeEWD(grace_data, scale_factor, round_nearest_day=False):
     return ewt
 
 
-def readGraceData(filename, lat_name, lon_name, data_name, time=None):
+def readTellusData(filename, lat_lon_list, lat_name, lon_name, data_name, time_name=None,
+                   lat_bounds_name=None, lon_bounds_name=None, uncertainty_name = None):
     ''' 
     This function reads in netcdf data provided by GRACE Tellus
 
@@ -171,20 +172,74 @@ def readGraceData(filename, lat_name, lon_name, data_name, time=None):
     @param lat_name: Name of latitude data
     @param lon_name: Name of longitude data
     @param data_name: Name of data product
-    @param time: Name of time data
+    @param time_name: Name of time data
+    @param lat_bounds_name: Name of latitude boundaries
+    @param lon_bounds_name: Name of longitude boundaries
     '''
+
+
+    def findBin(in_value, in_bounds):
+        search = np.logical_and(in_value >= in_bounds[:,0], in_value < in_bounds[:,1])
+
+        if np.sum(search) == 1:
+            return np.argmax(serach)
+        elif in_value == in_bounds[-1]:
+            return len(in_bounds)-1
+        else:
+            raise RuntimeError("Value not found")
 
     nc = Dataset(filename, 'r')
 
-    lat_index = nc[lat_name][:]
-    lon_index = nc[lon_name][:]
+    lat_data = nc[lat_name][:]
+    lon_data = nc[lon_name][:]
     data = nc[data_name][:]
 
-    if time != None:
+    if lat_bounds == None and lon_bounds == None:
         time = nc.variables[time]
-        date_index = pd.to_datetime(num2date(time[:],units=time.units,calendar=time.calendar))
-        return pd.Panel(data=data, items=date_index,major_axis=lat_index, minor_axis=lon_index)
 
+        lat_delta = (lat_data[1] - lat_data[0])/2
+        lon_delta = (lon_data[1] - lon_data[0])/2
+
+        lat_bounds = np.stack([lat_data-lat_delta, lat_data+lat_delta]).T
+        lon_bounds = np.stack([lon-lon_delta, lon+lon_delta]).T
+        
     else:
+        lat_bounds = nc[lat_bounds_name][:]
+        lon_bounds = nc[lon_bounds_name][:]
 
-        return pd.DataFrame(data = data, columns=lon_index, index=lat_index)
+    if time_name != None:
+        time = nc[time_name][:]
+        date_index = pd.to_datetime(num2date(time[:],units=time.units,calendar=time.calendar))
+
+    return_data = OrderedDict()
+
+
+    if uncertainty_name != None:
+        uncertainty = nc[uncertainty_name][:]
+
+    for lat, lon in lat_lon_list:
+
+        # Convert lontitude to 0-360
+        if lon < 0:
+            lon += 360.
+
+        
+        lat_bin = findBin(lat, lat_bounds)
+        lon_bin = findBin(lon, lon_bounds)
+
+        if time_name != None and uncertainty_name != None:
+            pd.DataFrame([data, uncertainty], columns=[
+        
+
+    # return_data = OrderedDict()
+    # return_data['data'] = data
+    # return_data['lat'] = lat
+    # return_data['lon'] = lon
+    # return_data['lat_bounds'] = lat_bounds
+    # return_data['lon_bounds'] = lon_bounds
+    # return_data['data_index'] = date_index
+
+
+    
+
+    return return_data
