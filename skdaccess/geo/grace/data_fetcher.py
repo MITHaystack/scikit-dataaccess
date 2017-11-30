@@ -28,7 +28,7 @@
 
 # mithagi required Base imports
 from skdaccess.framework.data_class import DataFetcherStorage, TableWrapper
-from skdaccess.utilities.grace_util import readGraceData
+from skdaccess.utilities.grace_util import readTellusData, getStartEndDate
 
 # standard library imports
 import re
@@ -83,52 +83,61 @@ class DataFetcher(DataFetcherStorage):
             print('No data information available, please run: skdaccess grace')
             raise exc
 
-
-        csr_data = readGraceData(os.path.join(data_location, csr_filename), 'lat','lon','lwe_thickness','time')
-        jpl_data = readGraceData(os.path.join(data_location, jpl_filename), 'lat','lon','lwe_thickness','time')
-        gfz_data = readGraceData(os.path.join(data_location, gfz_filename), 'lat','lon','lwe_thickness','time')
-
-        
-        scale_factor = readGraceData(os.path.join(data_location, scale_factor_filename), 'Latitude', 'Longitude', 'SCALE_FACTOR')
-        leakage_error = readGraceData(os.path.join(data_location, scale_factor_filename), 'Latitude', 'Longitude', 'LEAKAGE_ERROR')
-        measurement_error = readGraceData(os.path.join(data_location, scale_factor_filename), 'Latitude', 'Longitude', 'MEASUREMENT_ERROR')
-            
         geo_point_list = self.ap_paramList[0]()
 
+        csr_data, csr_meta = readTellusData(os.path.join(data_location, csr_filename), geo_point_list, 'lat','lon',
+                                            'lwe_thickness', 'CSR','time')
+        jpl_data, jpl_meta = readTellusData(os.path.join(data_location, jpl_filename), geo_point_list, 'lat','lon',
+                                            'lwe_thickness', 'JPL','time')
+        gfz_data, gfz_meta = readTellusData(os.path.join(data_location, gfz_filename), geo_point_list, 'lat','lon',
+                                            'lwe_thickness', 'GFZ','time')
+
+        
+        scale_factor_data, scale_factor_meta = readTellusData(os.path.join(data_location, scale_factor_filename),
+                                                             geo_point_list, 'Latitude', 'Longitude', 'SCALE_FACTOR')
+        leakage_error_data, leakage_error_meta = readTellusData(os.path.join(data_location, scale_factor_filename),
+                                                               geo_point_list, 'Latitude', 'Longitude', 'LEAKAGE_ERROR')
+        measurement_error_data, measurement_error_meta = readTellusData(os.path.join(data_location, scale_factor_filename),
+                                                                       geo_point_list, 'Latitude', 'Longitude', 'MEASUREMENT_ERROR')
+
+        
         # Get appropriate time range
         start_date = self.start_date
         end_date = self.end_date
 
+
+        if start_date == None or end_date == None:
+            csr_start_date, csr_end_date = getStartEndDate(csr_data)
+            jpl_start_date, jpl_end_date = getStartEndDate(jpl_data)
+            gfz_start_date, gfz_end_date = getStartEndDate(gfz_data)
+
+        
         if start_date == None:
-            start_date = np.min([csr_data.items[0], jpl_data.items[0], gfz_data.items[0]])
+            start_date = np.min([csr_start_date, jpl_start_date, gfz_start_date])
 
 
         if end_date == None:
-            end_date = np.max([csr_data.items[-1], jpl_data.items[-1], gfz_data.items[-1]])
+            end_date = np.max([csr_end_date, jpl_end_date, gfz_end_date])
 
         data_dict = OrderedDict()
         metadata_dict = OrderedDict()
-        for geo_point in geo_point_list:
-
-            lat = geo_point[0]
-            lon = (geo_point[1] + 360) % 360
-
-            lat_index = floor(lat) + 0.5
-            lon_index = floor(lon) + 0.5
+        for (csr_label, csr_frame), (jpl_label, jpl_frame), (gfz_label, gfz_frame) in zip(csr_data.items(),
+                                                                                          jpl_data.items(),
+                                                                                          gfz_data.items()):
 
 
-
-            data = pd.DataFrame({'CSR' : csr_data.loc[start_date:end_date, lat_index, lon_index].copy(),
-                                 'JPL' : jpl_data.loc[start_date:end_date, lat_index, lon_index].copy(),
-                                 'GFZ' : gfz_data.loc[start_date:end_date, lat_index, lon_index].copy()})
+            data = pd.concat([csr_frame.loc[start_date:end_date],
+                              jpl_frame.loc[start_date:end_date],
+                              gfz_frame.loc[start_date:end_date]], axis=1)
+            
             data.index.name = 'Date'
 
 
-            label = str(geo_point[0]) + ', ' + str(geo_point[1])
+            label = csr_label
             
-            metadata_dict[label] = pd.Series({'scale_factor' : scale_factor.loc[lat_index, lon_index],
-                                             'measurement_error' : measurement_error.loc[lat_index,lon_index],
-                                             'leakage_error' : leakage_error.loc[lat_index, lon_index]})
+            metadata_dict[label] = pd.Series({'scale_factor' : scale_factor_data[csr_label],
+                                             'measurement_error' : measurement_error_data[csr_label],
+                                              'leakage_error' : leakage_error_data[csr_label]})
 
             data_dict[label] = data
 

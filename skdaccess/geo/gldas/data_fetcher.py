@@ -28,7 +28,7 @@
 
 # mithagi required Base imports
 from skdaccess.framework.data_class import DataFetcherStorage, TableWrapper
-from skdaccess.utilities.grace_util import readGraceData
+from skdaccess.utilities.grace_util import readTellusData, getStartEndDate
 
 
 # Standard library imports
@@ -73,53 +73,43 @@ class DataFetcher(DataFetcherStorage):
 
 
         geo_point_list = self.ap_paramList[0]()
+        gldas_data_name = 'Equivalent Water Thickness (cm)'
+        
 
-        full_data = readGraceData(data_file, 'Latitude','Longitude','Water_Thickness','Time')
+        full_data, metadata = readTellusData(data_file, geo_point_list, 'Latitude','Longitude',
+                                             'Water_Thickness', gldas_data_name, 'Time')
         
         # Get appropriate time range
-        start_date = self.start_date
-        end_date = self.end_date
-
-        if start_date == None:
-            start_date = dates.iloc[0]
-
-        elif type(start_date) == str:
-            start_date = pd.to_datetime(start_date)
-
-
-        if end_date == None:
-            end_date = dates.iloc[-1]
-
-        elif type(end_date) == str:
-            end_date == pd.to_datetime(end_date)
+        if self.start_date == None or self.end_date == None:
+            start_date, end_date = getStartEndDate(full_data)
         
-        data = full_data[start_date:end_date]
+        if self.start_date != None:
+            start_date = self.start_date
 
-        data_dict = OrderedDict()
-        for geo_point in geo_point_list:
-            
+        elif type(self.start_date) == str:
+            start_date = pd.to_datetime(self.start_date)
 
-            lat = geo_point[0]
-            lon = (geo_point[1] + 360) % 360
 
-            lat_index = round(lat - (lat % 1)) + 0.5
-            lon_index = round(lon - (lon % 1)) + 0.5
+        if self.end_date != None:
+            end_date = self.end_date
 
-            gldas_data = data.loc[:,lat_index, lon_index]
-            gldas_data.name = 'Equivalent Water Depth (cm)'
+        elif type(self.end_date) == str:
+            end_date == pd.to_datetime(self.end_date)
+        
 
-            gldas_unc = pd.Series(np.ones(len(gldas_data),dtype=np.float) * np.nan, index=gldas_data.index,name="Uncertainty")
-            gldas_data = pd.concat([gldas_data, gldas_unc], axis=1)
+
+        for label in full_data.keys():
+
+            full_data[label] = full_data[label][start_date:end_date]
+
+            gldas_unc = pd.Series(np.ones(len(full_data[label]),dtype=np.float) * np.nan, index=full_data[label].index,name="Uncertainty")
+            full_data[label] = pd.concat([full_data[label], gldas_unc], axis=1)
 
             if self.resample == True:
-                gldas_data = gldas_data.reindex(pd.date_range(start_date, end_date))
+                full_data[label] = full_data[label].reindex(pd.date_range(start_date, end_date))
 
-            label = str(geo_point[0]) + ', ' + str(geo_point[1])
 
-            data_dict[label] = gldas_data
-
-        gldas_data.columns = ['Equivalent Water Thickness (cm)', 'Uncertainty']
-        return(TableWrapper(data_dict, default_columns = ['Equivalent Water Thickness (cm)'],
+        return(TableWrapper(full_data, default_columns = ['Equivalent Water Thickness (cm)'],
                             default_error_columns=['Uncertainty']))
 
 

@@ -163,8 +163,9 @@ def computeEWD(grace_data, scale_factor, round_nearest_day=False):
     return ewt
 
 
-def readTellusData(filename, lat_lon_list, lat_name, lon_name, data_name, time_name=None,
-                   lat_bounds_name=None, lon_bounds_name=None, uncertainty_name = None):
+def readTellusData(filename, lat_lon_list, lat_name, lon_name, data_name, data_label=None,
+                   time_name=None, lat_bounds_name=None, lon_bounds_name=None,
+                   uncertainty_name = None):
     ''' 
     This function reads in netcdf data provided by GRACE Tellus
 
@@ -182,11 +183,14 @@ def readTellusData(filename, lat_lon_list, lat_name, lon_name, data_name, time_n
         search = np.logical_and(in_value >= in_bounds[:,0], in_value < in_bounds[:,1])
 
         if np.sum(search) == 1:
-            return np.argmax(serach)
+            return np.argmax(search)
         elif in_value == in_bounds[-1]:
             return len(in_bounds)-1
         else:
             raise RuntimeError("Value not found")
+
+    if data_label == None and time_name != None:
+        raise RuntimeError("Need to specify data label when time data is used")
 
     nc = Dataset(filename, 'r')
 
@@ -194,52 +198,70 @@ def readTellusData(filename, lat_lon_list, lat_name, lon_name, data_name, time_n
     lon_data = nc[lon_name][:]
     data = nc[data_name][:]
 
-    if lat_bounds == None and lon_bounds == None:
-        time = nc.variables[time]
-
+    if lat_bounds_name == None and lon_bounds_name == None:
         lat_delta = (lat_data[1] - lat_data[0])/2
         lon_delta = (lon_data[1] - lon_data[0])/2
 
         lat_bounds = np.stack([lat_data-lat_delta, lat_data+lat_delta]).T
-        lon_bounds = np.stack([lon-lon_delta, lon+lon_delta]).T
+        lon_bounds = np.stack([lon_data-lon_delta, lon_data+lon_delta]).T
         
     else:
         lat_bounds = nc[lat_bounds_name][:]
         lon_bounds = nc[lon_bounds_name][:]
 
     if time_name != None:
-        time = nc[time_name][:]
+        time = nc[time_name]
         date_index = pd.to_datetime(num2date(time[:],units=time.units,calendar=time.calendar))
-
-    return_data = OrderedDict()
-
 
     if uncertainty_name != None:
         uncertainty = nc[uncertainty_name][:]
 
+
+    data_dict = OrderedDict()
+    meta_dict = OrderedDict()
+
     for lat, lon in lat_lon_list:
 
         # Convert lontitude to 0-360
+        orig_lon = lon        
         if lon < 0:
             lon += 360.
+
 
         
         lat_bin = findBin(lat, lat_bounds)
         lon_bin = findBin(lon, lon_bounds)
 
+        label = str(lat) + ', ' + str(orig_lon)
+
         if time_name != None and uncertainty_name != None:
-            pd.DataFrame([data, uncertainty], columns=[
+            frame_data_dict = OrderedDict()
+            frame_data_dict[data_label] = data[:,lat_bin, lon_bin]
+            frame_data_dict['Uncertainty'] = uncertainty[:,lat_bin, lon_bin]
+            data_dict[label] = pd.DataFrame(frame_data_dict, index=date_index)
+
+        elif time_name != None and uncertainty_name == None:
+            data_dict[label] = pd.DataFrame({data_label : data[:, lat_bin, lon_bin]}, index=date_index)
+
+        else:
+            data_dict[label] = data[lat_bin, lon_bin]
+
+        meta_dict[label] = OrderedDict()
+        meta_dict[label]['Lat'] = lat
+        meta_dict[label]['Lon'] = orig_lon
         
 
-    # return_data = OrderedDict()
-    # return_data['data'] = data
-    # return_data['lat'] = lat
-    # return_data['lon'] = lon
-    # return_data['lat_bounds'] = lat_bounds
-    # return_data['lon_bounds'] = lon_bounds
-    # return_data['data_index'] = date_index
+
+    return data_dict, meta_dict
 
 
-    
 
-    return return_data
+def getStartEndDate(in_data):
+    label, data = next(in_data.items())
+
+    start_date = in_data.index[0]
+    end_date = in_data.index[-1]
+
+    return start_date, end_date
+
+
