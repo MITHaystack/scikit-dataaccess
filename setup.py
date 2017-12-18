@@ -11,7 +11,7 @@ with open("README.rst") as rfile:
 
 
 setup(name     = package_name,
-      version  = '1.9.6post1',
+      version  = '1.9.7',
       packages = package_list,
       zip_safe = False,
 
