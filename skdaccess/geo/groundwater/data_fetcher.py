@@ -210,11 +210,13 @@ class DataFetcher(DataFetcherStorage):
             metadata_filename = state + '_gw_metadata.rdb'
             if use_file is None:
 
-                print("Downloading", state, "data")                
+                print("Downloading", state, "data")
 
+
+                data_file = open(data_filename, 'wb')
+                metadata_file = open(metadata_filename, 'wb')
                 try:
                     # Download data
-                    data_file = open(data_filename, 'wb')
                     copyfileobj(urlopen('http://waterservices.usgs.gov/nwis/dv/?format=rdb&stateCd=' + state +
                                         '&startDT=1800-01-01&endDT=2020-12-31&statCd=00003,00008&parameterCd=72019&siteType=GW'),
                                 data_file)
@@ -222,17 +224,18 @@ class DataFetcher(DataFetcherStorage):
 
 
                     # Download meta data
-                    data_file = open(metadata_filename, 'wb')
                     copyfileobj(urlopen('http://waterservices.usgs.gov/nwis/site/?format=rdb&stateCd=' + state +
                                         '&startDT=1800-01-01&endDT=2020-12-31&parameterCd=72019&siteType=GW&hasDataTypeCd=dv'),
-                                data_file)
-                    data_file.close()
-
+                                metadata_file)
 
 
                 except HTTPError:
                     print('No data for', state)
-                    continue
+
+
+                finally:
+                    data_file.close()
+                    metadata_file.close()
 
             else:
                 data_filename = use_file + data_filename
