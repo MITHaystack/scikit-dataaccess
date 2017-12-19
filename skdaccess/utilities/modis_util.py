@@ -128,6 +128,15 @@ def calibrateModis(data, metadata):
             else:
                 raise RuntimeError('Data has wrong number of dimensions')
 
+    elif product_id.upper() in ['35_L2']:
+        for index, key in enumerate(sds_names):
+            # 35_L2 should require no calibration
+            add_offset, scale_factor, fill_value = levelTwoInfo(metadata[key])
+            if not (np.isclose(fill_value, 0) and np.isclose(scale_factor,1) and np.isclose(add_offset,0)):
+                raise RuntimeError('Unexpected calibration data for 35_L2')
+
+        new_data = data
+
     else:
         raise RuntimeError('Calibration of product ' + product_id + ' not supported')
 
@@ -221,6 +230,13 @@ class LatLon(object):
                     lon_y_sampling = [3, ylen, 5]
                 else:
                     raise RuntimeError('Cannot parse lat/lon Metadata')
+
+            # metadata is an array, not a string
+            except AttributeError:
+                lat_x_sampling = lat_metadata['Cell_Across_Swath_Sampling']
+                lat_y_sampling = lat_metadata['Cell_Along_Swath_Sampling']
+                lon_x_sampling = lon_metadata['Cell_Across_Swath_Sampling']
+                lon_y_sampling = lon_metadata['Cell_Along_Swath_Sampling']
                     
 
             # seems information starts indexing at 1
@@ -339,7 +355,7 @@ def createGrid(data, y_start, y_end, x_start, x_end, y_grid, x_grid, dtype, grid
         new_data = np.zeros((y_grid,x_grid, section.shape[2]), dtype = dtype)
         new_data_slice1 = (slice(None), slice(section.shape[0], None), slice(None))
         new_data_slice2 = (slice(None), slice(None),                   slice(section.shape[1], None))
-        new_data_slice3 = (slice(None), slice(None, section.shape[0]), slice(None, section.shape[1]))
+        new_data_slice3 = (slice(None, section.shape[0]), slice(None, section.shape[1]), slice(None, section.shape[2]))
         section_y_len = section.shape[1]
         section_x_len = section.shape[2]
 
