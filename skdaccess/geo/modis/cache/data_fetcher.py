@@ -137,7 +137,7 @@ class DataFetcher(DataFetcherCache):
             if data_location == None:
                 data_location = os.path.join(os.path.expanduser('~'), '.skdaccess','modis')
                 os.makedirs(data_location, exist_ok=True)
-                setDataLocation('modis', data_location)
+                DataFetcher.setDataLocation('modis', data_location)
 
             try:
                 metadata = pd.read_csv(os.path.join(data_location, 'metadata.csv'), index_col=0)
@@ -160,7 +160,7 @@ class DataFetcher(DataFetcherCache):
                 metadata.loc[fileid] = filename
                 filename_list.append(filename)
 
-            metadata.to_csv(os.path.join(data_location + 'metadata.csv'))
+            metadata.to_csv(os.path.join(data_location, 'metadata.csv'))
 
             for fileid, filename in zip(fileid_list, filename_list):
                 missing_metadata.loc[fileid] = filename
