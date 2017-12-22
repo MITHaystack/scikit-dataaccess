@@ -137,7 +137,7 @@ class DataFetcher(DataFetcherCache):
             if data_location == None:
                 data_location = os.path.join(os.path.expanduser('~'), '.skdaccess','modis')
                 os.makedirs(data_location, exist_ok=True)
-                setDataLocation('modis', data_location)
+                DataFetcher.setDataLocation('modis', data_location)
 
             try:
                 metadata = pd.read_csv(os.path.join(data_location, 'metadata.csv'), index_col=0)
