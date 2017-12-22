@@ -160,7 +160,7 @@ class DataFetcher(DataFetcherCache):
                 metadata.loc[fileid] = filename
                 filename_list.append(filename)
 
-            metadata.to_csv(os.path.join(data_location + 'metadata.csv'))
+            metadata.to_csv(os.path.join(data_location, 'metadata.csv'))
 
             for fileid, filename in zip(fileid_list, filename_list):
                 missing_metadata.loc[fileid] = filename
