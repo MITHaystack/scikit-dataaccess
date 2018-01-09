@@ -100,7 +100,7 @@ class DataFetcher(DataFetcherStorage):
         measurement_error_data, measurement_error_meta = readTellusData(os.path.join(data_location, scale_factor_filename),
                                                                        geo_point_list, 'Latitude', 'Longitude', 'MEASUREMENT_ERROR')
 
-        
+
         # Get appropriate time range
         start_date = self.start_date
         end_date = self.end_date
@@ -111,7 +111,7 @@ class DataFetcher(DataFetcherStorage):
             jpl_start_date, jpl_end_date = getStartEndDate(jpl_data)
             gfz_start_date, gfz_end_date = getStartEndDate(gfz_data)
 
-        
+
         if start_date == None:
             start_date = np.min([csr_start_date, jpl_start_date, gfz_start_date])
 
@@ -129,7 +129,7 @@ class DataFetcher(DataFetcherStorage):
             data = pd.concat([csr_frame.loc[start_date:end_date],
                               jpl_frame.loc[start_date:end_date],
                               gfz_frame.loc[start_date:end_date]], axis=1)
-            
+
             data.index.name = 'Date'
 
 
