@@ -710,9 +710,9 @@ class XArrayWrapper(DataWrapperBase):
     '''
     Wrapper for xarrays
     '''
-    def __init__(self, obj_wrap, index_name, run_id = -1 ):
+    def __init__(self, obj_wrap, index_list, run_id = -1 ):
 
-        self.index_name = index_name
+        self.index_list = index_list
 
         super(XArrayWrapper, self).__init__(obj_wrap, run_id)
 
@@ -724,8 +724,8 @@ class XArrayWrapper(DataWrapperBase):
         @return iterator to data
         '''
 
-        for index in self.obj_wrap[self.index_name]:
-            yield self.obj_wrap.sel(**{index_name:index})
+        for index in self.index_list:
+            yield index, self.data[index]
 
 
     def info(self, key=None):
@@ -736,6 +736,6 @@ class XArrayWrapper(DataWrapperBase):
         '''
 
         if key==None:
-            return self.obj_wrap.attrs
+            return self.data.attrs
         else:
-            return self.obj_wrap[key].attrs
+            return self.data[key].attrs
