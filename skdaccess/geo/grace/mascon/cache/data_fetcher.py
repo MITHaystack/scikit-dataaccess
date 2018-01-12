@@ -63,10 +63,10 @@ class DataFetcher(DataFetcherCache):
 
         file_list = self.cacheData('mascon', [self.mascon_url, self.scale_factor_url])
 
-        data, metadata = readTellusData(file_list[0], geo_point_list,'lat','lon','lwe_thickness', 'Equivalent Water Thickness', time_name='time',
+        data, metadata = readTellusData(file_list[0], geo_point_list,'lat','lon','lwe_thickness', 'EWD', time_name='time',
                                         lat_bounds_name='lat_bounds', lon_bounds_name='lon_bounds')
 
-        unc_data, unc_metadata = readTellusData(file_list[0], geo_point_list,'lat','lon','uncertainty', 'EWT Uncertainty', time_name='time',
+        unc_data, unc_metadata = readTellusData(file_list[0], geo_point_list,'lat','lon','uncertainty', 'EWD_Error', time_name='time',
                                         lat_bounds_name='lat_bounds', lon_bounds_name='lon_bounds')
 
         scale_data, scale_metadata = readTellusData(file_list[1], geo_point_list, 'lat', 'lon', 'scale_factor')
