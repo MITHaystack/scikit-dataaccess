@@ -23,7 +23,7 @@
 # THE SOFTWARE.
 
 # Scikit Data Access imports
-from skdaccess.framework.data_class import DataFetcherCache, TableWrapper
+from skdaccess.framework.data_class import DataFetcherCache, ImageWrapper
 from skdaccess.utilities.sounding_util import convertToStr
 
 # 3rd party imports
@@ -136,5 +136,5 @@ class DataFetcher(DataFetcherCache):
             metadata_dict[label]['Longitude'] = lon_coords
             
         
-        return TableWrapper(obj_wrap = data_dict, meta_data = metadata_dict)
+        return ImageWrapper(obj_wrap = data_dict, meta_data = metadata_dict)
     
