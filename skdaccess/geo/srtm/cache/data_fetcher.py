@@ -126,7 +126,7 @@ class DataFetcher(DataFetcherCache):
 
             lat_start, lon_start = getCoordinates(filename)
 
-            lat_coords, lon_coords = np.meshgrid(np.linspace(lat_start, lat_start+1, 3601),
+            lat_coords, lon_coords = np.meshgrid(np.linspace(lat_start+1, lat_start, 3601),
                                                  np.linspace(lon_start, lon_start+1, 3601),
                                                  indexing = 'ij')
 
