@@ -109,7 +109,7 @@ class DataFetcher(DataFetcherStorage):
                 print('Dataset not available')
                 return None
     
-            storeData = pd.HDFStore(storeData_fn)
+            storeData = pd.HDFStore(storeData_fn, 'r')
             mdyratio = self._mdyratio
             
             smSet_all, smHdr_all = pbo_util.nostab_sys(storeName,storeData,[self._start_time,self._end_time],indx=keyList,mdyratio=mdyratio,
