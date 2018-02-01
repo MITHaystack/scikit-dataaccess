@@ -256,31 +256,87 @@ def query_files_urls(target, mission, instrument, product_type,
     
     return file_urls
 
-def correct_CRISM_label(label_file):
+def correct_CRISM_label(label_file_location):
     '''
     Correct CRISM label file and allow GDAL to read it properly.
     Necessary for Targeted Reduced Data Record (TRDR) data
     Adapted from https://github.com/jlaura/crism/blob/master/csas.py
     
-    @param label_file: Local address of the current label
+    @param label_file_location: Local address of the current label
     
     @return Local address of the new label
     '''
     
-    new_lbl_file = open('.'.join(label_file.split('.')[:-1]) + '_fixed.lbl', 'w')
+    new_label_file_location = label_file_location
+    if '_fixed' not in new_label_file_location:
+        new_label_file_location = '.'.join(label_file_location.split('.')[:-1]) \
+                                  + '_fixed.' + label_file_location.split('.')[-1]
+    new_label_file = open(new_label_file_location, 'w')
     
-    for line in open(label_file,'r'):
+    for line in open(label_file_location, 'r'):
         if "OBJECT          = FILE" in line:
             line = "/* OBJECT = FILE */\n"
         if "LINES" in line:
             lines = int(line.split("=")[1])
         if "LINE_SAMPLES" in line:
             samples = int(line.split("=")[1])
-        new_lbl_file.write(line)
+        new_label_file.write(line)
         
-    new_lbl_file.close()
+    new_label_file.close()
 
-    return '.'.join(label_file.split('.')[:-1]) + '_fixed.lbl'
+    return new_label_file_location
+
+def correct_file_name_case_in_label(label_file_location, other_file_locations):
+    '''
+    Correct a label file if the case of the related data file(s) is incorrect
+    and GDAL cannot read it properly
+    
+    @param label_file_location: Local address of the current label
+    @param other_file_locations: Other files that were downloaded with the label file
+    
+    @return Local address of the new label
+    '''
+    
+    label_file_name = '.'.join(label_file_location.split('/')[-1].split('.')[:-1])
+    insensitive_lalels = []
+    for file_location in other_file_locations:
+        file_name = '.'.join(file_location.split('/')[-1].split('.')[:-1])
+        if (file_location != label_file_location
+            and file_name == label_file_name):
+                insensitive_lalel = re.compile(re.escape(file_location.split('/')[-1]),
+                                               re.IGNORECASE)
+                insensitive_lalels.append((insensitive_lalel,
+                                           file_location.split('/')[-1]))
+    
+    with open(label_file_location, 'r') as file:
+        label_file = file.read()
+        
+    for insensitive_lalel, sensitive_lalel in insensitive_lalels:
+        label_file = insensitive_lalel.sub(sensitive_lalel, label_file)
+
+    new_label_file_location = label_file_location
+    if '_fixed' not in new_label_file_location:
+        new_label_file_location = '.'.join(label_file_location.split('.')[:-1]) \
+                                  + '_fixed.' + label_file_location.split('.')[-1]
+    with open(new_label_file_location, 'w') as file:
+        file.write(label_file)
+
+    return new_label_file_location
+
+def correct_label_file(label_file_location, other_file_locations = []):
+    '''
+    Correct a label file if GDAL cannot open the corresponding data file
+    
+    @param label_file_location: Local address of the current label
+    @param other_file_locations: Other files that were downloaded with the label file
+    
+    @return Local address of the new label
+    '''
+    
+    # Correction not limited to CRISM data, in case other data had similar issues
+    new_label_file_location = correct_CRISM_label(label_file_location)
+    return correct_file_name_case_in_label(new_label_file_location,
+                                           other_file_locations)
 
 def get_raster_array(gdal_raster, remove_ndv = True):
     '''
