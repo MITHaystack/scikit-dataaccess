@@ -297,7 +297,7 @@ def correct_file_name_case_in_label(label_file_location, other_file_locations):
     @return Local address of the new label
     '''
     
-    label_file_name = '.'.join(label_file_location.split('/')[-1].split('.')[:-1])
+    label_file_name = '_'.join('.'.join(label_file_location.split('/')[-1].split('.')[:-1]).split('_')[:-1])
     insensitive_lalels = []
     for file_location in other_file_locations:
         file_name = '.'.join(file_location.split('/')[-1].split('.')[:-1])
