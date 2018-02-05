@@ -115,9 +115,9 @@ class DataFetcher(DataFetcherCache):
                     metadata_dict[product] = OrderedDict()
                     metadata_dict[product]['Unopened files'] = []
                 raster = gdal.Open(file)
-                # Correction not limited to CRISM data, in case other data had similar issues
+                # Try to correct the label file
                 if raster is None:
-                    new_label_file = correct_CRISM_label(file)
+                    new_label_file = correct_label_file(file, downloaded_files)
                     raster = gdal.Open(new_label_file)
                     if raster is not None:
                         print('File', label, 'has been corrected')
