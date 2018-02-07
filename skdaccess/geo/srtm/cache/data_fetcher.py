@@ -43,6 +43,13 @@ class DataFetcher(DataFetcherCache):
                  username, password):
         '''
         Initialize Data Fetcher
+
+        @param lat_tile_start: Latitude of the southwest corner of the starting tile
+        @param lat_tile_end: Latitude of the southwset corner of the last tile
+        @param lon_tile_start: Longitude of the southwest corner of the starting tile
+        @param lon_tile_end: Longitude of the southwest corner of the last tile
+        @param username: NASA Earth Data username
+        @param password: NASA Earth Data Password
         '''
         self.lat_tile_start = lat_tile_start
         self.lat_tile_end = lat_tile_end
@@ -55,7 +62,9 @@ class DataFetcher(DataFetcherCache):
 
     def output(self):
         '''
-        Generate data wrapper
+        Generate SRTM data wrapper
+
+        @return SRTM Image Wrapper
         '''
 
         lat_tile_array = np.arange(self.lat_tile_start, self.lat_tile_end+1)
@@ -93,6 +102,12 @@ class DataFetcher(DataFetcherCache):
                                               'https://urs.earthdata.nasa.gov')
 
         def getCoordinates(in_filename):
+            '''
+            Determine the longitude and latitude of the lowerleft corner of the input filename
+
+            @param in_filename: Input SRTM filename
+            @return Latitude of southwest corner, Longitude of southwest corner
+            '''
 
             filename_base = os.path.split(in_filename)[1]
 
