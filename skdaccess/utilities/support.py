@@ -76,3 +76,20 @@ def progress_bar(in_iterable, total=None, enabled=True):
         return tqdm(in_iterable, total=total)
     else:
         return in_iterable
+
+def convertToStr(in_value, zfill=0):
+    '''
+    If input is a number, convert to a string
+    with zero paddding. Otherwise, just return
+    the string.
+
+    @input in_value: Input string or number
+    @zfill: Amount of zero padding
+
+    @return zero padded number as a string, or original string
+    '''
+
+    if isinstance(in_value, str):
+        return in_value
+    else:
+        return str(in_value).zfill(zfill)

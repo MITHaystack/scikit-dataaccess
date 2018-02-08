@@ -34,6 +34,9 @@ from calendar import monthrange
 import pandas as pd
 from six.moves.urllib.parse import urlencode
 
+# Package imports
+from .support import convertToStr
+
 class SoundingParser(HTMLParser):
     ''' This class parses Wyoming Sounding data '''
     def __init__(self):
@@ -108,23 +111,6 @@ class SoundingParser(HTMLParser):
         elif self.read_data == True and self.in_header == True:
             self.label = data.strip()
 
-
-def convertToStr(in_value, zfill=0):
-    '''
-    If input is a number, convert to a string
-    with zero paddding. Otherwise, just return
-    the string.
-
-    @input in_value: Input string or number
-    @zfill: Amount of zero padding
-
-    @return zero padded number as a string, or original string
-    '''
-
-    if isinstance(in_value, str):
-        return in_value
-    else:
-        return str(in_value).zfill(zfill)
 
 def generateQueries(station_number, year_list, month_list, day_start, day_end, start_hour,
                     end_hour):

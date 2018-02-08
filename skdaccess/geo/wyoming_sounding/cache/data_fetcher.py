@@ -24,7 +24,8 @@
 
 # Scikit Data Access imports
 from skdaccess.framework.data_class import DataFetcherCache, TableWrapper
-from skdaccess.utilities.sounding_util import SoundingParser, generateQueries, convertToStr
+from skdaccess.utilities.sounding_util import SoundingParser, generateQueries
+from skdaccess.utilities.support import convertToStr
 
 
 # 3rd party imports
