@@ -24,7 +24,7 @@
 
 # Scikit Data Access imports
 from skdaccess.framework.data_class import DataFetcherCache, ImageWrapper
-from skdaccess.utilities.sounding_util import convertToStr
+from skdaccess.utilities.support import convertToStr
 
 # 3rd party imports
 import pandas as pd
