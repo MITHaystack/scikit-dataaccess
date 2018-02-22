@@ -63,9 +63,9 @@ class SplineLatLon(object):
 
         return ret_lat, ret_lon
 
-def getExtentsFromCentersPlateCaree(westmost_pixel_lon, eastmost_pixel_lon,
-                                    southmost_pixel_lat, northmost_pixel_lat,
-                                    lon_grid_spacing, lat_grid_spacing):
+def getExtentsFromCentersPlateCarree(westmost_pixel_lon, eastmost_pixel_lon,
+                                     southmost_pixel_lat, northmost_pixel_lat,
+                                     lon_grid_spacing, lat_grid_spacing):
     '''
     Given the centers and grid spacing, return the extents of data
     using assuming Plate Caree
