@@ -29,6 +29,7 @@ from skdaccess.utilities.support import convertToStr
 # 3rd party imports
 import pandas as pd
 import numpy as np
+from pkg_resources import resource_filename
 
 # Standard library imports
 from collections import OrderedDict
@@ -79,7 +80,7 @@ class DataFetcher(DataFetcherCache):
         filename_list = []
         filename_root = '.SRTMGL1.hgt.zip'
         base_url = 'https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/'
-        
+
         for lat, lon in zip(lat_grid, lon_grid):
 
             if lat < 0:
@@ -96,12 +97,24 @@ class DataFetcher(DataFetcherCache):
 
             filename_list.append(lat_label + convertToStr(lat, 2) + lon_label + convertToStr(lon, 3) + filename_root)
 
-        url_list = [base_url + filename for filename in filename_list]
+        # Read in list of available data
+        srtm_support_filename = resource_filename('skdaccess', os.path.join('support','srtm.txt'))
+        available_file_list = open(srtm_support_filename).readlines()
+        available_file_list = [filename.strip() for filename in available_file_list]
+
+        requested_files = pd.DataFrame({'Filename' : filename_list})
+        requested_files['Valid'] = [ filename in available_file_list for filename in filename_list ]
+
+        valid_filename_list = requested_files.loc[ requested_files['Valid']==True, 'Filename'].tolist()
+
+        url_list = [base_url + filename for filename in valid_filename_list]
 
         downloaded_file_list = self.cacheData('srtm', url_list, self.username, self.password,
                                               'https://urs.earthdata.nasa.gov')
 
-        def getCoordinates(in_filename):
+        requested_files.loc[ requested_files['Valid']==True, 'Full Path'] = downloaded_file_list
+
+        def getCoordinates(filename):
             '''
             Determine the longitude and latitude of the lowerleft corner of the input filename
 
@@ -109,15 +122,14 @@ class DataFetcher(DataFetcherCache):
             @return Latitude of southwest corner, Longitude of southwest corner
             '''
 
-            filename_base = os.path.split(in_filename)[1]
-
-            lat_start = int(filename_base[1:3])            
+            lat_start = int(filename[1:3])
             
-            if filename_base[0] == 'S':
+            if filename[0] == 'S':
                 lat_start *= -1
 
-            lon_start = int(filename_base[4:7])
-            if filename_base[3] == 'W':
+            lon_start = int(filename[4:7])
+
+            if filename[3] == 'W':
                 lon_start *= -1
 
             return lat_start, lon_start
@@ -126,16 +138,25 @@ class DataFetcher(DataFetcherCache):
         data_dict = OrderedDict()
         metadata_dict = OrderedDict()
         
-        for filename in downloaded_file_list:
-            zipped_data = ZipFile(filename)
-            zipped_filename = zipped_data.infolist()[0].filename
+        for label, file_info in requested_files.iterrows():
 
-            dem_data = np.frombuffer(zipped_data.open(zipped_filename).read(),
-                                     np.dtype('>i2')).reshape(3601,3601)
+            full_path = file_info['Full Path']
+            filename = file_info['Filename']
 
-            label = os.path.split(filename)[1][:7]
+            if file_info['Valid']:
 
-            
+                zipped_data = ZipFile(full_path)
+                zipped_full_path = zipped_data.infolist()[0].filename
+
+                dem_data = np.frombuffer(zipped_data.open(zipped_full_path).read(),
+                                         np.dtype('>i2')).reshape(3601,3601)
+
+            else:
+
+                dem_data = np.full(shape=[3601,3601], fill_value=-32768, dtype='>i2')
+
+
+            label = filename[:7]
 
             data_dict[label] = dem_data
 
@@ -144,7 +165,6 @@ class DataFetcher(DataFetcherCache):
             lat_coords, lon_coords = np.meshgrid(np.linspace(lat_start+1, lat_start, 3601),
                                                  np.linspace(lon_start, lon_start+1, 3601),
                                                  indexing = 'ij')
-
 
             metadata_dict[label] = OrderedDict()
             metadata_dict[label]['Latitude'] = lat_coords
