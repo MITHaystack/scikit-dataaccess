@@ -1,7 +1,7 @@
 # The MIT License (MIT)
 # Copyright (c) 2016 Massachusetts Institute of Technology
 #
-# Author: Cody Rude
+# Authors: Cody Rude, Guillaume Rongier
 # This software has been created in projects supported by the US National
 # Science Foundation and NASA (PI: Pankratius)
 #
@@ -41,7 +41,7 @@ import os
 class DataFetcher(DataFetcherCache):
     ''' DataFetcher for retrieving data from the Shuttle Radar Topography Mission '''
     def __init__(self, lat_tile_start, lat_tile_end, lon_tile_start, lon_tile_end,
-                 username, password):
+                 username, password, arcsecond_sampling = 1):
         '''
         Initialize Data Fetcher
 
@@ -51,13 +51,18 @@ class DataFetcher(DataFetcherCache):
         @param lon_tile_end: Longitude of the southwest corner of the last tile
         @param username: NASA Earth Data username
         @param password: NASA Earth Data Password
+        @param arcsecond_sampling: Sample spacing of the SRTM data, either 1 arc-
+                                   second or 3 arc-seconds
         '''
+        assert arcsecond_sampling == 1 or arcsecond_sampling == 3, "Sampling should be 1 or 3 arc-seconds"
+
         self.lat_tile_start = lat_tile_start
         self.lat_tile_end = lat_tile_end
         self.lon_tile_start = lon_tile_start
         self.lon_tile_end = lon_tile_end
         self.username = username
         self.password = password
+        self.arcsecond_sampling = arcsecond_sampling
         
         super(DataFetcher, self).__init__()
 
@@ -79,7 +84,12 @@ class DataFetcher(DataFetcherCache):
 
         filename_list = []
         filename_root = '.SRTMGL1.hgt.zip'
-        base_url = 'https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/'
+        base_url = 'https://e4ftl01.cr.usgs.gov/MEASURES/'
+        folder_root = 'SRTMGL1.003/2000.02.11/'
+        if self.arcsecond_sampling == 3:
+            filename_root = '.SRTMGL3.hgt.zip'
+            folder_root = 'SRTMGL3.003/2000.02.11/'
+        base_url += folder_root
 
         for lat, lon in zip(lat_grid, lon_grid):
 
@@ -98,7 +108,10 @@ class DataFetcher(DataFetcherCache):
             filename_list.append(lat_label + convertToStr(lat, 2) + lon_label + convertToStr(lon, 3) + filename_root)
 
         # Read in list of available data
-        srtm_support_filename = resource_filename('skdaccess', os.path.join('support','srtm.txt'))
+        srtm_list_filename = 'srtm_gl1.txt'
+        if self.arcsecond_sampling == 3:
+            srtm_list_filename = 'srtm_gl3.txt'
+        srtm_support_filename = resource_filename('skdaccess', os.path.join('support',srtm_list_filename))
         available_file_list = open(srtm_support_filename).readlines()
         available_file_list = [filename.strip() for filename in available_file_list]
 
@@ -138,6 +151,10 @@ class DataFetcher(DataFetcherCache):
         data_dict = OrderedDict()
         metadata_dict = OrderedDict()
         
+        array_shape = (3601,3601)
+        if self.arcsecond_sampling == 3:
+            array_shape = (1201,1201)
+        
         for label, file_info in requested_files.iterrows():
 
             full_path = file_info['Full Path']
@@ -149,11 +166,11 @@ class DataFetcher(DataFetcherCache):
                 zipped_full_path = zipped_data.infolist()[0].filename
 
                 dem_data = np.frombuffer(zipped_data.open(zipped_full_path).read(),
-                                         np.dtype('>i2')).reshape(3601,3601)
+                                         np.dtype('>i2')).reshape(array_shape)
 
             else:
 
-                dem_data = np.full(shape=[3601,3601], fill_value=-32768, dtype='>i2')
+                dem_data = np.full(shape=array_shape, fill_value=-32768, dtype='>i2')
 
 
             label = filename[:7]
@@ -162,8 +179,8 @@ class DataFetcher(DataFetcherCache):
 
             lat_start, lon_start = getCoordinates(filename)
 
-            lat_coords, lon_coords = np.meshgrid(np.linspace(lat_start+1, lat_start, 3601),
-                                                 np.linspace(lon_start, lon_start+1, 3601),
+            lat_coords, lon_coords = np.meshgrid(np.linspace(lat_start+1, lat_start, array_shape[0]),
+                                                 np.linspace(lon_start, lon_start+1, array_shape[1]),
                                                  indexing = 'ij')
 
             metadata_dict[label] = OrderedDict()
@@ -172,4 +189,3 @@ class DataFetcher(DataFetcherCache):
             
         
         return ImageWrapper(obj_wrap = data_dict, meta_data = metadata_dict)
-    
