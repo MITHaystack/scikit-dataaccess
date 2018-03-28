@@ -381,7 +381,15 @@ class DataFetcher(DataFetcherStorage):
             return pd.to_datetime(pd.datetime(year,month,day,hour,minute))
 
         with ZipFile(acc_filename) as zipfile:
-            anttext = zipfile.read('All_PBO_ants.eq').decode()
+            # Find antenna and read information
+            anttext = None
+            for zip_info in zipfile.filelist:
+                if re.search('All_PBO_ants.eq$', zip_info.filename):
+                    anttext = zipfile.read(zip_info).decode()
+                    break
+
+            if anttext == None:
+                raise RuntimeError('Cannot find antenna information!')
             # Convert comment characters to a standard comment character
             anttext_comment = re.sub('[*!]','#',anttext)
 
