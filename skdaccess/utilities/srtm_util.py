@@ -62,8 +62,6 @@ def merge_srtm_tiles(srtm_tiles, lon_min, lon_max, lat_min, lat_max):
         i_factor += 1
         j_factor = number_tile_y - 1
 
-    topography[topography <= 0.] = np.nan
-
     pixel_lon_size = (lon_max - lon_min)/(topography.shape[1] - 1)
     pixel_lat_size = (lat_max - lat_min)/(topography.shape[0] - 1)
     topography_extent = (lon_min - 0.5*pixel_lon_size,
