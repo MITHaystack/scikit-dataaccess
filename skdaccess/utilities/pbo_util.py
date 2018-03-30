@@ -282,7 +282,7 @@ def propagateErrors(R,sc,stationCovs):
     oldCs[:,0:3] *= 1000
 
 
-def nostab_sys(allH,allD,timerng,indx=1,mdyratio=.7, use_progress_bar = True):
+def nostab_sys(allH,allD,timerng,indx=1,mdyratio=.7, use_progress_bar = True, index_date_only=False):
     '''
     Do not apply stabilization and simply returns stations after checking for sufficient amount of data
 
@@ -303,17 +303,31 @@ def nostab_sys(allH,allD,timerng,indx=1,mdyratio=.7, use_progress_bar = True):
     if mdyratio > 1:
         mindays = mdyratio
     else:
-        mindays = ((datetime.strptime(timerng[1],"%Y-%m-%d")-datetime.strptime(timerng[0],"%Y-%m-%d")).days)*mdyratio   
+        mindays = ((pd.to_datetime(timerng[1]) - pd.to_datetime(timerng[0]))/pd.to_timedelta(1,'D'))*mdyratio
     
     #grab specified sites from the given list of data, or defaults to using all of the sites
     if indx == 1:
         indx = list(allH.keys())
     for ii in progress_bar(indx,enabled = use_progress_bar):
-        dCheck = allD['data_' + ii][timerng[0]:timerng[1]].shape[0]
+
+        if index_date_only:
+            pddata = allD['data_' + ii][timerng[0]:timerng[1]]
+
+        else:
+            pddata = allD['data_' + ii]
+            jd_conversion = 2400000.5
+            pddata[pddata.index.name] = pddata.index
+            pddata = pddata[[pddata.index.name] + pddata.columns.tolist()[:-1]]
+            pddata.index = pd.to_datetime(pddata['JJJJJ.JJJJ'] + jd_conversion, unit='D', origin='julian')
+            pddata.index.name = 'Date'
+            pddata = pddata[timerng[0]:timerng[1]]
+
+
+        dCheck = pddata[timerng[0]:timerng[1]].shape[0]
+
         if dCheck>mindays:
             # requires the minimum amount of data to be present
             # resamples these stations to daily
-            pddata = allD['data_' + ii][timerng[0]:timerng[1]]
             if pddata.shape[0] < datelen:
                 pddata = pddata.reindex(pd.date_range(start=timerng[0],end=timerng[1],freq='D'))
             else:

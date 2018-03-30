@@ -57,7 +57,7 @@ class DataFetcher(DataFetcherStorage):
     def __init__(self, start_time, end_time, ap_paramList, mdyratio=.5,
                  default_columns = ['dN','dE','dU'],
                  default_error_columns = ['Sn', 'Se', 'Su'],
-                 use_progress_bar = True):
+                 use_progress_bar = True, index_date_only=True):
         ''' 
         Initialize a DataFetcher
 
@@ -68,6 +68,8 @@ class DataFetcher(DataFetcherStorage):
         @param mdyratio: Only keep stations that have mdyratio of data in the specified time range
         @param default_columns: Default columns to process
         @param default_error_columns: Default error columns to process
+        @param use_progress_bar: Use a progress bar when loading data
+        @param index_date_only: Create a index using date only (no hour information)
         '''
         
         self._start_time = start_time
@@ -77,6 +79,7 @@ class DataFetcher(DataFetcherStorage):
         self.default_columns = default_columns
         self.default_error_columns = default_error_columns
         self.use_progress_bar = use_progress_bar
+        self.index_date_only = index_date_only
 
         self.antenna_info = DataFetcher.getAntennaLogs()
         
@@ -113,7 +116,7 @@ class DataFetcher(DataFetcherStorage):
             mdyratio = self._mdyratio
             
             smSet_all, smHdr_all = pbo_util.nostab_sys(storeName,storeData,[self._start_time,self._end_time],indx=keyList,mdyratio=mdyratio,
-                                                       use_progress_bar = self.use_progress_bar)
+                                                       use_progress_bar = self.use_progress_bar, index_date_only=self.index_date_only)
     
             self._smSet_all = smSet_all
             self._smHdr_all = smHdr_all
