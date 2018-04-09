@@ -31,7 +31,8 @@ from skdaccess.framework.data_class import DataFetcherCache, ImageWrapper
 from skdaccess.utilities.image_util import SplineLatLon
 
 # 3rd party imports
-from pyinsar.io.uavsar import readUAVSARMetadata
+from pyinsar.data_import.uavsar import readUAVSARMetadata
+
 import numpy as np
 
 class DataFetcher(DataFetcherCache):
