@@ -31,7 +31,7 @@ from skdaccess.framework.data_class import DataFetcherCache, ImageWrapper
 from skdaccess.utilities.image_util import SplineLatLon
 
 # 3rd party imports
-from pyinsar.data_import.uavsar import readUAVSARMetadata
+from pyinsar.data_import.uavsar import read_uavsar_metadata
 
 import numpy as np
 
@@ -154,14 +154,14 @@ class DataFetcher(DataFetcherCache):
 
 
         llh,llh_info = self._readUAVSARData(llh_filename[0],
-                                            readUAVSARMetadata(metadata_filename_list[0]))
+                                            read_uavsar_metadata(metadata_filename_list[0]))
         metadata_dict = OrderedDict()
         data_dict = OrderedDict()
         for filename, metadata_filename in zip(filename_list, metadata_filename_list):
             filename_key = os.path.basename(filename)
             metadata_dict[filename_key] = OrderedDict()
 
-            data_metadata = readUAVSARMetadata(metadata_filename)
+            data_metadata = read_uavsar_metadata(metadata_filename)
 
             data, data_filename_info = self._readUAVSARData(filename, data_metadata, self.memmap)
             metadata_dict[filename_key]['filename_info'] = data_filename_info
