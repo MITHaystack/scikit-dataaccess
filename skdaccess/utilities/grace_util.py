@@ -49,11 +49,11 @@ def computeEWD(grace_data, scale_factor, round_nearest_day=False):
     @return Equivalent water depth determined by applying the scale factor to
             the average GFZ, JPL and CSR.
     '''
-    
+
     def cutMissingData(in_data, reverse=False):
         '''
         Removes data from the beginning (or ending if reverse=True) so that
-        data exists for all 3 sources (GFZ, JPL, and CSR). 
+        data exists for all 3 sources (GFZ, JPL, and CSR).
 
 
         This function is necessary as not all sources may get cut when
@@ -61,7 +61,7 @@ def computeEWD(grace_data, scale_factor, round_nearest_day=False):
 
         @param in_data: Input grace data
         @param reverse: Remove data from end instead of beginning
-        
+
         @return Tuple containing modified in_data, the last cut date
         '''
 
@@ -81,7 +81,7 @@ def computeEWD(grace_data, scale_factor, round_nearest_day=False):
                     in_data = in_data.iloc[1:]
 
                 last_cut_date = date
-                
+
             else:
                 break
 
@@ -93,7 +93,7 @@ def computeEWD(grace_data, scale_factor, round_nearest_day=False):
             return pd.Series(np.nan, index=grace_data.index.round('D'))
         else:
             return pd.Series(np.nan, index=grace_data.index)
-    
+
     # Find all months that have different dates supplied by GFZ, JPL, and CSR
     offsets = grace_data[grace_data.isnull().any(axis=1)]
 
@@ -122,7 +122,7 @@ def computeEWD(grace_data, scale_factor, round_nearest_day=False):
 
     new_index = []
     new_measurements = []
-    
+
     # Iterate over all data with offset dates and combine them
     for (c_i, c_v), (g_i,g_v), (j_i, j_v) in zip(csr.iteritems(), gfz.iteritems(), jpl.iteritems()):
 
@@ -131,9 +131,9 @@ def computeEWD(grace_data, scale_factor, round_nearest_day=False):
         if dateMismatch(dates):
             raise ValueError('Different dates are not within 10 days of each other')
 
-        # Determine new index and average value of data  
+        # Determine new index and average value of data
         new_index.append(averageDates(dates, round_nearest_day))
-        new_measurements.append(np.mean([c_v, g_v, j_v])) 
+        new_measurements.append(np.mean([c_v, g_v, j_v]))
 
     # Create series from averaged results
     fixed_means = pd.Series(data = new_measurements, index=new_index)
@@ -166,7 +166,7 @@ def computeEWD(grace_data, scale_factor, round_nearest_day=False):
 def readTellusData(filename, lat_lon_list, lat_name, lon_name, data_name, data_label=None,
                    time_name=None, lat_bounds_name=None, lon_bounds_name=None,
                    uncertainty_name = None):
-    ''' 
+    '''
     This function reads in netcdf data provided by GRACE Tellus
 
     @param filename: Name of file to read in
@@ -204,7 +204,7 @@ def readTellusData(filename, lat_lon_list, lat_name, lon_name, data_name, data_l
 
         lat_bounds = np.stack([lat_data-lat_delta, lat_data+lat_delta]).T
         lon_bounds = np.stack([lon_data-lon_delta, lon_data+lon_delta]).T
-        
+
     else:
         lat_bounds = nc[lat_bounds_name][:]
         lon_bounds = nc[lon_bounds_name][:]
@@ -223,12 +223,12 @@ def readTellusData(filename, lat_lon_list, lat_name, lon_name, data_name, data_l
     for lat, lon in lat_lon_list:
 
         # Convert lontitude to 0-360
-        orig_lon = lon        
+        orig_lon = lon
         if lon < 0:
             lon += 360.
 
 
-        
+
         lat_bin = findBin(lat, lat_bounds)
         lon_bin = findBin(lon, lon_bounds)
 
@@ -249,7 +249,7 @@ def readTellusData(filename, lat_lon_list, lat_name, lon_name, data_name, data_l
         meta_dict[label] = OrderedDict()
         meta_dict[label]['Lat'] = lat
         meta_dict[label]['Lon'] = orig_lon
-        
+
 
 
     return data_dict, meta_dict
@@ -263,5 +263,3 @@ def getStartEndDate(in_data):
     end_date = in_data.index[-1]
 
     return start_date, end_date
-
-
