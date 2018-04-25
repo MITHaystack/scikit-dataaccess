@@ -51,6 +51,7 @@ from tqdm import tqdm
 from skimage.io import imread
 from astropy.io import fits
 from atomicwrites import atomic_write
+import requests
 
 
 
@@ -263,7 +264,7 @@ class DataFetcherCache(DataFetcherLocal):
     Data fetcher base class for downloading data and caching results on hard disk
     '''
     def cacheData(self, keyname, online_path_list, username=None, password=None, authentication_url=None,
-                  cookiejar = None):
+                  cookiejar = None, use_requests=False):
         '''
         Download and store specified data to local disk
 
@@ -333,36 +334,45 @@ class DataFetcherCache(DataFetcherLocal):
         missing_files.sort()
 
 
-        # Deal with password protected urls
-        if username != None or password != None:
-            password_manager = HTTPPasswordMgrWithDefaultRealm()
-            if authentication_url == None:
-                authentication_url = [parsed_url.geturl() for parsed_url in missing_files]
-            password_manager.add_password(None, authentication_url, username, password)
-            handler = HTTPBasicAuthHandler(password_manager)
+        if not use_requests:
+            # Deal with password protected urls
+            if username != None or password != None:
+                password_manager = HTTPPasswordMgrWithDefaultRealm()
+                if authentication_url == None:
+                    authentication_url = [parsed_url.geturl() for parsed_url in missing_files]
+                password_manager.add_password(None, authentication_url, username, password)
+                handler = HTTPBasicAuthHandler(password_manager)
 
-            # If no cookiejar was given, create a new one
-            if cookiejar == None:
-                cookiejar = CookieJar()
+                # If no cookiejar was given, create a new one
+                if cookiejar == None:
+                    cookiejar = CookieJar()
 
-            cookie_processor = HTTPCookieProcessor(cookiejar)
+                cookie_processor = HTTPCookieProcessor(cookiejar)
 
-            install_opener(build_opener(cookie_processor, handler))
+                install_opener(build_opener(cookie_processor, handler))
 
-        # Use a cookie with no username or password
-        elif cookiejar != None:
-            cookie_processor = HTTPCookieProcessor(cookiejar)
-            install_opener(build_opener(cookie_processor))
+            # Use a cookie with no username or password
+            elif cookiejar != None:
+                cookie_processor = HTTPCookieProcessor(cookiejar)
+                install_opener(build_opener(cookie_processor))
 
 
 
         # Download missing files
         if len(missing_files) > 0:
+
             for parsed_url in tqdm(missing_files):
                 out_filename = generatePath(data_location, parsed_url)
                 os.makedirs(os.path.split(out_filename)[0],exist_ok=True)
                 with atomic_write(out_filename, mode='wb') as data_file:
-                    shutil.copyfileobj(urlopen(parsed_url.geturl()), data_file)
+                    if not use_requests:
+                        shutil.copyfileobj(urlopen(parsed_url.geturl()), data_file)
+                    else:
+                        with requests.Session() as session:
+                            initial_request = session.request('get',parsed_url.geturl())
+                            r = session.get(initial_request.url, auth=(username,password), stream=True)
+                            shutil.copyfileobj(r.raw, data_file)
+
 
         # Return a list of file locations for parsing
         return [generatePath(data_location, parsed_url) for parsed_url in parsed_http_paths]
