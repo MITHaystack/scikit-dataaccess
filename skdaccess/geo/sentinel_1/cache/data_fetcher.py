@@ -74,7 +74,7 @@ class DataFetcher(DataFetcherCache):
         '''
 
         if not self.local_paths:
-            file_list = self.cacheData('sentinel_1', self.url_list, self.username, self.password, 'https://urs.earthdata.nasa.gov')
+            file_list = self.cacheData('sentinel_1', self.url_list, self.username, self.password, 'https://urs.earthdata.nasa.gov', use_requests=True)
             satellite_file_list = self.cacheData('sentinel_1', self.satellite_url_list)
         else:
             file_list = self.url_list
