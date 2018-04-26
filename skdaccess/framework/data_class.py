@@ -60,7 +60,7 @@ class DataFetcherBase(object):
     '''
     Base class for all data fetchers
     '''
-    def __init__(self, ap_paramList=[]):
+    def __init__(self, ap_paramList=[], verbose=False):
         '''
         Initialize data fetcher with parameter list
 
@@ -68,6 +68,7 @@ class DataFetcherBase(object):
         '''
 
         self.ap_paramList = ap_paramList
+        self.verbose = verbose
 
     def output(self):
         '''
@@ -131,6 +132,10 @@ class DataFetcherBase(object):
         @return Boolean indicating whether or not this data fetcher is multirun enabled
         '''
         pass
+
+    def verbose_print(self, *args, **kwargs):
+        if self.verbose:
+            print(*args, **kwargs)
 
 
 class DataFetcherLocal(DataFetcherBase):
