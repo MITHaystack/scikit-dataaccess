@@ -278,6 +278,10 @@ class DataFetcherCache(DataFetcherLocal):
         @return List of downloaded file locations
         '''
 
+        # Sanity check on input options
+        if use_requests == True and (username == None or password == None):
+            raise ValueError('Must supply username and password when using requests')
+
         def parseURL(data_location, in_path):
             '''
             This function takes the file path of saved data and determines
