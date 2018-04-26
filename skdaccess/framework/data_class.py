@@ -269,7 +269,7 @@ class DataFetcherCache(DataFetcherLocal):
     Data fetcher base class for downloading data and caching results on hard disk
     '''
     def cacheData(self, keyname, online_path_list, username=None, password=None, authentication_url=None,
-                  cookiejar = None, use_requests=False):
+                  cookiejar = None, use_requests=False, use_progress_bar=True):
         '''
         Download and store specified data to local disk
 
@@ -366,7 +366,12 @@ class DataFetcherCache(DataFetcherLocal):
         # Download missing files
         if len(missing_files) > 0:
 
-            for parsed_url in tqdm(missing_files):
+            if use_progress_bar:
+                missing_files_loop = tqdm(missing_files)
+            else:
+                missing_files_loop = missing_files
+
+            for parsed_url in missing_files_loop:
                 out_filename = generatePath(data_location, parsed_url)
                 os.makedirs(os.path.split(out_filename)[0],exist_ok=True)
                 with atomic_write(out_filename, mode='wb') as data_file:
