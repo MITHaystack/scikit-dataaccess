@@ -45,7 +45,7 @@ import os
 
 class DataFetcher(DataFetcherCache):
     ''' DataFetcher for retrieving Sentinel SLC data '''
-    def __init__(self, url_list, satellite_url_list, username, password, swath, polarization = 'VV', local_paths=False):
+    def __init__(self, url_list, satellite_url_list, username, password, swath, polarization = 'VV', local_paths=False, verbose=True):
         '''
         Initialize Sentinel Data Fetcher
 
@@ -64,7 +64,7 @@ class DataFetcher(DataFetcherCache):
         self.polarization = polarization
         self.local_paths = local_paths
 
-        super(DataFetcher, self).__init__()
+        super(DataFetcher, self).__init__(verbose=verbose)
 
     def output(self):
         '''
@@ -73,10 +73,21 @@ class DataFetcher(DataFetcherCache):
         @return Sentinel SLC data in a data wrapper
         '''
 
+        # Check that the number of images matches the number of orbit files
+        num_images = len(self.url_list)
+        if num_images != len(self.satellite_url_list):
+            raise ValueError('Different number of slc and satellite urls')
+
+
         if not self.local_paths:
-            file_list = self.cacheData('sentinel_1', self.url_list, self.username, self.password, 'https://urs.earthdata.nasa.gov', use_requests=True)
-            satellite_file_list = self.cacheData('sentinel_1', self.satellite_url_list, self.username, self.password, 'https://urs.earthdata.nasa.gov',
-            use_requests=True)
+
+            self.verbose_print('Retrieving SLC data', flush=True)
+            file_list = self.cacheData('sentinel_1', self.url_list, self.username, self.password, 'https://urs.earthdata.nasa.gov',
+                                       use_requests=True, use_progress_bar=self.verbose)
+            self.verbose_print('Retrieving orbit files', flush=True)
+            satellite_file_list = self.cacheData('sentinel_1', self.satellite_url_list, self.username, self.password,
+                                                 'https://urs.earthdata.nasa.gov', use_requests=True, use_progress_bar=self.verbose)
+            self.verbose_print('All files retrieved', flush=True)
         else:
             file_list = self.url_list
             satellite_file_list = self.satellite_url_list
