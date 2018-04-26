@@ -279,8 +279,8 @@ class DataFetcherCache(DataFetcherLocal):
         '''
 
         # Sanity check on input options
-        if use_requests == True and (username == None or password == None):
-            raise ValueError('Must supply username and password when using requests')
+        if use_requests == True and (username == None or password == None or authentication_url != None):
+            raise ValueError('Must supply username and password and no authentication url when using requests')
 
         def parseURL(data_location, in_path):
             '''
@@ -345,6 +345,8 @@ class DataFetcherCache(DataFetcherLocal):
 
         if not use_requests:
             # Deal with password protected urls
+            # This method comes from
+            # https://wiki.earthdata.nasa.gov/display/EL/How+To+Access+Data+With+Python
             if username != None or password != None:
                 password_manager = HTTPPasswordMgrWithDefaultRealm()
                 if authentication_url == None:
@@ -382,6 +384,8 @@ class DataFetcherCache(DataFetcherLocal):
                     if not use_requests:
                         shutil.copyfileobj(urlopen(parsed_url.geturl()), data_file)
                     else:
+                        # This method to download password protected data comes from
+                        # https://wiki.earthdata.nasa.gov/display/EL/How+To+Access+Data+With+Python
                         with requests.Session() as session:
                             initial_request = session.request('get',parsed_url.geturl())
                             r = session.get(initial_request.url, auth=(username,password), stream=True)
