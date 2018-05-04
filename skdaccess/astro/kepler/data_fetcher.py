@@ -59,6 +59,25 @@ class DataFetcher(DataFetcherCache):
         self.quarter_list = quarter_list
         super(DataFetcher, self).__init__(ap_paramList)
 
+    def _getKeplerFilePath(self):
+        '''
+        Get the path to the Kepler HDF file
+
+        This helper function for backwards compatibility is necessary
+        data locations for cached data are now all directories.
+
+        @return String containing the path to the Kepler HDF file
+        '''
+
+        data_location = DataFetcher.getDataLocation('kepler')
+
+        if os.path.split(data_location)[1] == 'kepler_data.h5':
+            return data_location
+        else:
+            return os.path.join(data_location, 'kepler_data.h5')
+
+
+
     def downloadKeplerData(self, kid_list):
         '''
         Download and parse Kepler data for a list of kepler id's
@@ -121,13 +140,7 @@ class DataFetcher(DataFetcherCache):
 
         kid_list = data_specification
 
-        data_location = DataFetcher.getDataLocation('kepler')
-
-        if data_location == None:
-            data_location = os.path.join(os.path.expanduser('~'),'.skdaccess','kepler')
-            os.makedirs(data_location, exist_ok=True)
-            data_location = os.path.join(data_location, 'kepler_data.h5')
-            DataFetcher.setDataLocation('kepler', data_location)
+        data_location = self._getKeplerFilePath()
 
         store = pd.HDFStore(data_location)
         
@@ -157,7 +170,7 @@ class DataFetcher(DataFetcherCache):
 
         self.cacheData(kid_list)
 
-        data_location = DataFetcher.getDataLocation('kepler')
+        data_location = self._getKeplerFilePath()
 
         kid_data = dict()
 
