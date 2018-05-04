@@ -63,8 +63,8 @@ class DataFetcher(DataFetcherCache):
         '''
         Get the path to the Kepler HDF file
 
-        This helper function for backwards compatibility is necessary
-        data locations for cached data are now all directories.
+        This helper function is for backwards compatibility as data
+        locations for cached data are now all directories.
 
         @return String containing the path to the Kepler HDF file
         '''
