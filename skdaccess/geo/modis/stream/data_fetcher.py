@@ -35,7 +35,6 @@ import re
 
 # 3rd party package imports
 import pandas as pd
-from scipy.optimize import brute
 from six.moves.urllib.request import urlopen
 import numpy as np
 
