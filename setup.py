@@ -6,7 +6,7 @@ package_name = 'scikit-dataaccess'
 
 package_list = find_packages()
 
-with open("README.rst") as rfile:
+with open("README.md") as rfile:
     readme = rfile.read()
 
 
