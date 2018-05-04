@@ -278,10 +278,6 @@ class DataFetcherCache(DataFetcherLocal):
         @return List of downloaded file locations
         '''
 
-        # Sanity check on input options
-        if use_requests == True and (username == None or password == None or authentication_url != None):
-            raise ValueError('Must supply username and password and no authentication url when using requests')
-
         def parseURL(data_location, in_path):
             '''
             This function takes the file path of saved data and determines
@@ -342,35 +338,38 @@ class DataFetcherCache(DataFetcherLocal):
 
         missing_files.sort()
 
-
-        if not use_requests:
-            # Deal with password protected urls
-            # This method comes from
-            # https://wiki.earthdata.nasa.gov/display/EL/How+To+Access+Data+With+Python
-            if username != None or password != None:
-                password_manager = HTTPPasswordMgrWithDefaultRealm()
-                if authentication_url == None:
-                    authentication_url = [parsed_url.geturl() for parsed_url in missing_files]
-                password_manager.add_password(None, authentication_url, username, password)
-                handler = HTTPBasicAuthHandler(password_manager)
-
-                # If no cookiejar was given, create a new one
-                if cookiejar == None:
-                    cookiejar = CookieJar()
-
-                cookie_processor = HTTPCookieProcessor(cookiejar)
-
-                install_opener(build_opener(cookie_processor, handler))
-
-            # Use a cookie with no username or password
-            elif cookiejar != None:
-                cookie_processor = HTTPCookieProcessor(cookiejar)
-                install_opener(build_opener(cookie_processor))
-
-
-
         # Download missing files
         if len(missing_files) > 0:
+            # Sanity check on input options
+            if use_requests == True and (username == None or password == None or authentication_url != None):
+                raise ValueError('Must supply username and password and no authentication url when using requests')
+
+
+            # Setup connection (non requests)
+            if not use_requests:
+                # Deal with password protected urls
+                # This method comes from
+                # https://wiki.earthdata.nasa.gov/display/EL/How+To+Access+Data+With+Python
+                if username != None or password != None:
+                    password_manager = HTTPPasswordMgrWithDefaultRealm()
+                    if authentication_url == None:
+                        authentication_url = [parsed_url.geturl() for parsed_url in missing_files]
+                    password_manager.add_password(None, authentication_url, username, password)
+                    handler = HTTPBasicAuthHandler(password_manager)
+
+                    # If no cookiejar was given, create a new one
+                    if cookiejar == None:
+                        cookiejar = CookieJar()
+
+                    cookie_processor = HTTPCookieProcessor(cookiejar)
+
+                    install_opener(build_opener(cookie_processor, handler))
+
+                # Use a cookie with no username or password
+                elif cookiejar != None:
+                    cookie_processor = HTTPCookieProcessor(cookiejar)
+                    install_opener(build_opener(cookie_processor))
+
 
             if use_progress_bar:
                 missing_files_loop = tqdm(missing_files)
