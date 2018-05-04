@@ -46,9 +46,9 @@ pip install scikit-dataaccess
 
 ### Documentation
 
-- User Manual: [/docs/skdaccess_manual.pdf](https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/skdaccess_manual.pdf)<br>
-- Code documentation (Doxygen): [/docs/skdaccess_doxygen.pdf](https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/skdaccess_doxygen.pdf)
-- Code visualization (treemap): [/docs/skdaccess_treemap.png](https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/skdaccess_treemap.png)
+- User Manual: [/docs/skdaccess_manual.pdf](https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess_manual.pdf)<br>
+- Code documentation (Doxygen): [/docs/skdaccess_doxygen.pdf](https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess_doxygen.pdf)
+- Code visualization (treemap): [/docs/skdaccess_treemap.png](https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/docs/skdaccess_treemap.png)
 - Code class diagrams: [/docs/class_diagrams](https://github.com/MITHaystack/scikit-dataaccess/tree/master/skdaccess/docs/class_diagrams)
 
 
