@@ -191,7 +191,7 @@ class DataFetcher(DataFetcherStorage):
         return 'PBO Data Fetcher' + super(DataFetcher, self).__str__()
 
 
-    def getStationMetadata():
+    def getStationMetadata(data_frame=False):
         '''
         Read in the metadata and convert to dictionary
 
@@ -217,7 +217,18 @@ class DataFetcher(DataFetcherStorage):
 
         store.close()
 
-        return meta_data
+        if data_frame:
+            metadata_frame = pd.DataFrame.from_dict(meta_data, orient='index')
+            metadata_frame['X'] = [data[0] for data in metadata_frame['refXYZ']]
+            metadata_frame['Y'] = [data[1] for data in metadata_frame['refXYZ']]
+            metadata_frame['Z'] = [data[2] for data in metadata_frame['refXYZ']]
+            metadata_frame['Height'] = [data[2] for data in metadata_frame['refNEU']]
+
+            metadata_frame.drop(labels=['refNEU','refXYZ', '4ID'], inplace=True, axis=1)
+            return metadata_frame
+
+        else:
+            return meta_data
 
     def getAntennaLogs():
         '''
