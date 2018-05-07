@@ -22,12 +22,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+# Standard library imports
+from collections import OrderedDict
+
 # mithagi required Base imports
 from skdaccess.framework.data_class import DataFetcherCache, TableWrapper
 from skdaccess.utilities.grace_util import readTellusData
 
 # 3rd party imports
 import pandas as pd
+from netCDF4 import Dataset
 
 
 class DataFetcher(DataFetcherCache):
@@ -47,6 +51,7 @@ class DataFetcher(DataFetcherCache):
 
         self.mascon_url = 'ftp://podaac.jpl.nasa.gov/allData/tellus/L3/mascon/RL05/JPL/CRI/netcdf/GRCTellus.JPL.200204_201706.GLO.RL05M_1.MSCNv02CRIv02.nc'
         self.scale_factor_url = 'ftp://podaac.jpl.nasa.gov/allData/tellus/L3/mascon/RL05/JPL/CRI/netcdf/CLM4.SCALE_FACTOR.JPL.MSCNv01CRIv01.nc'
+        self.mascon_placement_url = 'ftp://podaac.jpl.nasa.gov/allData/tellus/L3/mascon/RL05/JPL/CRI/netcdf/JPL_MSCNv01_PLACEMENT.nc'
 
 
         super(DataFetcher, self).__init__(ap_paramList)
@@ -89,3 +94,27 @@ class DataFetcher(DataFetcherCache):
         return TableWrapper(data, meta_data=metadata,
                             default_columns=['Equivalent Water Thickness'],
                             default_error_columns=['EWT Uncertainty'])
+
+    def getMasconPlacement(self):
+        '''
+        Retrieve mascon placement data
+
+        @return Mascon data, Mascon metadata
+        '''
+        file_list = self.cacheData('mascon', [self.mascon_placement_url])
+
+
+        placement = Dataset('JPL_MSCNv01_PLACEMENT.nc')
+
+        mascon_data = OrderedDict()
+        mascon_meta = OrderedDict()
+
+        for label, data in placement.variables.items():
+            mascon_data[label] = data[:]
+            mascon_meta = OrderedDict()
+
+            for meta_label in data.ncattrs():
+                mascon_meta[meta_label] = data.getncattr(meta_label)
+
+
+        return mascon_data, mascon_meta
