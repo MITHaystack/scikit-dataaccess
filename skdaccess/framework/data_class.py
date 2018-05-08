@@ -341,8 +341,8 @@ class DataFetcherCache(DataFetcherLocal):
         # Download missing files
         if len(missing_files) > 0:
             # Sanity check on input options
-            if use_requests == True and (username == None or password == None or authentication_url != None):
-                raise ValueError('Must supply username and password and no authentication url when using requests')
+            if use_requests == True and authentication_url != None:
+                raise ValueError('Cannot use an authentication url with requests')
 
 
             # Setup connection (non requests)
@@ -383,12 +383,16 @@ class DataFetcherCache(DataFetcherLocal):
                     if not use_requests:
                         shutil.copyfileobj(urlopen(parsed_url.geturl()), data_file)
                     else:
-                        # This method to download password protected data comes from
-                        # https://wiki.earthdata.nasa.gov/display/EL/How+To+Access+Data+With+Python
-                        with requests.Session() as session:
-                            initial_request = session.request('get',parsed_url.geturl())
-                            r = session.get(initial_request.url, auth=(username,password), stream=True)
-                            shutil.copyfileobj(r.raw, data_file)
+                        if username != None or password != None:
+                            # This method to download password protected data comes from
+                            # https://wiki.earthdata.nasa.gov/display/EL/How+To+Access+Data+With+Python
+                            with requests.Session() as session:
+                                initial_request = session.request('get',parsed_url.geturl())
+                                r = session.get(initial_request.url, auth=(username,password), stream=True)
+                                shutil.copyfileobj(r.raw, data_file, 1024*1024*10)
+                        else:
+                            r = requests.get(parsed_url.geturl(), stream=True)
+                            shutil.copyfileobj(r.raw, data_file, 1024*1024*10)
 
 
         # Return a list of file locations for parsing
