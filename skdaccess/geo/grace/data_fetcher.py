@@ -106,6 +106,22 @@ class DataFetcher(DataFetcherStorage):
         end_date = self.end_date
 
 
+        def getMaskedValue(in_value):
+            '''
+            Retrieve the value if not masked,
+            otherwise return np.nan
+
+            @param in_value: Input value to check
+
+            @return input value or nan
+            '''
+            if np.ma.is_masked(in_value):
+                return np.nan
+            else:
+                return in_value
+
+
+
         if start_date == None or end_date == None:
             csr_start_date, csr_end_date = getStartEndDate(csr_data)
             jpl_start_date, jpl_end_date = getStartEndDate(jpl_data)
@@ -135,9 +151,9 @@ class DataFetcher(DataFetcherStorage):
 
             label = csr_label
             
-            metadata_dict[label] = pd.Series({'scale_factor' : scale_factor_data[csr_label],
-                                             'measurement_error' : measurement_error_data[csr_label],
-                                              'leakage_error' : leakage_error_data[csr_label]})
+            metadata_dict[label] = pd.Series({'scale_factor' : getMaskedValue(scale_factor_data[csr_label]),
+                                             'measurement_error' : getMaskedValue(measurement_error_data[csr_label]),
+                                              'leakage_error' : getMaskedValue(leakage_error_data[csr_label])})
 
             data_dict[label] = data
 
