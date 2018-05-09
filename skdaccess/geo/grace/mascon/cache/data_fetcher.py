@@ -68,13 +68,14 @@ class DataFetcher(DataFetcherCache):
 
         file_list = self.cacheData('mascon', [self.mascon_url, self.scale_factor_url])
 
-        data, metadata = readTellusData(file_list[0], geo_point_list,'lat','lon','lwe_thickness', 'EWD', time_name='time',
-                                        lat_bounds_name='lat_bounds', lon_bounds_name='lon_bounds')
+        data, metadata, lat_bounds, lon_bounds = readTellusData(file_list[0], geo_point_list,'lat','lon','lwe_thickness', 'EWD', time_name='time',
+                                                                lat_bounds_name='lat_bounds', lon_bounds_name='lon_bounds')
 
-        unc_data, unc_metadata = readTellusData(file_list[0], geo_point_list,'lat','lon','uncertainty', 'EWD_Error', time_name='time',
-                                        lat_bounds_name='lat_bounds', lon_bounds_name='lon_bounds')
+        unc_data, unc_metadata = readTellusData(file_list[0], geo_point_list,'lat','lon','uncertainty', 'EWD_Error',
+                                                time_name='time', lat_bounds=lat_bounds, lon_bounds=lon_bounds)[:2]
 
-        scale_data, scale_metadata = readTellusData(file_list[1], geo_point_list, 'lat', 'lon', 'scale_factor')
+        scale_data, scale_metadata  = readTellusData(file_list[1], geo_point_list, 'lat', 'lon', 'scale_factor',
+                                                     lat_bounds=lat_bounds, lon_bounds=lon_bounds)[:2]
 
         for data_name in data.keys():
             data[data_name] = pd.concat([data[data_name], unc_data[data_name]], axis=1)

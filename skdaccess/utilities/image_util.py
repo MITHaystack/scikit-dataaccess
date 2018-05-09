@@ -135,3 +135,20 @@ def getExtentsFromCentersPlateCarree(westmost_pixel_lon, eastmost_pixel_lon,
 
 
     return (start_lon, end_lon, start_lat, end_lat)
+
+
+def convertBinCentersToEdges(bin_centers):
+    '''
+    Calculate edges of a set of bins from their centers
+
+    @param bin_centers: Array of bin centers
+
+    @return bin_edges
+    '''
+    centers_length = len(bin_centers)
+    edges = np.zeros(centers_length + 1, dtype=bin_centers.dtype)
+    edges[1:centers_length] = (bin_centers[:-1] + bin_centers[1:]) / 2
+    edges[0] = 2*bin_centers[0] - edges[1]
+    edges[-1] = 2*bin_centers[-1] - edges[-2]
+
+    return edges

@@ -85,22 +85,24 @@ class DataFetcher(DataFetcherStorage):
 
         geo_point_list = self.ap_paramList[0]()
 
-        csr_data, csr_meta = readTellusData(os.path.join(data_location, csr_filename), geo_point_list, 'lat','lon',
-                                            'lwe_thickness', 'CSR','time')
-        jpl_data, jpl_meta = readTellusData(os.path.join(data_location, jpl_filename), geo_point_list, 'lat','lon',
-                                            'lwe_thickness', 'JPL','time')
-        gfz_data, gfz_meta = readTellusData(os.path.join(data_location, gfz_filename), geo_point_list, 'lat','lon',
-                                            'lwe_thickness', 'GFZ','time')
+        csr_data, csr_meta, lat_bounds, lon_bounds = readTellusData(os.path.join(data_location, csr_filename), geo_point_list, 'lat','lon',
+                                                                    'lwe_thickness', 'CSR','time')
+        jpl_data, jpl_meta, = readTellusData(os.path.join(data_location, jpl_filename), geo_point_list, 'lat','lon',
+                                             'lwe_thickness', 'JPL','time', lat_bounds=lat_bounds, lon_bounds=lon_bounds)[:2]
+        gfz_data, gfz_meta, = readTellusData(os.path.join(data_location, gfz_filename), geo_point_list, 'lat','lon',
+                                             'lwe_thickness', 'GFZ','time', lat_bounds=lat_bounds, lon_bounds=lon_bounds)[:2]
 
         
-        scale_factor_data, scale_factor_meta = readTellusData(os.path.join(data_location, scale_factor_filename),
-                                                             geo_point_list, 'Latitude', 'Longitude', 'SCALE_FACTOR')
-        leakage_error_data, leakage_error_meta = readTellusData(os.path.join(data_location, scale_factor_filename),
-                                                               geo_point_list, 'Latitude', 'Longitude', 'LEAKAGE_ERROR')
-        measurement_error_data, measurement_error_meta = readTellusData(os.path.join(data_location, scale_factor_filename),
-                                                                       geo_point_list, 'Latitude', 'Longitude', 'MEASUREMENT_ERROR')
-
-
+        scale_factor_data, scale_factor_meta, = readTellusData(os.path.join(data_location, scale_factor_filename),
+                                                               geo_point_list, 'Latitude', 'Longitude', 'SCALE_FACTOR',
+                                                               lat_bounds=lat_bounds, lon_bounds=lon_bounds)[:2]
+        leakage_error_data, leakage_error_meta, = readTellusData(os.path.join(data_location, scale_factor_filename),
+                                                                 geo_point_list, 'Latitude', 'Longitude', 'LEAKAGE_ERROR',
+                                                                 lat_bounds=lat_bounds, lon_bounds=lon_bounds)[:2]
+        measurement_error_data, measurement_error_meta, = readTellusData(os.path.join(data_location, scale_factor_filename),
+                                                                         geo_point_list, 'Latitude', 'Longitude',
+                                                                         'MEASUREMENT_ERROR', lat_bounds=lat_bounds,
+                                                                         lon_bounds=lon_bounds)[:2]
         # Get appropriate time range
         start_date = self.start_date
         end_date = self.end_date

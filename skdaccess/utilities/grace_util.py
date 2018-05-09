@@ -1,8 +1,40 @@
+# The MIT License (MIT)
+# Copyright (c) 2016, 2017, 2018 Massachusetts Institute of Technology
+#
+# Authors: Cody Rude
+# This software has been created in projects supported by the US National
+# Science Foundation and NASA (PI: Pankratius)
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+
+# Standard library imports
+from itertools import combinations
+from collections import OrderedDict
+
+# Scikit Data Access imports
+from .image_util import convertBinCentersToEdges
+
+# 3rd part imports
 import pandas as pd
 import numpy as np
-from itertools import combinations
 from netCDF4 import Dataset, num2date
-from collections import OrderedDict
+
 
 
 def averageDates(dates, round_nearest_day = False):
@@ -165,7 +197,7 @@ def computeEWD(grace_data, scale_factor, round_nearest_day=False):
 
 def readTellusData(filename, lat_lon_list, lat_name, lon_name, data_name, data_label=None,
                    time_name=None, lat_bounds_name=None, lon_bounds_name=None,
-                   uncertainty_name = None):
+                   uncertainty_name = None, lat_bounds=None, lon_bounds = None):
     '''
     This function reads in netcdf data provided by GRACE Tellus
 
@@ -176,6 +208,11 @@ def readTellusData(filename, lat_lon_list, lat_name, lon_name, data_name, data_l
     @param time_name: Name of time data
     @param lat_bounds_name: Name of latitude boundaries
     @param lon_bounds_name: Name of longitude boundaries
+    @param uncertainty_name: Name of uncertainty in data set
+    @param lat_bounds: Latitude bounds
+    @param lon_bounds: Longitude bounds
+
+    @return dictionary containing data and dictionary containing latitude and longitude
     '''
 
 
@@ -192,22 +229,31 @@ def readTellusData(filename, lat_lon_list, lat_name, lon_name, data_name, data_l
     if data_label == None and time_name != None:
         raise RuntimeError("Need to specify data label when time data is used")
 
+
+    if lat_bounds is None and lon_bounds is not None or \
+       lat_bounds is not None and lon_bounds is None:
+
+       raise ValueError('Must specify both lat_bounds and lon_bounds, or neither of them')
+
     nc = Dataset(filename, 'r')
 
     lat_data = nc[lat_name][:]
     lon_data = nc[lon_name][:]
     data = nc[data_name][:]
 
-    if lat_bounds_name == None and lon_bounds_name == None:
-        lat_delta = (lat_data[1] - lat_data[0])/2
-        lon_delta = (lon_data[1] - lon_data[0])/2
 
-        lat_bounds = np.stack([lat_data-lat_delta, lat_data+lat_delta]).T
-        lon_bounds = np.stack([lon_data-lon_delta, lon_data+lon_delta]).T
+    if lat_bounds is None:
+        if lat_bounds_name == None and lon_bounds_name == None:
 
-    else:
-        lat_bounds = nc[lat_bounds_name][:]
-        lon_bounds = nc[lon_bounds_name][:]
+            lat_edges = convertBinCentersToEdges(lat_data)
+            lon_edges = convertBinCentersToEdges(lon_data)
+
+            lat_bounds = np.stack([lat_edges[:-1], lat_edges[1:]], axis=1)
+            lon_bounds = np.stack([lon_edges[:-1], lon_edges[1:]], axis=1)
+
+        else:
+            lat_bounds = nc[lat_bounds_name][:]
+            lon_bounds = nc[lon_bounds_name][:]
 
     if time_name != None:
         time = nc[time_name]
@@ -252,7 +298,7 @@ def readTellusData(filename, lat_lon_list, lat_name, lon_name, data_name, data_l
 
 
 
-    return data_dict, meta_dict
+    return data_dict, meta_dict, lat_bounds, lon_bounds
 
 
 
