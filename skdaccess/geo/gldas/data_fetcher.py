@@ -77,7 +77,7 @@ class DataFetcher(DataFetcherStorage):
 
 
         full_data, metadata = readTellusData(data_file, geo_point_list, 'Latitude','Longitude',
-                                             'Water_Thickness', gldas_data_name, 'Time')
+                                             'Water_Thickness', gldas_data_name, 'Time')[:2]
         
         # Get appropriate time range
         if self.start_date == None or self.end_date == None:
