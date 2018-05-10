@@ -25,9 +25,7 @@
 # Scikit Data Access imports
 from skdaccess.framework.data_class import DataFetcherCache, ImageWrapper
 from skdaccess.utilities.support import convertToStr
-
-# pyinsar imports
-from pyinsar.data_import.sentinel import parse_satellite_data
+from skdaccess.utilities.sentinel_1_util import parseSatelliteData
 
 # 3rd party imports
 import pandas as pd
@@ -116,7 +114,7 @@ class DataFetcher(DataFetcherCache):
 
             metadata[filename]['Wavelength'] = radar_lambda
 
-            metadata[filename]['Orbit'] = parse_satellite_data(satellite_filepath)
+            metadata[filename]['Orbit'] = parseSatelliteData(satellite_filepath)
 
 
             # Currently a bug when reading in data using Sentinel-1 Driver
