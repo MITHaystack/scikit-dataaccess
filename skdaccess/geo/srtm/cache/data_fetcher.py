@@ -25,6 +25,8 @@
 # Scikit Data Access imports
 from skdaccess.framework.data_class import DataFetcherCache, ImageWrapper
 from skdaccess.utilities.support import convertToStr
+from skdaccess.utilities.image_util import getExtentsFromCentersPlateCarree, LinearGeolocation, convertBinCentersToEdges
+
 
 # 3rd party imports
 import pandas as pd
@@ -210,6 +212,15 @@ class DataFetcher(DataFetcherCache):
             metadata_dict[label] = OrderedDict()
             metadata_dict[label]['Latitude'] = lat_coords
             metadata_dict[label]['Longitude'] = lon_coords
+
+            
+            lon_edges = convertBinCentersToEdges(lon_coords[0,:])
+            lat_edges = convertBinCentersToEdges(lat_coords[::-1,0])
+
+            extents = [lon_edges[0], lon_edges[-1], lat_edges[0], lat_edges[-1]]
+            
+
+            metadata_dict[label]['Geolocation'] = LinearGeolocation(masked_dem_data, extents, flip_y=True)
             
         
         return ImageWrapper(obj_wrap = data_dict, meta_data = metadata_dict)

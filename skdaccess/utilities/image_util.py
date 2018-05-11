@@ -112,6 +112,91 @@ class SplineLatLon(object):
         return ret_lat, ret_lon
 
 
+class LinearGeolocation(object):
+    '''
+    This class provides functions to convert between pixel and geodetic coordinates
+    '''
+    def __init__(self, data, extents, x_offset=0, y_offset=0, flip_y=False):
+        '''
+        Initialize SRTM Geolocation object
+
+        @param data: Numpy 2d data
+        @param extents: Latitude and longitude extents
+        @param x_offset: Pixel offset in x
+        @param y_offset: Pixel offset in y
+        @param flip_y: The y axis has been flipped so that increasing
+                       y values are decreasing in latitude
+
+        '''
+
+        self.flip_y = flip_y
+
+        self.lon_extents = extents[:2]        
+        self.lat_extents = extents[2:]
+        
+        self.lat_pixel_size = (self.lat_extents[1] - self.lat_extents[0]) / data.shape[0]
+        self.lon_pixel_size = (self.lon_extents[1] - self.lon_extents[0]) / data.shape[1]
+
+        self.start_lat = self.lat_pixel_size / 2 + self.lat_extents[0]
+        self.start_lon = self.lon_pixel_size / 2 + self.lon_extents[0]
+        self.x_offset = x_offset
+        self.y_offset = y_offset
+
+        self.len_x = data.shape[1]
+        self.len_y = data.shape[0]
+
+    def getLatLon(self, y, x):
+        '''
+        Retrive the Latitude and Longitude from pixel coordinates
+
+        @param y: The y pixel
+        @param x: The x pixel
+
+        @return (latitude, longitude) of the pixel coordinate
+        '''
+
+        if self.flip_y:
+            y_coord = (self.len_y - y - 1) + self.y_offset
+
+        else:
+            y_coord = y + self.y_offset
+
+
+        lat = self.start_lat + y_coord * self.lat_pixel_size
+        lon = self.start_lon + (x + self.x_offset) * self.lon_pixel_size
+
+        return lat, lon
+
+    def getXY(self, lat, lon):
+        '''
+        Retrive the Latitude and Longitude from pixel coordinates
+
+        @param y: The y pixel
+        @param x: The x pixel
+
+        @return (latitude, longitude) of the pixel coordinate
+        '''
+
+        y = (lat - self.start_lat) / self.lat_pixel_size - self.y_offset
+        x = (lon - self.start_lon) / self.lon_pixel_size - self.x_offset
+
+
+
+        if self.flip_y:
+            y = self.len_y - y - 1
+
+        return y, x
+
+    def getExtents(self):
+        '''
+        Retrieve the extents of the data
+
+        @return (minimum_longitude, maximum_longitude, minimum_latitude, maximum_latitude)
+        '''
+        return self.lon_extents + self.lat_extents
+
+
+
 def getExtentsFromCentersPlateCarree(westmost_pixel_lon, eastmost_pixel_lon,
                                      southmost_pixel_lat, northmost_pixel_lat,
                                      lon_grid_spacing, lat_grid_spacing):
