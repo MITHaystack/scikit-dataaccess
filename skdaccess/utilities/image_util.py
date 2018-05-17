@@ -112,13 +112,46 @@ class SplineLatLon(object):
         return ret_lat, ret_lon
 
 
+def SplineGeolocation(object):
+    '''
+    This class holds splines to convert between 2d cartesian and geodetic coordinates
+    '''
+    def __init__(self, lat_spline, lon_spline, x_spline, y_spline, x_offset=0, y_offset=0):
+
+        self.x_offset = x_offset
+        self.y_offset = y_offset
+
+        self.lat_spline = lat_spline
+        self.lon_spline = lon_spline
+        self.x_spline = x_spline
+        self.y_spline = y_spline
+
+
+    def _accessSpline(self, *args, spline_function):
+        '''
+        Access values from a spline.
+
+        @param *args: Input arguments for spline function
+        @param spline_function: Spline function used for interpolation
+
+        @return interpolated values from the spline
+        '''
+        ret_val = spline_function(*args, grid=False)
+
+        if np.alltrue([np.isscalar([arg for arg in args])]):
+            ret_val = ret_val.item()
+        else:
+            return ret_val
+
+
+
 class LinearGeolocation(object):
     '''
     This class provides functions to convert between pixel and geodetic coordinates
     '''
     def __init__(self, data, extents, x_offset=0, y_offset=0, flip_y=False):
         '''
-        Initialize SRTM Geolocation object
+        Initialize Linear Geolocation object
 
         @param data: Numpy 2d data
         @param extents: Latitude and longitude extents
