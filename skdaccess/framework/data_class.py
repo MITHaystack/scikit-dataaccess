@@ -40,6 +40,7 @@ from urllib.request import HTTPCookieProcessor
 from urllib.request import build_opener, install_opener, urlopen
 from io import BytesIO
 from http.cookiejar import CookieJar
+import fcntl
 
 
 # Compatability imports for standard library
@@ -156,7 +157,14 @@ class DataFetcherLocal(DataFetcherBase):
         except (NoOptionError, NoSectionError):
 
             # If it doesn't exist, create a new one
-            data_location = os.path.join(os.path.expanduser('~'), '.skdaccess', data_name)
+
+            # Check if an alternate root has been defined
+            try:
+                data_location = os.path.join(conf.get('skdaccess', 'root'), data_name)
+            except (NoOptionError, NoSectionError):
+                data_location = os.path.join(os.path.expanduser('~'), '.skdaccess', data_name)
+
+            # Make directory and set location
             os.makedirs(data_location, exist_ok=True)
             DataFetcherLocal.setDataLocation(data_name, data_location)
 
@@ -268,6 +276,27 @@ class DataFetcherCache(DataFetcherLocal):
     '''
     Data fetcher base class for downloading data and caching results on hard disk
     '''
+
+    def checkIfDataExists(self, in_file_name):
+        '''
+        Checks if the file exists on the filesystem and the file is not empty
+
+        @in_file_name: Input filename to test
+        @return True if data exists and False otherwise
+        '''
+        try:
+            with open(in_file_name, 'rb') as read_file:
+                rv = fcntl.lockf(read_file, fcntl.LOCK_SH)
+                first_byte = read_file.read(1)
+
+            if len(first_byte) == 0:
+                return False
+            else:
+                return True
+
+        except FileNotFoundError:
+            return False
+
     def cacheData(self, keyname, online_path_list, username=None, password=None, authentication_url=None,
                   cookiejar = None, use_requests=False, use_progress_bar=True):
         '''
@@ -329,6 +358,9 @@ class DataFetcherCache(DataFetcherLocal):
 
         # Get currently downloaded files
         downloaded_full_file_paths = [filename for filename in glob(os.path.join(data_location,'**'), recursive=True) if os.path.isfile(filename)]
+        # Remove files empty files
+        downloaded_full_file_paths = [filename for filename in downloaded_full_file_paths if self.checkIfDataExists(filename)]
+        # Convert filenames to urls
         downloaded_parsed_urls = set(parseURL(data_location, file_path) for file_path in downloaded_full_file_paths)
 
 
@@ -379,20 +411,27 @@ class DataFetcherCache(DataFetcherLocal):
             for parsed_url in missing_files_loop:
                 out_filename = generatePath(data_location, parsed_url)
                 os.makedirs(os.path.split(out_filename)[0],exist_ok=True)
-                with atomic_write(out_filename, mode='wb') as data_file:
-                    if not use_requests:
-                        shutil.copyfileobj(urlopen(parsed_url.geturl()), data_file)
-                    else:
-                        if username != None or password != None:
-                            # This method to download password protected data comes from
-                            # https://wiki.earthdata.nasa.gov/display/EL/How+To+Access+Data+With+Python
-                            with requests.Session() as session:
-                                initial_request = session.request('get',parsed_url.geturl())
-                                r = session.get(initial_request.url, auth=(username,password), stream=True)
-                                shutil.copyfileobj(r.raw, data_file, 1024*1024*10)
-                        else:
-                            r = requests.get(parsed_url.geturl(), stream=True)
-                            shutil.copyfileobj(r.raw, data_file, 1024*1024*10)
+
+                with open(out_filename, 'a+b') as lockfile:
+
+                    fcntl.lockf(lockfile, fcntl.LOCK_EX)
+                    lockfile.seek(0)
+                    if len(lockfile.read(1)) == 0:
+
+                        with atomic_write(out_filename, mode='wb', overwrite=True) as data_file:
+                            if not use_requests:
+                                shutil.copyfileobj(urlopen(parsed_url.geturl()), data_file)
+                            else:
+                                if username != None or password != None:
+                                    # This method to download password protected data comes from
+                                    # https://wiki.earthdata.nasa.gov/display/EL/How+To+Access+Data+With+Python
+                                    with requests.Session() as session:
+                                        initial_request = session.request('get',parsed_url.geturl())
+                                        r = session.get(initial_request.url, auth=(username,password), stream=True)
+                                        shutil.copyfileobj(r.raw, data_file, 1024*1024*10)
+                                else:
+                                    r = requests.get(parsed_url.geturl(), stream=True)
+                                    shutil.copyfileobj(r.raw, data_file, 1024*1024*10)
 
 
         # Return a list of file locations for parsing
