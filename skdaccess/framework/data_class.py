@@ -41,6 +41,7 @@ from urllib.request import build_opener, install_opener, urlopen
 from io import BytesIO
 from http.cookiejar import CookieJar
 import fcntl
+import struct
 
 
 # Compatability imports for standard library
@@ -286,7 +287,7 @@ class DataFetcherCache(DataFetcherLocal):
         '''
         try:
             with open(in_file_name, 'rb') as read_file:
-                rv = fcntl.lockf(read_file, fcntl.LOCK_SH)
+                rv = fcntl.fcntl(read_file, fcntl.LOCK_SH)
                 first_byte = read_file.read(1)
 
             if len(first_byte) == 0:

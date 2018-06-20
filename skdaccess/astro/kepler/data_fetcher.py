@@ -28,6 +28,7 @@
 
 # mithagi required Base,Utils imports
 from skdaccess.framework.data_class import DataFetcherCache, TableWrapper
+from skdaccess.utilities.file_util import openPandasHDFStoreLocking
 
 # Standard library imports
 import re
@@ -142,7 +143,8 @@ class DataFetcher(DataFetcherCache):
 
         data_location = self._getKeplerFilePath()
 
-        store = pd.HDFStore(data_location)
+
+        store = openPandasHDFStoreLocking(data_location, 'a')
         
         missing_kid_list = []
         for kid in kid_list:
@@ -174,7 +176,7 @@ class DataFetcher(DataFetcherCache):
 
         kid_data = dict()
 
-        store = pd.HDFStore(data_location)
+        store = openPandasHDFStoreLocking(data_location, 'r')
 
         for kid in kid_list:
             kid_data[kid] = store['kid_' + kid]

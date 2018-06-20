@@ -32,12 +32,14 @@ from pathlib import Path
 from shutil import copyfileobj
 import os
 import re
+import fcntl
 
 
 # 3rd party package imports
 import numpy as np
 import pandas as pd
 from six.moves.urllib.request import urlopen
+import certifi
 
 # mithagi imports
 from skdaccess.framework.data_class import DataFetcherCache, ImageWrapper
@@ -91,7 +93,7 @@ class DataFetcher(DataFetcherCache):
         super(DataFetcher, self).__init__(ap_paramList)
 
 
-    def find_data(self, fileid_list):
+    def find_data(self, fileid_list, file_object):
         '''
         Finds files previously downloaded files associated with fileids
 
@@ -99,28 +101,21 @@ class DataFetcher(DataFetcherCache):
         @return Pandas series of file locaitons indexed by file id
         '''
 
-        data_location = DataFetcher.getDataLocation('modis')
-
         file_locations = []
-        if data_location != None:
-            try:
-                metadata = pd.read_csv(os.path.join(data_location,'metadata.csv'), index_col=0)
-                for fileid in fileid_list:
-                    if fileid in metadata.index:
-                        file_locations.append(metadata.loc[fileid,'filename'])
+        try:
+            metadata = pd.read_csv(file_object, index_col=0)
+            for fileid in fileid_list:
+                if fileid in metadata.index:
+                    file_locations.append(metadata.loc[fileid,'filename'])
 
-                    else:
-                        file_locations.append(None)
+                else:
+                    file_locations.append(None)
 
-            except OSError:
-                file_locations = [ None for i in range(len(fileid_list)) ]
-
-        else:
+        except pd.errors.EmptyDataError:
             file_locations = [ None for i in range(len(fileid_list)) ]
 
-
         return pd.Series(file_locations, index=fileid_list)
-        
+
  
     def cacheData(self, data_specification):
         '''
@@ -130,18 +125,12 @@ class DataFetcher(DataFetcherCache):
         '''
         file_ids = data_specification
 
-        def download_data(missing_metadata):
-            data_location = DataFetcher.getDataLocation('modis')
-
-            if data_location == None:
-                data_location = os.path.join(os.path.expanduser('~'), '.skdaccess','modis')
-                os.makedirs(data_location, exist_ok=True)
-                DataFetcher.setDataLocation('modis', data_location)
-
+        def download_data(missing_metadata, file_object):
+            
             try:
-                metadata = pd.read_csv(os.path.join(data_location, 'metadata.csv'), index_col=0)
+                metadata = pd.read_csv(file_object, index_col=0)                    
 
-            except OSError:
+            except pd.errors.EmptyDataError:
                 metadata = pd.DataFrame(columns=["filename"])
                 metadata.index.name = 'fileid'
 
@@ -154,12 +143,14 @@ class DataFetcher(DataFetcherCache):
                 filename = re.search('[^/]*$', fileurl).group()
 
                 data_file = open(os.path.join(data_location,filename), 'wb')
-                copyfileobj(urlopen(fileurl), data_file)
+                copyfileobj(urlopen(fileurl, cafile=certifi.where()), data_file)
                 data_file.close()
                 metadata.loc[fileid] = filename
                 filename_list.append(filename)
 
-            metadata.to_csv(os.path.join(data_location, 'metadata.csv'))
+            file_object.seek(0)
+            file_object.truncate()
+            metadata.to_csv(file_object)
 
             for fileid, filename in zip(fileid_list, filename_list):
                 missing_metadata.loc[fileid] = filename
@@ -167,13 +158,23 @@ class DataFetcher(DataFetcherCache):
             return missing_metadata
 
 
-        file_names = self.find_data(file_ids)
+        data_location = DataFetcher.getDataLocation('modis')
+        metadata_location = os.path.join(data_location, 'metadata.csv')
+
+        with open(metadata_location, 'a+') as metadata_file:
+
+            fcntl.lockf(metadata_file, fcntl.LOCK_EX)
+
+            metadata_file.seek(0)
+            file_names = self.find_data(file_ids, metadata_file)
+            metadata_file.seek(0)
 
 
-        missing = file_names[pd.isnull(file_names)]
+            missing = file_names[pd.isnull(file_names)]
 
-        if len(missing) > 0:
-            downloaded = download_data(missing)
+            if len(missing) > 0:
+                downloaded = download_data(missing, metadata_file)
+
 
     def output(self):
         ''' 
@@ -196,7 +197,11 @@ class DataFetcher(DataFetcherCache):
         
         self.cacheData(file_ids)
 
-        file_list = self.find_data(file_ids)
+        data_location = DataFetcher.getDataLocation('modis')
+        with open(os.path.join(data_location,'metadata.csv'), 'a+') as file_object:
+            fcntl.lockf(file_object, fcntl.LOCK_SH)
+            file_object.seek(0)
+            file_list = self.find_data(file_ids, file_object)
 
         # Location of data files
         data_location = DataFetcher.getDataLocation('modis')
