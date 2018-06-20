@@ -11,7 +11,7 @@ with open("README.md") as rfile:
 
 
 setup(name     = package_name,
-      version  = '1.9.12'
+      version  = '1.9.12',
       packages = package_list,
       zip_safe = False,
 
