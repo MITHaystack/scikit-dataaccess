@@ -431,8 +431,9 @@ class DataFetcherCache(DataFetcherLocal):
                                         r = session.get(initial_request.url, auth=(username,password), stream=True)
                                         shutil.copyfileobj(r.raw, data_file, 1024*1024*10)
                                 else:
-                                    r = requests.get(parsed_url.geturl(), stream=True)
-                                    shutil.copyfileobj(r.raw, data_file, 1024*1024*10)
+                                    with requests.Session() as session:
+                                        r = session.get(parsed_url.geturl(), stream=True)
+                                        shutil.copyfileobj(r.raw, data_file, 1024*1024*10)
 
 
         # Return a list of file locations for parsing
