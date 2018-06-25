@@ -488,6 +488,14 @@ class DataWrapperBase(object):
         '''
         self.data = obj
 
+    def updateMetadata(self, new_metadata):
+        '''
+        Update metadata
+
+        @param new_metadata: New metadata
+        '''
+        self.meta_data = new_metadata
+
     def get(self):
         '''
         Retrieve stored data.
