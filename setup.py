@@ -6,12 +6,12 @@ package_name = 'scikit-dataaccess'
 
 package_list = find_packages()
 
-with open("README.md") as rfile:
+with open("README.md", encoding='utf-8') as rfile:
     readme = rfile.read()
 
 
 setup(name     = package_name,
-      version  = '1.9.12',
+      version  = '1.9.12.post1',
       packages = package_list,
       zip_safe = False,
 
@@ -82,5 +82,6 @@ setup(name     = package_name,
           ]},
       url = 'https://github.com/MITHaystack/scikit-dataaccess',
       python_requires='>=3.4',
-      long_description = readme
+      long_description = readme,
+      long_description_content_type='text/markdown'
       )
