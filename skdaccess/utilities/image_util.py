@@ -115,10 +115,12 @@ class SplineLatLon(object):
 class LinearGeolocation(object):
     '''
     This class provides functions to convert between pixel and geodetic coordinates
+
+    Assumes a linear relationship between pixel and geodetic coordinates
     '''
     def __init__(self, data, extents, x_offset=0, y_offset=0, flip_y=False):
         '''
-        Initialize SRTM Geolocation object
+        Initialize Linear Geolocation object
 
         @param data: Numpy 2d data
         @param extents: Latitude and longitude extents
@@ -167,14 +169,14 @@ class LinearGeolocation(object):
 
         return lat, lon
 
-    def getXY(self, lat, lon):
+    def getYX(self, lat, lon):
         '''
         Retrive the Latitude and Longitude from pixel coordinates
 
-        @param y: The y pixel
-        @param x: The x pixel
+        @param lat: The Latitude
+        @param lon: The Longitude
 
-        @return (latitude, longitude) of the pixel coordinate
+        @return (y, x) pixel coordinates of the input latitude and longitude
         '''
 
         y = (lat - self.start_lat) / self.lat_pixel_size - self.y_offset
