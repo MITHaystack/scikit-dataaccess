@@ -156,7 +156,14 @@ class DataFetcherLocal(DataFetcherBase):
         except (NoOptionError, NoSectionError):
 
             # If it doesn't exist, create a new one
-            data_location = os.path.join(os.path.expanduser('~'), '.skdaccess', data_name)
+
+            # Check if an alternate root has been defined
+            try:
+                data_location = os.path.join(conf.get('skdaccess', 'root'), data_name)
+            except (NoOptionError, NoSectionError):
+                data_location = os.path.join(os.path.expanduser('~'), '.skdaccess', data_name)
+
+            # Make directory and set location
             os.makedirs(data_location, exist_ok=True)
             DataFetcherLocal.setDataLocation(data_name, data_location)
 
