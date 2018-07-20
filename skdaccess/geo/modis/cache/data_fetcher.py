@@ -39,7 +39,6 @@ import fcntl
 import numpy as np
 import pandas as pd
 from six.moves.urllib.request import urlopen
-import certifi
 
 # mithagi imports
 from skdaccess.framework.data_class import DataFetcherCache, ImageWrapper
@@ -143,7 +142,7 @@ class DataFetcher(DataFetcherCache):
                 filename = re.search('[^/]*$', fileurl).group()
 
                 data_file = open(os.path.join(data_location,filename), 'wb')
-                copyfileobj(urlopen(fileurl, cafile=certifi.where()), data_file)
+                copyfileobj(urlopen(fileurl, data_file)
                 data_file.close()
                 metadata.loc[fileid] = filename
                 filename_list.append(filename)
