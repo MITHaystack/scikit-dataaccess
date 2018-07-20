@@ -553,6 +553,15 @@ class DataWrapperBase(object):
 
         return len(self.data)
 
+    def getRunID(self):
+        '''
+        Get the Run ID
+
+        @return run_id
+        '''
+        return self.run_id
+
+
 
 class SeriesWrapper(DataWrapperBase):
     '''
