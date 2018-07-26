@@ -51,7 +51,9 @@ class DataFetcher(DataFetcherCache):
         @param username: Username for downloading data
         @param password: Password for downloading data
         @param swath: Swath number (1, 2, or 3)
-        @param Polarization: Polarization of data to retrieve
+        @param polarization: Polarization of data to retrieve
+        @param local_paths: locations are local paths, not urls
+        @param verbose: Print additional information
         '''
 
         self.url_list = url_list
