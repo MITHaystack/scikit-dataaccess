@@ -114,14 +114,14 @@ def getSRTMData(srtmdw, lat_start,lat_end, lon_start,lon_end):
     @return tuple containing the cut data and a geolocation object
     '''
 
-    tiles = getSRTMLatLon(lon_start, lon_end, lat_start, lat_end)
+    tiles = getSRTMLatLon(lat_start, lat_end, lon_start, lon_end)
     srtm_data, srtm_extents = merge_srtm_tiles(srtmdw, tiles[2],tiles[3]+1, tiles[0], tiles[1]+1)
     srtm_data = np.flipud(srtm_data)
     srtm_geo = LinearGeolocation(srtm_data, srtm_extents)
 
-    start_y, start_x = np.round(srtm_geo.getXY(lat_start,lon_start)).astype(np.int)
+    start_y, start_x = np.round(srtm_geo.getYX(lat_start,lon_start)).astype(np.int)
 
-    end_y, end_x = np.round(srtm_geo.getXY(lat_end,lon_end)).astype(np.int)
+    end_y, end_x = np.round(srtm_geo.getYX(lat_end,lon_end)).astype(np.int)
 
     srtm_geo.x_offset = start_x
     srtm_geo.y_offset = start_y
