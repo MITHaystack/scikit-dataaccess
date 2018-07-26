@@ -166,9 +166,9 @@ class LinearGeolocation(object):
 
         self.flip_y = flip_y
 
-        self.lon_extents = extents[:2]        
+        self.lon_extents = extents[:2]
         self.lat_extents = extents[2:]
-        
+
         self.lat_pixel_size = (self.lat_extents[1] - self.lat_extents[0]) / data.shape[0]
         self.lon_pixel_size = (self.lon_extents[1] - self.lon_extents[0]) / data.shape[1]
 
@@ -257,7 +257,7 @@ def getExtentsFromCentersPlateCarree(westmost_pixel_lon, eastmost_pixel_lon,
     return (start_lon, end_lon, start_lat, end_lat)
 
 
-def convertBinCentersToEdges(bin_centers):
+def convertBinCentersToEdges(bin_centers, dtype = None):
     '''
     Calculate edges of a set of bins from their centers
 
@@ -265,8 +265,12 @@ def convertBinCentersToEdges(bin_centers):
 
     @return bin_edges
     '''
+
+    if dtype is None:
+        dtype == bin_centers.dtype
+
     centers_length = len(bin_centers)
-    edges = np.zeros(centers_length + 1, dtype=bin_centers.dtype)
+    edges = np.zeros(centers_length + 1, dtype=dtype)
     edges[1:centers_length] = (bin_centers[:-1] + bin_centers[1:]) / 2
     edges[0] = 2*bin_centers[0] - edges[1]
     edges[-1] = 2*bin_centers[-1] - edges[-2]
