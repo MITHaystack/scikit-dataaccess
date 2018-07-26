@@ -43,7 +43,8 @@ import os
 class DataFetcher(DataFetcherCache):
     ''' DataFetcher for retrieving data from the Shuttle Radar Topography Mission '''
     def __init__(self, lat_tile_start, lat_tile_end, lon_tile_start, lon_tile_end,
-                 username, password, arcsecond_sampling = 1, mask_water = True):
+                 username, password, arcsecond_sampling = 1, mask_water = True,
+                 store_geolocation_grids=False):
         '''
         Initialize Data Fetcher
 
@@ -67,6 +68,7 @@ class DataFetcher(DataFetcherCache):
         self.password = password
         self.arcsecond_sampling = arcsecond_sampling
         self.mask_water = mask_water
+        self.store_geolocation_grids = store_geolocation_grids
         
         super(DataFetcher, self).__init__()
 
@@ -210,8 +212,10 @@ class DataFetcher(DataFetcherCache):
                                                  indexing = 'ij')
 
             metadata_dict[label] = OrderedDict()
-            metadata_dict[label]['Latitude'] = lat_coords
-            metadata_dict[label]['Longitude'] = lon_coords
+
+            if self.store_geolocation_grids:
+                metadata_dict[label]['Latitude'] = lat_coords
+                metadata_dict[label]['Longitude'] = lon_coords
 
             
             lon_edges = convertBinCentersToEdges(lon_coords[0,:])
