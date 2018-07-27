@@ -73,11 +73,16 @@ class DataFetcher(DataFetcherCache):
         data_location = DataFetcher.getDataLocation('kepler')
 
         if os.path.split(data_location)[1] == 'kepler_data.h5':
-            return data_location
+            data_file_name = data_location
         else:
-            return os.path.join(data_location, 'kepler_data.h5')
+            data_file_name = os.path.join(data_location, 'kepler_data.h5')
 
+        data_file_directory = os.path.split(data_file_name)[0]
 
+        if not os.path.isdir(data_file_directory):
+            os.makedirs(data_file_directory, exist_ok=True)
+
+        return data_file_name
 
     def downloadKeplerData(self, kid_list):
         '''
