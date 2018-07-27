@@ -35,10 +35,13 @@ from netCDF4 import Dataset
 
 
 class DataFetcher(DataFetcherCache):
+    '''
+    Data Fetcher for GRACE mascon data
+    '''
 
     def __init__(self, ap_paramList, start_date = None, end_date = None):
         '''
-        Construct a Grace Data Fetcher
+        Construct a GRACE mascon Data Fetcher
 
         @param ap_paramList[geo_point]: AutoList of geographic location tuples (lat,lon)
         @param start_date: Beginning date

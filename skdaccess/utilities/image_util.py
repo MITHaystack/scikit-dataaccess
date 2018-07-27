@@ -182,7 +182,7 @@ class LinearGeolocation(object):
 
     def getLatLon(self, y, x):
         '''
-        Retrive the Latitude and Longitude from pixel coordinates
+        Retrive the latitude and longitude from pixel coordinates
 
         @param y: The y pixel
         @param x: The x pixel
@@ -204,7 +204,7 @@ class LinearGeolocation(object):
 
     def getYX(self, lat, lon):
         '''
-        Retrive the Latitude and Longitude from pixel coordinates
+        Retrive the pixel coordinates from the latitude and longitude
 
         @param lat: The Latitude
         @param lon: The Longitude

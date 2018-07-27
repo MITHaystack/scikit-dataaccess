@@ -429,6 +429,10 @@ class DataFetcherCache(DataFetcherLocal):
                                     with requests.Session() as session:
                                         initial_request = session.request('get',parsed_url.geturl())
                                         r = session.get(initial_request.url, auth=(username,password), stream=True)
+
+                                        if r.status_code == 401:
+                                            raise RuntimeError("Authorization Denied")
+
                                         shutil.copyfileobj(r.raw, data_file, 1024*1024*10)
                                 else:
                                     with requests.Session() as session:

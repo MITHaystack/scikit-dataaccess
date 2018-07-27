@@ -148,9 +148,9 @@ class DataFetcher(DataFetcherCache):
         @return Imagewrapper of data
         '''
 
-        llh_filename = self.cacheData('uavsar', [self.llh_url], use_requests=True)
-        filename_list = self.cacheData('uavsar', self.slc_url_list, use_requests=True)
-        metadata_filename_list = self.cacheData('uavsar', self.metadata_url_list, use_requests=True)
+        llh_filename = self.cacheData('uavsar', [self.llh_url])
+        filename_list = self.cacheData('uavsar', self.slc_url_list)
+        metadata_filename_list = self.cacheData('uavsar', self.metadata_url_list)
 
 
         llh,llh_info = self._readUAVSARData(llh_filename[0],
