@@ -169,7 +169,7 @@ class DataFetcherLocal(DataFetcherBase):
             DataFetcherLocal.setDataLocation(data_name, data_location)
 
 
-        if not os.path.exists(data_location):
+        if not os.path.isdir(data_location):
             # Make directory
             os.makedirs(data_location, exist_ok=True)
 
