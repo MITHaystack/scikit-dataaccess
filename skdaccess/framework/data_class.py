@@ -154,7 +154,7 @@ class DataFetcherLocal(DataFetcherBase):
 
         conf = DataFetcherLocal.getConfig()
         try:
-            return conf.get(data_name, 'data_location')
+            data_location = conf.get(data_name, 'data_location')
         except (NoOptionError, NoSectionError):
 
             # If it doesn't exist, create a new one
@@ -165,11 +165,15 @@ class DataFetcherLocal(DataFetcherBase):
             except (NoOptionError, NoSectionError):
                 data_location = os.path.join(os.path.expanduser('~'), '.skdaccess', data_name)
 
-            # Make directory and set location
-            os.makedirs(data_location, exist_ok=True)
+            # Set location
             DataFetcherLocal.setDataLocation(data_name, data_location)
 
-            return data_location
+
+        if not os.path.isdir(data_location):
+            # Make directory
+            os.makedirs(data_location, exist_ok=True)
+
+        return data_location
 
     def setDataLocation(data_name, location, key='data_location'):
         '''
