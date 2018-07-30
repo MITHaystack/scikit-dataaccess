@@ -36,7 +36,6 @@ from netCDF4 import Dataset
 from scipy.interpolate import RectBivariateSpline
 from scipy.optimize import brute
 from six.moves.urllib.request import urlopen
-import certifi
 from skdaccess.framework.data_class import ImageWrapper
 
 def getImageType(in_data):
@@ -395,7 +394,7 @@ def getFileIDs(modis_identifier, start_date, end_date, lat, lon, daynightboth):
                     + '&stop=' + end_date + '&north=' + lat_str + '&south=' + lat_str + '&west='
                     + lon_str + '&east=' + lon_str + '&coordsOrTiles=coords&dayNightBoth=' + daynightboth)
 
-    url = urlopen(info_url, cafile=certifi.where())
+    url = urlopen(info_url)
     tree = ET.fromstring(url.read().decode())
     url.close()
 
@@ -419,7 +418,7 @@ def getFileURLs(file_ids):
     info_url = info_url[:-1]
 
 
-    url = urlopen(info_url, cafile=certifi.where())
+    url = urlopen(info_url)
     tree = ET.fromstring(url.read().decode())
     url.close()
 
