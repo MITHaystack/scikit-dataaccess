@@ -81,10 +81,10 @@ class DataFetcher(DataFetcherCache):
 
             self.verbose_print('Retrieving SLC data', flush=True)
             file_list = self.cacheData('sentinel_1', self.url_list, self.username, self.password,
-                                       use_requests=True, use_progress_bar=self.verbose)
+                                       use_requests=False, use_progress_bar=self.verbose)
             self.verbose_print('Retrieving orbit files', flush=True)
             satellite_file_list = self.cacheData('sentinel_1', self.satellite_url_list, self.username, self.password,
-                                                 use_requests=True, use_progress_bar=self.verbose)
+                                                 use_requests=False, use_progress_bar=self.verbose)
             self.verbose_print('All files retrieved', flush=True)
         else:
             file_list = self.url_list
