@@ -288,7 +288,7 @@ class DataFetcherCache(DataFetcherLocal):
         '''
         Checks if the file exists on the filesystem and the file is not empty
 
-        @in_file_name: Input filename to test
+        @param in_file_name: Input filename to test
         @return True if data exists and False otherwise
         '''
         try:
@@ -309,7 +309,14 @@ class DataFetcherCache(DataFetcherLocal):
         '''
         Download and store specified data to local disk
 
-        @param data_specification: Specification of data to be retrieved
+        @param keyname: Name of dataset in configuration file
+        @param online_path_list: List of urls to data
+        @param username: Username for accessing online resources
+        @param password: Password for accessing online resources
+        @param authentication_url: The url used for authentication (unused when use_requests=True)
+        @param cookiejar: The cookiejar that stores credentials (unused when use_requests=True)
+        @param use_requests: Use the requests library instead of the standard library for accessing resources
+        @param use_progress_bar: Use a progress bar to show number of items downloaded
 
         @return List of downloaded file locations
         '''

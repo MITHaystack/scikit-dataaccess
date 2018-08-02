@@ -33,7 +33,7 @@ def parseSatelliteData(in_satellite_file):
     '''
     Parse Sentinel satelllite data
 
-    @param in_sentinel_file: Satellite orbit filename
+    @param in_satellite_file: Satellite orbit filename
 
     @return DataFrame of orbit information
     '''

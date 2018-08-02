@@ -78,7 +78,7 @@ class SoundingParser(HTMLParser):
 
     def handle_data(self, data):
         '''
-        Function to parse data between <pre> tags
+        Function to parse data between '<pre>' tags
 
         @param data: Input data
         '''

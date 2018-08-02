@@ -43,7 +43,12 @@ class DataFetcher(DataFetcherStream):
         '''
         Geomagnetism Data fetcher constructor
         
-        @param ap_paramList[AutoList]
+        @param ap_paramList[AutoList]: AutoList of Observatory names
+        @param start_time: Starting time
+        @param end_time: Ending time
+        @param interval: Time resolution
+        @param channels: Data channels
+        @paraam data_type = Data type
         '''
         
         self.start_time = start_time

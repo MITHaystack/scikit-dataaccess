@@ -291,6 +291,8 @@ def nostab_sys(allH,allD,timerng,indx=1,mdyratio=.7, use_progress_bar = True, in
     @param timerng: an array with two string elements, describing the starting and ending dates
     @param indx: a list of site 4ID's indicating stations in the relevant geographic location, or 1 for all sites
     @param mdyratio: optional parameter for the minimum required ratio of data to determine if a sitef is kept for further analysis
+    @param use_progress_bar: Display a progress bar
+    @param index_date_only: When creating an index for the data, use date (not the time) only
  
     @return smSet, a reduced size dictionary of the data (in meters) for the sites in the specified geographic region and
             smHdr, a reduced size dictionary of the headers for the sites in the region
