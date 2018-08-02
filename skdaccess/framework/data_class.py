@@ -136,6 +136,12 @@ class DataFetcherBase(object):
         pass
 
     def verbose_print(self, *args, **kwargs):
+        """
+        Print statement if verbose flag is set
+
+        @param *args: Arguments to pass to print
+        @param **kwargs: Keyword arguments to pass to print
+        """
         if self.verbose:
             print(*args, **kwargs)
 
