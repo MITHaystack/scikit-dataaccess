@@ -35,12 +35,21 @@ class SplineLatLon(object):
                  y_num_pixels=None, x_num_pixels=None, x_offset=0, y_offset=0,
                  interp_type='grid'):
         '''
-        Initialize SplineLatLon with premade lat/lon functions
+        Initialize SplineLatLon with premade lat/lon functions or information about the latitude and longitude
 
         @param lat_func: Latitude spline function
         @param lon_func: Longitude spline function
+        @param lat_grid: Latitude grid
+        @param lon_grid: Longitude grid
+        @param x_points: 1d array of x coordinates
+        @param y_points: 1d array of y coordinates
+        @param lon_extent: Extent of data in longitude
+        @param lat_extent: Extent of data in latitude
+        @param y_num_pixels: Number of y coordinates
+        @param x_num_pixels: Number of x coordinates
         @param x_offset: Offset in the x coordinate
         @param y_offset: Offset in the y coordinate
+        @param interp_type: Interpolate type. Currently only 'grid' type is supported
         '''
 
 
@@ -308,8 +317,10 @@ class AffineGlobalCoords(object):
         '''
         Convert pixel coordinates to projected coordinates
 
-        @param y_in
-        @param x_in
+        @param y_array: Input y pixel coordinates
+        @param x_array: Input x pixel coordinates
+
+        @return projected y coordinates, projected x coordinates
         '''
         y = y_array + self._y_offset
         x = x_array + self._x_offset
@@ -321,7 +332,10 @@ class AffineGlobalCoords(object):
         '''
         Convert from projected coordinates to pixel coordinates
 
-        @
+        @y_proj: Input projected y coordinates
+        @x_proj: Input projected x coordinates
+
+        @return y pixel coordinates, x pixel coordinates
         '''
         c0 = self._aff_coeffs[0]
         c1 = self._aff_coeffs[1]
