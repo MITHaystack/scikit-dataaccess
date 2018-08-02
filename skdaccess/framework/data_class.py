@@ -467,6 +467,13 @@ class DataFetcherCache(DataFetcherLocal):
         return False
 
     def getHDFStorage(self, keyname):
+        """
+        Retrieve Pandas HDF Store which for a dataset
+
+        @param keyname: Key name of HDF store
+
+        @return Pandas HDF Store
+        """
 
         data_location = DataFetcherCache.getDataLocation(keyname)
         if data_location == None:
