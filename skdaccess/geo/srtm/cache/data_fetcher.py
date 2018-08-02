@@ -25,12 +25,13 @@
 # Scikit Data Access imports
 from skdaccess.framework.data_class import DataFetcherCache, ImageWrapper
 from skdaccess.utilities.support import convertToStr
-from skdaccess.utilities.image_util import getExtentsFromCentersPlateCarree, LinearGeolocation, convertBinCentersToEdges
+from skdaccess.utilities.image_util import AffineGlobalCoords, convertBinCentersToEdges
 
 
 # 3rd party imports
 import pandas as pd
 import numpy as np
+import gdal
 from pkg_resources import resource_filename
 
 # Standard library imports
@@ -69,6 +70,19 @@ class DataFetcher(DataFetcherCache):
         self.arcsecond_sampling = arcsecond_sampling
         self.mask_water = mask_water
         self.store_geolocation_grids = store_geolocation_grids
+
+        self._missing_data_projection = '\n'.join([
+            'GEOGCS["WGS 84",',
+            '    DATUM["WGS_1984",',
+            '        SPHEROID["WGS 84",6378137,298.257223563,',
+            '            AUTHORITY["EPSG","7030"]],',
+            '        AUTHORITY["EPSG","6326"]],',
+            '    PRIMEM["Greenwich",0,',
+            '        AUTHORITY["EPSG","8901"]],',
+            '    UNIT["degree",0.0174532925199433,',
+            '        AUTHORITY["EPSG","9122"]],',
+            '    AUTHORITY["EPSG","4326"]]'
+        ])
         
         super(DataFetcher, self).__init__()
 
@@ -170,6 +184,21 @@ class DataFetcher(DataFetcherCache):
             hgt_full_path = requested_files.at[i, 'Full Path']
             hgt_filename = requested_files.at[i, 'Filename']
 
+            label = hgt_filename[:7]
+            lat_start, lon_start = getCoordinates(hgt_filename)
+
+            metadata_dict[label] = OrderedDict()
+
+            x_res = 1.0 / (array_shape[0]-1)
+            y_res = 1.0 / (array_shape[1]-1)
+            extents = [
+                lon_start - x_res / 2,
+                lon_start + 1 + x_res / 2,
+                lat_start - y_res / 2,
+                lat_start + 1 + y_res / 2
+            ]
+
+
             if requested_files.at[i, 'Valid']:
 
                 masked_dem_data = np.ones(array_shape)
@@ -177,54 +206,59 @@ class DataFetcher(DataFetcherCache):
                     
                     num_full_path = requested_files.at[i + 1, 'Full Path']
                     num_filename = requested_files.at[i + 1, 'Full Path']
-                    
+
                     zipped_num_data = ZipFile(num_full_path)
                     zipped_num_full_path = zipped_num_data.infolist()[0].filename
 
                     num_data = np.frombuffer(zipped_num_data.open(zipped_num_full_path).read(),
                                              np.dtype('uint8')).reshape(array_shape)
+
                     masked_dem_data[(num_data == 1) | (num_data == 2)] = water_value
                     
                     i += 1
 
                 zipped_hgt_data = ZipFile(hgt_full_path)
-                zipped_hgt_full_path = zipped_hgt_data.infolist()[0].filename
 
-                dem_data = np.frombuffer(zipped_hgt_data.open(zipped_hgt_full_path).read(),
-                                         np.dtype('>i2')).reshape(array_shape)
+                dem_dataset = gdal.Open(hgt_full_path, gdal.GA_ReadOnly)
+
+                dem_data = dem_dataset.ReadAsArray()
+
                 masked_dem_data *= dem_data
+
+                metadata_dict[label]['WKT'] = dem_dataset.GetProjection()
+                metadata_dict[label]['GeoTransform'] = dem_dataset.GetGeoTransform()
 
             else:
 
+
+                geo_transform = []
+                geo_transform.append(extents[0])
+                geo_transform.append(x_res)
+                geo_transform.append(0)
+                geo_transform.append(extents[-1])
+                geo_transform.append(0)
+                geo_transform.append(-y_res)
+
+
+                metadata_dict[label]['WKT'] = self._missing_data_projection
+                metadata_dict[label]['GeoTransform'] = geo_transform
                 masked_dem_data = np.full(shape=array_shape, fill_value=water_value)
                 
                 i += 1
 
-
-            label = hgt_filename[:7]
-
             data_dict[label] = masked_dem_data
+            metadata_dict[label]['Geolocation'] = AffineGlobalCoords(metadata_dict[label]['GeoTransform'], center_pixels=True)
+            metadata_dict[label]['extents'] = extents
 
-            lat_start, lon_start = getCoordinates(hgt_filename)
 
-            lat_coords, lon_coords = np.meshgrid(np.linspace(lat_start+1, lat_start, array_shape[0]),
-                                                 np.linspace(lon_start, lon_start+1, array_shape[1]),
-                                                 indexing = 'ij')
-
-            metadata_dict[label] = OrderedDict()
 
             if self.store_geolocation_grids:
+                lat_coords, lon_coords = np.meshgrid(np.linspace(lat_start+1, lat_start, array_shape[0]),
+                                                     np.linspace(lon_start, lon_start+1, array_shape[1]),
+                                                     indexing = 'ij')
+
                 metadata_dict[label]['Latitude'] = lat_coords
                 metadata_dict[label]['Longitude'] = lon_coords
 
-            
-            lon_edges = convertBinCentersToEdges(lon_coords[0,:])
-            lat_edges = convertBinCentersToEdges(lat_coords[::-1,0])
 
-            extents = [lon_edges[0], lon_edges[-1], lat_edges[0], lat_edges[-1]]
-            
-
-            metadata_dict[label]['Geolocation'] = LinearGeolocation(masked_dem_data, extents, flip_y=True)
-            
-        
         return ImageWrapper(obj_wrap = data_dict, meta_data = metadata_dict)
