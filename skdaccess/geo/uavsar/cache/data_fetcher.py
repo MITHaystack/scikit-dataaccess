@@ -43,7 +43,7 @@ class DataFetcher(DataFetcherCache):
         Initialize UAVSAR data fetcher
 
         @param slc_url_list: List of slc urls
-        @param metadata_Url_list: List of metadata urls
+        @param metadata_url_list: List of metadata urls
         @param llh_url: Latitude Longitude Height url
         @param memmap: Open files using a memory map
         '''

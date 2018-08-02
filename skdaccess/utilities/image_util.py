@@ -43,8 +43,8 @@ class SplineLatLon(object):
         @param lon_grid: Longitude grid
         @param x_points: 1d array of x coordinates
         @param y_points: 1d array of y coordinates
-        @param lon_extent: Extent of data in longitude
-        @param lat_extent: Extent of data in latitude
+        @param lon_extents: Extent of data in longitude
+        @param lat_extents: Extent of data in latitude
         @param y_num_pixels: Number of y coordinates
         @param x_num_pixels: Number of x coordinates
         @param x_offset: Offset in the x coordinate
@@ -332,8 +332,8 @@ class AffineGlobalCoords(object):
         '''
         Convert from projected coordinates to pixel coordinates
 
-        @y_proj: Input projected y coordinates
-        @x_proj: Input projected x coordinates
+        @param y_proj: Input projected y coordinates
+        @param x_proj: Input projected x coordinates
 
         @return y pixel coordinates, x pixel coordinates
         '''

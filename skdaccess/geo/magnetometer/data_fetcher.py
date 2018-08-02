@@ -48,7 +48,7 @@ class DataFetcher(DataFetcherStream):
         @param end_time: Ending time
         @param interval: Time resolution
         @param channels: Data channels
-        @paraam data_type = Data type
+        @param data_type = Data type
         '''
         
         self.start_time = start_time

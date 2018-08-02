@@ -97,6 +97,7 @@ class DataFetcher(DataFetcherCache):
         Finds files previously downloaded files associated with fileids
 
         @param fileid_list: List of file id's
+        @param file_object: File object to read from
         @return Pandas series of file locaitons indexed by file id
         '''
 
