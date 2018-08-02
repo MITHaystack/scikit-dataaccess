@@ -468,7 +468,7 @@ class DataFetcherCache(DataFetcherLocal):
 
     def getHDFStorage(self, keyname):
         """
-        Retrieve Pandas HDF Store for a dataset
+        Retrieve a Pandas HDF Store for a dataset
 
         @param keyname: Key name of HDF store
 
