@@ -276,3 +276,62 @@ def convertBinCentersToEdges(bin_centers, dtype = None):
     edges[-1] = 2*bin_centers[-1] - edges[-2]
 
     return edges
+
+
+class AffineGlobalCoords(object):
+    '''
+    Convert between projected and pixel coordinates using an affine transformation
+    '''
+
+    def __init__(self, aff_coeffs, center_pixels=False):
+        '''
+        Initialize Global Coords Object
+
+        @param aff_coeffs: Affine coefficients
+        @param center_pixels: Apply offsets so that integer values refer to the
+                              center of the pixel and not the edge
+
+        '''
+
+        self._aff_coeffs = aff_coeffs
+
+        if center_pixels:
+            self._x_offset = 0.5
+            self._y_offset = 0.5
+
+        else:
+            self._x_offset = 0.0
+            self._y_offset = 0.0
+
+
+    def getProjectedYX(self, y_array, x_array):
+        '''
+        Convert pixel coordinates to projected coordinates
+
+        @param y_in
+        @param x_in
+        '''
+        y = y_array + self._y_offset
+        x = x_array + self._x_offset
+        return (self._aff_coeffs[3] + self._aff_coeffs[4]*x + self._aff_coeffs[5]*y,
+                self._aff_coeffs[0] + self._aff_coeffs[1]*x + self._aff_coeffs[2]*y)
+
+
+    def getRasterYX(self, y_proj, x_proj):
+        '''
+        Convert from projected coordinates to pixel coordinates
+
+        @
+        '''
+        c0 = self._aff_coeffs[0]
+        c1 = self._aff_coeffs[1]
+        c2 = self._aff_coeffs[2]
+        c3 = self._aff_coeffs[3]
+        c4 = self._aff_coeffs[4]
+        c5 = self._aff_coeffs[5]
+
+
+        y = (c4*(c0-x_proj) + c1*y_proj - c1*c3) / (c1*c5 - c2*c4)
+        x = -(c5 * (c0 - x_proj) + c2*y_proj - c2*c3) / (c1*c5 - c2*c4)
+
+        return y - self._y_offset, x - self._x_offset
