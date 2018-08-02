@@ -48,6 +48,7 @@ class DataFetcher(DataFetcherCache):
         Initialize Sentinel Data Fetcher
 
         @param url_list: List of urls of SLC data
+        @param satellite_url_list: List of satellite urls
         @param username: Username for downloading data
         @param password: Password for downloading data
         @param swath: Swath number (1, 2, or 3)
