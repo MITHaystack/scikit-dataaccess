@@ -271,8 +271,10 @@ def convertBinCentersToEdges(bin_centers, dtype = None):
     Calculate edges of a set of bins from their centers
 
     @param bin_centers: Array of bin centers
+    @param dtype: Data type of array used to store bin edges
 
     @return bin_edges
+
     '''
 
     if dtype is None:

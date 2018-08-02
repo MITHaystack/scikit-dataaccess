@@ -38,6 +38,7 @@ def retrieveCommonDatesHDF(support_data_filename, key_list, in_date_list):
     Get a list of all dates that have  data available
 
     @param support_data_filename: Filename of support data
+    @param key_list: List of keys in HDF file
     @param in_date_list: Input date list to check
 
     @return dictionary of dates with data

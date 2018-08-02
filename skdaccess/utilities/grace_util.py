@@ -202,6 +202,8 @@ def readTellusData(filename, lat_lon_list, lat_name, lon_name, data_name, data_l
     This function reads in netcdf data provided by GRACE Tellus
 
     @param filename: Name of file to read in
+    @param lat_lon_list: List of latitude, longitude tuples that are to be read
+    @param data_label: Label for data
     @param lat_name: Name of latitude data
     @param lon_name: Name of longitude data
     @param data_name: Name of data product

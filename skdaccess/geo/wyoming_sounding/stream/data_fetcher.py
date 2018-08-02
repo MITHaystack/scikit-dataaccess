@@ -43,13 +43,11 @@ class DataFetcher(DataFetcherStream):
 
         @param station_number: Station number
         @param year: Input year
-        @param month: Input month
-        @param start_time: Starting time to retrieve data. Should be 2
-                           digits specifying day of year and 2 digits
-                           specifying hour. Hour may be either 00 or
-                           12. Examples: 2512, 2100
-
-        @param end_time: Ending time. Same format as start time.
+        @param month: Input month (Integer for a single month, or a list of integers for multiple months)
+        @param day_start: First day of the month to include
+        @param day_end: Last day of the month to include
+        @param start_hour: Starting hour (may be either 0 or 12)
+        @param end_hour: Ending hour (may be either 0 or 12)
         '''
 
         self.station_number = station_number

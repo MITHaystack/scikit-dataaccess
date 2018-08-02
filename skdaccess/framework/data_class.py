@@ -67,6 +67,7 @@ class DataFetcherBase(object):
         Initialize data fetcher with parameter list
 
         @param ap_paramList: List of parameters
+        @param verbose: Output extra information
         '''
 
         self.ap_paramList = ap_paramList

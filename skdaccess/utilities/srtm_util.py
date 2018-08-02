@@ -108,8 +108,8 @@ def getSRTMData(srtmdw, lat_start,lat_end, lon_start,lon_end):
     @param srtmdw: SRTM data wrapper
     @param lat_start: Starting latiude
     @param lat_end: Ending latiude
-    @param lat_start: Starting longitude
-    @param lat_lon: Ending longitude
+    @param lon_start: Starting longitude
+    @param lon_lon: Ending longitude
 
     @return tuple containing the cut data and a geolocation object
     '''
