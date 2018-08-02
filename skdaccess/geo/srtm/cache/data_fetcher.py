@@ -58,6 +58,7 @@ class DataFetcher(DataFetcherCache):
         @param arcsecond_sampling: Sample spacing of the SRTM data, either 1 arc-
                                    second or 3 arc-seconds
         @param mask_water: True if the water bodies should be masked, false otherwise
+        @param store_geolocation_grids: Store grids of latitude and longitude in the metadata
         '''
         assert arcsecond_sampling == 1 or arcsecond_sampling == 3, "Sampling should be 1 or 3 arc-seconds"
 
