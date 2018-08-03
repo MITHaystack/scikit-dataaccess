@@ -330,7 +330,7 @@ class AffineGlobalCoords(object):
                 self._aff_coeffs[0] + self._aff_coeffs[1]*x + self._aff_coeffs[2]*y)
 
 
-    def getRasterYX(self, y_proj, x_proj):
+    def getPixelYX(self, y_proj, x_proj):
         '''
         Convert from projected coordinates to pixel coordinates
 
