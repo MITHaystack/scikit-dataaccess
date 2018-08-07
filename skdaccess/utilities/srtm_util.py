@@ -23,7 +23,7 @@
 # THE SOFTWARE.
 
 # Scikit Data Access imports
-from .image_util import LinearGeolocation
+from .image_util import AffineGlobalCoords, getGeoTransform
 
 # 3rd party imports
 import numpy as np
@@ -102,33 +102,41 @@ def getSRTMData(srtmdw, lat_start,lat_end, lon_start,lon_end):
     '''
     Select SRTM data in a latitude/longitude box
 
-    This method flips the y axis so that increasing y pixels
-    are increasing in latitude
-
     @param srtmdw: SRTM data wrapper
     @param lat_start: Starting latiude
     @param lat_end: Ending latiude
     @param lon_start: Starting longitude
     @param lon_end: Ending longitude
+    @param flip_y: Flip the y axis so that increasing y pixels are increasing in latitude
 
-    @return tuple containing the cut data and a geolocation object
+    @return Tuple containing the cut data, new extents, and a affine geotransform coefficients
     '''
 
     tiles = getSRTMLatLon(lat_start, lat_end, lon_start, lon_end)
     srtm_data, srtm_extents = merge_srtm_tiles(srtmdw, tiles[2],tiles[3]+1, tiles[0], tiles[1]+1)
-    srtm_data = np.flipud(srtm_data)
-    srtm_geo = LinearGeolocation(srtm_data, srtm_extents)
 
-    start_y, start_x = np.round(srtm_geo.getYX(lat_start,lon_start)).astype(np.int)
+    full_geotransform = getGeoTransform(srtm_extents, srtm_data.shape[1], srtm_data.shape[0])
 
-    end_y, end_x = np.round(srtm_geo.getYX(lat_end,lon_end)).astype(np.int)
+    full_geo = AffineGlobalCoords(full_geotransform)
 
-    srtm_geo.x_offset = start_x
-    srtm_geo.y_offset = start_y
+    start_y, start_x = np.floor(full_geo.getPixelYX(lat_end,lon_start)).astype(np.int)
+
+    end_y, end_x = np.ceil(full_geo.getPixelYX(lat_start,lon_end)).astype(np.int)
 
     cut_data = srtm_data[start_y:end_y, start_x:end_x]
 
-    srtm_geo.len_y = cut_data.shape[0]
-    srtm_geo.len_x = cut_data.shape[1]
+    cut_proj_y_start, cut_proj_x_start = full_geo.getProjectedYX(end_y, start_x)
+    cut_proj_y_end, cut_proj_x_end = full_geo.getProjectedYX(start_y, end_x)
 
-    return cut_data, srtm_geo
+    cut_extents = [
+        cut_proj_x_start,
+        cut_proj_x_end,
+        cut_proj_y_start,
+        cut_proj_y_end
+    ]
+
+    cut_geotransform = full_geotransform.copy()
+    cut_geotransform[0] = cut_extents[0]
+    cut_geotransform[3] = cut_extents[-1]
+
+    return cut_data, cut_extents, cut_geotransform
