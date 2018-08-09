@@ -351,3 +351,35 @@ class AffineGlobalCoords(object):
         x = -(c5 * (c0 - x_proj) + c2*y_proj - c2*c3) / (c1*c5 - c2*c4)
 
         return y - self._y_offset, x - self._x_offset
+
+def getGeoTransform(extents, x_size, y_size, y_flipped=True):
+    """
+    Get 6 geotransform coefficients from the extents of an image and its shape
+
+    Assumes origin is in the upper left and the x pixel coordinate does not depend on
+    y projected coordinate, and the y pixl coordinate doesn't depend on the x projected
+    coordinate
+
+    @param extents: Image extents (x_min, x_max, y_min, y_max)
+    @param x_size: Number of x pixels
+    @param y_size: Number of y pixels
+    @param y_flipped: The y pixel coordinates are flipped relative
+                      to the projected coordinates
+
+    @return list containing the 6 affine transformation coordinates
+    """
+    x_res = (extents[1] - extents[0]) / x_size
+    y_res = (extents[3] - extents[2]) / y_size
+
+    geo_transform = []
+    geo_transform.append(extents[0])
+    geo_transform.append(x_res)
+    geo_transform.append(0)
+    geo_transform.append(extents[-1])
+    geo_transform.append(0)
+    geo_transform.append(y_res)
+
+    if y_flipped == True:
+        geo_transform[-1] *= -1
+
+    return geo_transform
