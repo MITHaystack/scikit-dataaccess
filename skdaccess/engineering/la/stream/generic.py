@@ -38,7 +38,7 @@ class DataFetcher(DataFetcherStream):
     """
     Class for handling data requests to data.lacity.org
     """
-    
+
     def __init__(self, endpoint, parameters, label, verbose=False, app_token = None):
         """
         Initialize Data Fetcher for accessing data.lacity.org
@@ -51,18 +51,18 @@ class DataFetcher(DataFetcherStream):
         """
         self.base_url = 'https://data.lacity.org/resource/'
         self.base_url_and_endpoint = self.base_url + endpoint + '.json?'
-        
-        self.parameters = parameters        
-        self.label = label        
+
+        self.parameters = parameters
+        self.label = label
         self.app_token = app_token
 
         if '$$app_token' in parameters:
-            raise RuntimeError("Use app_token option in constructor instead of manually " + 
+            raise RuntimeError("Use app_token option in constructor instead of manually " +
                                "adding it into the the parameters")
 
         if app_token != None:
             self.parameters['$$app_token'] = app_token
-            
+
         super(DataFetcher, self).__init__([], verbose)
 
     def output(self):
@@ -80,4 +80,3 @@ class DataFetcher(DataFetcherStream):
         data_dict[self.label] = pd.DataFrame.from_dict(decoded_json)
 
         return TableWrapper(data_dict)
-        
