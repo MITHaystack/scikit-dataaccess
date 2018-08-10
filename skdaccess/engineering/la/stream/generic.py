@@ -24,7 +24,7 @@
 
 # Standard library imports
 from collections import OrderedDict
-import json
+from io import StringIO
 
 # Scikit Data Access imports
 from skdaccess.framework.data_class import DataFetcherStream, TableWrapper
@@ -39,7 +39,7 @@ class DataFetcher(DataFetcherStream):
     Class for handling data requests to data.lacity.org
     """
 
-    def __init__(self, endpoint, parameters, label, verbose=False, app_token = None):
+    def __init__(self, endpoint, parameters, label, verbose=False, app_token = None, date_columns=None, **pandas_kwargs):
         """
         Initialize Data Fetcher for accessing data.lacity.org
 
@@ -48,13 +48,15 @@ class DataFetcher(DataFetcherStream):
         @param label: Label of pandas dataframe
         @param verbose: Print out extra information
         @param app_token: Application token to use to avoid throttling issues
+        @param pandas_kwargs: Any additional key word arguments are passed to pandas.read_csv
         """
         self.base_url = 'https://data.lacity.org/resource/'
-        self.base_url_and_endpoint = self.base_url + endpoint + '.json?'
+        self.base_url_and_endpoint = self.base_url + endpoint + '.csv?'
 
         self.parameters = parameters
         self.label = label
         self.app_token = app_token
+        self.pandas_kwargs = pandas_kwargs
 
         if '$$app_token' in parameters:
             raise RuntimeError("Use app_token option in constructor instead of manually " +
@@ -75,8 +77,10 @@ class DataFetcher(DataFetcherStream):
         url_query = self.base_url_and_endpoint + urlencode(self.parameters)
 
         with urlopen(url_query) as remote_resource:
-            decoded_json = json.loads(remote_resource.read().decode())
+            raw_string = remote_resource.read().decode()
 
-        data_dict[self.label] = pd.DataFrame.from_dict(decoded_json)
+        string_data = StringIO(raw_string)
+
+        data_dict[self.label] = pd.read_csv(string_data, **self.pandas_kwargs)
 
         return TableWrapper(data_dict)

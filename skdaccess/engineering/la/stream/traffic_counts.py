@@ -77,5 +77,6 @@ class DataFetcher(GenericDataFetcher):
                                           parameters = parameters,
                                           label = 'Traffic Count',
                                           app_token = app_token,
-                                          verbose = verbose)
-        
+                                          verbose = verbose,
+                                          header = 0,
+                                          parse_dates = [0])
