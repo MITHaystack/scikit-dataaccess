@@ -26,7 +26,7 @@
 from collections import OrderedDict
 
 # Scikit Data Access
-from skdaccess.engineering.la.stream.generic import DataFetcher as GenericDataFetcher
+from skdaccess.engineering.la.generic.stream import DataFetcher as GenericDataFetcher
 from skdaccess.utilities.support import join_string
 
 # Third party packages
@@ -75,7 +75,7 @@ class DataFetcher(GenericDataFetcher):
             
         super(DataFetcher, self).__init__(endpoint = endpoint,
                                           parameters = parameters,
-                                          label = 'Traffic Count',
+                                          label = 'Traffic Counts',
                                           app_token = app_token,
                                           verbose = verbose,
                                           header = 0,
