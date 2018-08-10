@@ -94,3 +94,40 @@ def convertToStr(in_value, zfill=0):
         return in_value
     else:
         return str(in_value).zfill(zfill)
+
+def join_string(part1, part2, concatenation_string = 'AND', seperator=' '):
+    """
+    Join two strings together using a concatenation string
+
+    Handles the case where either part1 or part2 are an empty string
+
+    @param part1: First string
+    @param part2: Second string
+    @param concatenation_string: String used to join part1 and part2
+    @param seperator: Seperator used to between each part and the
+                      concatenation string
+
+    @return A single string that consists of the part1 and part2
+            joined together using a concatenation string
+    """
+
+    if part1 == '':
+        return part2
+
+    elif part2 == '':
+        return part1
+
+
+    if part1[-1] == seperator:
+        sep1 = ''
+    else:
+        sep1 = seperator
+
+
+    if part2[0] == seperator:
+        sep2 = ''
+    else:
+        sep2 = ' '
+
+
+    return part1 + sep1 + concatenation_string + sep2 + part2
