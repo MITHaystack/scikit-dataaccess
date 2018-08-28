@@ -29,7 +29,7 @@ Supported data sets:
   </td>
    <!-- preview -->
   <td width=63>
-  <p><span>Preview</span></p>
+    <p><span>Preview<br><sup>(link)</sup></span></p>
   </td>
    <!-- description -->
   <td width=500>
@@ -54,7 +54,7 @@ Supported data sets:
    <!-- namespace -->
   <td width=200>
   <img src=https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_astro.png> 
-        <a href="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_Kepler.ipynb"> <sup> astro.kepler </sup> </a> 
+        <sup> astro.kepler </sup>
   </td>
   
    <!-- preview -->
@@ -123,7 +123,7 @@ Supported data sets:
    <!-- description -->
   <td width=500><sup> 
    Traffic Count data in Los Angeles. <br> Source: https://data.lacity.org/A-Livable-and-Sustainable-City/LADOT-Traffic-Counts-Summary/94wu-3ps3
-  /<sup> 
+  <sup> 
   </td>
  </tr>
  
@@ -419,7 +419,7 @@ Supported data sets:
    
    <!-- description -->
   <td width=500>
-   <sup> Sentinel-1 TOPSAR data from the European Space Agency retrieved from the Alaska Satellite Facility.<br>Source:https://www.asf.alaska.edu/ </sup>
+   <sup><img src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_datasource_logo_esa.png" /> Sentinel-1 TOPSAR data from the European Space Agency retrieved from the Alaska Satellite Facility.<br>Source:https://www.asf.alaska.edu/ </sup>
   </td>
  </tr>
  
