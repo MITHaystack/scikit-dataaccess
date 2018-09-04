@@ -56,8 +56,6 @@ from atomicwrites import atomic_write
 import requests
 
 
-
-
 class DataFetcherBase(object):
     '''
     Base class for all data fetchers
@@ -117,6 +115,37 @@ class DataFetcherBase(object):
 
         return conf
 
+    def getConfigItem(section, key):
+        """
+        Retrieve skdaccess configuration item
+
+        @param section: Section of configuration item
+        @param key: Configuration key value
+        @return Requested configuration item or None if it doesn't exist
+        """
+
+        conf = DataFetcherBase.getConfig()
+        if section in conf:
+            return conf.get(section, key, fallback=None)
+        else:
+            return None
+
+    def writeConfigItem(section, key, value):
+        """
+        Retrieve skdaccess configuration item
+
+        @param section: Section of configuration item
+        @param key: Configuration key value
+        @return Requested configuration item or None if it doesn't exist
+        """
+        conf = DataFetcherBase.getConfig()
+
+        if section not in conf:
+            conf.add_section(section)
+
+        conf.set(section, key, value)
+        DataFetcherBase.writeConfig(conf)
+
     def writeConfig(conf):
         '''
         Write config to disk
@@ -145,7 +174,6 @@ class DataFetcherBase(object):
         """
         if self.verbose:
             print(*args, **kwargs)
-
 
 class DataFetcherLocal(DataFetcherBase):
     ''' Data fetcher base class for use when storing data locally'''
