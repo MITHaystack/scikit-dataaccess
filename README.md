@@ -127,6 +127,39 @@ Supported data sets:
   </td>
  </tr>
  
+ <!--- HEADER ENTRY ---------------------------------->
+ <tr>
+  <td colspan=4><sup>
+  <img src=https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_finance.png>  Finance
+  </sup>
+  </td>
+ </tr>
+
+
+ <!--- ENTRY ---------------------------------->
+ <tr>
+  <td width=2>
+  <p><o:p>&nbsp;</o:p></p>
+  </td>
+
+   <!-- namespace -->
+  <td width=200><sup>
+  <img src=https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_finance.png> finance.stocks
+  </sup>
+  </td>
+
+   <!-- preview -->
+  <td width=63>
+  <a href="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_Stocks.ipynb"><img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.finance.stocks.png"/></a>
+  </td>
+
+   <!-- description -->
+  <td width=500>
+   Data on stocks retrieved using Alpha Vantage API.
+  </td>
+ </tr>
+
+
 
  <!--- HEADER ENTRY ---------------------------------->
  <tr>
