@@ -154,8 +154,9 @@ Supported data sets:
   </td>
 
    <!-- description -->
-  <td width=500>
+  <td width=500><sup>
    Data on stocks retrieved using Alpha Vantage API.
+   </sup>
   </td>
  </tr>
 
