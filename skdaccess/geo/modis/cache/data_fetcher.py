@@ -143,7 +143,7 @@ class DataFetcher(DataFetcherCache):
                 filename = re.search('[^/]*$', fileurl).group()
 
                 data_file = open(os.path.join(data_location,filename), 'wb')
-                copyfileobj(urlopen(fileurl, data_file))
+                copyfileobj(urlopen(fileurl), data_file)
                 data_file.close()
                 metadata.loc[fileid] = filename
                 filename_list.append(filename)
