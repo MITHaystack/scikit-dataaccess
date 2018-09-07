@@ -83,7 +83,7 @@ Supported data sets:
   
    <!-- preview -->
   <td width=63><sup> 
-  <a href="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_Voyager.ipynb"><img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.astro.voyager.png"/></a>  
+  <a href="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_Voyager.ipynb"><img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.astro.voyager.png"/></a>
   </sup> 
   </td>
    
@@ -99,7 +99,7 @@ Supported data sets:
  <tr>
   <td colspan=4><sup> 
   <img src=https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_engineering.png> Engineering
-  </sup>  
+  </sup>
   </td>
  </tr>
  
@@ -127,6 +127,31 @@ Supported data sets:
   </td>
  </tr>
  
+   <!--- ENTRY ---------------------------------->
+ <tr>
+  <td width=2>
+  <p><o:p>&nbsp;</o:p></p>
+  </td>
+
+   <!-- namespace -->
+  <td width=200><sup>
+  <img src=https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_engineering.png> engineering.webcams.mit_sailing 
+  </sup>
+  </td>
+
+   <!-- preview -->
+  <td width=63>
+  <a href="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_MIT_Sailing_Webcams.ipynb"><img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.engineering.webcams.mit_sailing.png"/></a>
+  </td>
+
+   <!-- description -->
+  <td width=500><sup>
+   Images from webcams located at the MIT Sailing Pavilion <br> Source: http://sailing.mit.edu/webcam.php
+  <sup>
+  </td>
+ </tr>
+
+
  <!--- HEADER ENTRY ---------------------------------->
  <tr>
   <td colspan=4><sup>
