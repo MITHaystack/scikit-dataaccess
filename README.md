@@ -53,8 +53,10 @@ Supported data sets:
   
    <!-- namespace -->
   <td width=200>
+  <sup>
   <img src=https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_astro.png> 
-        <sup> astro.kepler </sup>
+         astro.kepler 
+  </sup>
   </td>
   
    <!-- preview -->
