@@ -141,7 +141,7 @@ Supported data sets:
 
    <!-- preview -->
   <td width=63>
-  <a href="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_MIT_Sailing_Webcams.ipynb"><img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.engineering.webcam.mit_sailing.png"/></a>
+  <a href="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_Webcam_MIT_Sailing.ipynb"><img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.engineering.webcam.mit_sailing.png"/></a>
   </td>
 
    <!-- description -->
