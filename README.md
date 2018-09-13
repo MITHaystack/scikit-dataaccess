@@ -169,7 +169,7 @@ Supported data sets:
 
    <!-- namespace -->
   <td width=200><sup>
-  <img src=https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_finance.png> finance.stocks
+  <img src=https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_finance.png> finance.timeseries
   </sup>
   </td>
 
