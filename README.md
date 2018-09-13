@@ -53,8 +53,10 @@ Supported data sets:
   
    <!-- namespace -->
   <td width=200>
+  <sup>
   <img src=https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_astro.png> 
-        <sup> astro.kepler </sup>
+         astro.kepler 
+  </sup>
   </td>
   
    <!-- preview -->
@@ -134,7 +136,7 @@ Supported data sets:
   </td>
 
    <!-- namespace -->
-  <td width=200><sup>
+  <td width=250><sup>
   <img src=https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_engineering.png> engineering.webcam.mit_sailing
   </sup>
   </td>
