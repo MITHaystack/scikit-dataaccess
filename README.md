@@ -182,7 +182,7 @@ Supported data sets:
 
    <!-- description -->
   <td width=500><sup>
-   Data on financial time series retrieved using Alpha Vantage API. <br> Source: https://www.alphavantage.co/
+   Financial time series data retrieved using Alpha Vantage API. <br> Source: https://www.alphavantage.co/
    </sup>
   </td>
  </tr>
