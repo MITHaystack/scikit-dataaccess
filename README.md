@@ -175,7 +175,7 @@ Supported data sets:
 
    <!-- preview -->
   <td width=63>
-  <a href="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_Stocks.ipynb"><img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.finance.stocks.png"/></a>
+  <a href="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_Finance_Time_Series.ipynb"><img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.finance.stocks.png"/></a>
   </td>
 
    <!-- description -->
