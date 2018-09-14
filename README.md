@@ -70,6 +70,33 @@ Supported data sets:
   </td>
  </tr>
  
+
+  <!--- ENTRY ---------------------------------->
+ <tr>
+  <td width=2>
+  <p><o:p>&nbsp;</o:p></p>
+  </td>
+
+   <!-- namespace -->
+  <td width=200>
+  <sup>
+  <img src=https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_astro.png>
+         astro.kepler
+  </sup>
+  </td>
+
+   <!-- preview -->
+  <td width=63>
+  <a href="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_SDSS_Spectra.ipynb"><img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.astro.spectra.png"/></a>
+  </td>
+
+   <!-- description -->
+  <td width=500>
+   <sup> Spectra from the Sloan Digital Sky Survey <br>Source: https://www.sdss.org/dr14/spectro/ </sup>
+  </td>
+ </tr>
+
+
   
   <!--- ENTRY ---------------------------------->
  <tr>
