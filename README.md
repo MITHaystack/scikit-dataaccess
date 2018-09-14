@@ -81,7 +81,7 @@ Supported data sets:
   <td width=200>
   <sup>
   <img src=https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_astro.png>
-         astro.kepler
+         astro.spectra
   </sup>
   </td>
 

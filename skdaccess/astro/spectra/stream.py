@@ -30,6 +30,7 @@ from skdaccess.framework.param_class import *
 
 # Standard library imports
 from collections import OrderedDict
+from io import BytesIO
 
 # 3rd part imports
 from six.moves.urllib.request import urlopen
@@ -61,7 +62,8 @@ class DataFetcher(DataFetcherStream):
 
         for url in url_list:
             with urlopen(url) as url_data:
-                hdu_list = fits.open(url_data)
+                bytes_data = BytesIO(url_data.read())
+                hdu_list = fits.open(bytes_data)
                 data_dict[url] = Table(hdu_list[1].data).to_pandas()
                 meta_dict[url] = hdu_list[0].header
 

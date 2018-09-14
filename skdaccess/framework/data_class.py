@@ -276,14 +276,15 @@ class DataFetcherStream(DataFetcherBase):
                 if content_type == 'application/fits':
 
                     # Do not want caching to avoid issues when running multiple pipelines
-                    with warnings.catch_warnings(), fits.open(url_access, cache=False) as hdu_list:
+                    bytes_data = BytesIO(url_access.read())
+                    with warnings.catch_warnings(), fits.open(bytes_data, cache=False) as hdu_list:
                         warnings.simplefilter("ignore", fits.verify.VerifyWarning)
 
                         # Need to fix header otherwise astropy can fail to read data
                         hdu_list.verify('fix')
 
                         data_dict[url] = hdu_list[1].data
-                        metadata_dict[url] = hdu_list[0].header
+                        metadata_dict[url] = hdu_list[1].header
 
                 # Access jpg file
                 elif content_type == 'image/jpeg':
