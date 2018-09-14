@@ -39,7 +39,7 @@ import warnings
 
 class DataFetcher(DataFetcherStream):
     '''
-    Data Fetcher for Mahali temperature data
+    Data Fetcher for the Solar Dynamics Observatory
     '''
     
     def __init__(self, ap_paramList):
