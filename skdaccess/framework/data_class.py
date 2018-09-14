@@ -272,29 +272,27 @@ class DataFetcherStream(DataFetcherBase):
             with urlopen(url) as url_access:
                 content_type = url_access.info().get_content_type()
 
-            # Access fits file
-            if content_type == 'application/fits':
+                # Access fits file
+                if content_type == 'application/fits':
 
-                # Do not want caching to avoid issues when running multiple pipelines
-                with warnings.catch_warnings(), fits.open(url, cache=False) as hdu_list:
-                    warnings.simplefilter("ignore", fits.verify.VerifyWarning)
+                    # Do not want caching to avoid issues when running multiple pipelines
+                    with warnings.catch_warnings(), fits.open(url_access, cache=False) as hdu_list:
+                        warnings.simplefilter("ignore", fits.verify.VerifyWarning)
 
-                    # Need to fix header otherwise astropy can fail to read data
-                    hdu_list.verify('fix')
+                        # Need to fix header otherwise astropy can fail to read data
+                        hdu_list.verify('fix')
 
-                    data_dict[url] = hdu_list[1].data
-                    metadata_dict[url] = hdu_list[1].header
+                        data_dict[url] = hdu_list[1].data
+                        metadata_dict[url] = hdu_list[0].header
 
-            # Access jpg file
-            elif content_type == 'image/jpeg':
-                print( 'Downloading ' + url,end=' ')
-                data_dict[url] = imread(url)
-                metadata_dict[url] = None
-                print('[Done]')
+                # Access jpg file
+                elif content_type == 'image/jpeg':
+                    data_dict[url] = imread(url)
+                    metadata_dict[url] = None
 
-            # Throw warning if content_type not understood
-            else:
-                raise RuntimeError('Did not understand content type: ' + content_type)
+                # Throw warning if content_type not understood
+                else:
+                    raise RuntimeError('Did not understand content type: ' + content_type)
 
         return metadata_dict, data_dict
 
