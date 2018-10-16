@@ -2,9 +2,9 @@ import numpy as np
 
 def normalize(in_data, column='PDCSAP_FLUX', group_column='QUARTER'):
     '''
-    This function normalizes PDCSAP_FLUX data by quarter by dividing the flux by the median for the quarter
+    This function normalizes PDCSAP_FLUX data by quarter by dividing the flux of each quarter by the median of that respective quarter
 
-    @param in_data: Data to be normalized
+    @param in_data: Pandas Data Frame to be normalized
     @param column: Name of column to be normalized
     @param group_column: Name of column used to group data
     '''
