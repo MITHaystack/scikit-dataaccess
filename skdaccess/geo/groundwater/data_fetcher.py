@@ -253,7 +253,7 @@ class DataFetcher(DataFetcherStorage):
             meta_data = pd.read_table(metadata_filename, skiprows=31, names = ['Agency', 'Site Number', 'Site Name', 'Site Type', 
                                                                                'Lat', 'Lon', 'LatLon Accuracy', 'LatLon Datum',
                                                                                'Altitude', 'Altitude Accuracy', 'Altitude Datum',
-                                                                               'Hydrologic Code'], index_col=1)
+                                                                               'Hydrologic Code'], index_col=1, dtype={'Hydrologic Code': "object"})
 
             meta_data['Data Available'] = int(0)
             meta_data['State'] = state_abbrev
