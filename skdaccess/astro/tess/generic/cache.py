@@ -43,8 +43,7 @@ class DataFetcher(DataFetcherCache):
         Initialize TESS Data Fetcher
 
         @param ap_paramList[tess_ids]: List of TESS IDs to retrieve
-        @param start_url: URL to prepend before the TESS ID
-        @param end_url: URL to append after the TESS ID
+        @param toi_information: Pandas dataframe containing target information
         '''
         self.toi_information = toi_information
         super(DataFetcher, self).__init__(ap_paramList)
@@ -52,7 +51,7 @@ class DataFetcher(DataFetcherCache):
 
     def getTargetInformation():
         """
-        Retrieve Target list
+        Retrieve Target list information
         """
     pass
 
@@ -61,7 +60,7 @@ class DataFetcher(DataFetcherCache):
         Generate URL from TID
 
         @param tid: Input Tess ID
-        @param return url to access data
+        @return URL List of of objects in tid_list
         """
         pass
 

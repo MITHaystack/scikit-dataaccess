@@ -37,8 +37,6 @@ class DataFetcher(GenericDF):
         Initialize TESS Data Fetcher
 
         @param ap_paramList[tess_ids]: List of TESS IDs to retrieve
-        @param start_url: URL to prepend before the TESS ID
-        @param end_url: URL to append after the TESS ID
         '''
 
         self.start_url = 'https://archive.stsci.edu/hlsps/tess-data-alerts/hlsp_tess-data-alerts_tess_phot_'
@@ -52,13 +50,14 @@ class DataFetcher(GenericDF):
         Generate URL from TID
 
         @param tid_list: List of input Tess IDs
-        @param List of url's for accessing TID
         """
         return [ self.start_url + tid[-11:] + self.end_url for tid in tid_list]
 
     def getTargetInformation():
         """
-        Retrieve Target information for TESS data alerts
+        Retrieve Target information for TESS Data Alerts
+
+        @return Pandas DataFrame of containing target information
         """
 
         toi_url = 'https://archive.stsci.edu/hlsps/tess-data-alerts/hlsp_tess-data-alerts_tess_phot_alert-summary-s01+s02_tess_v3_spoc.csv'
