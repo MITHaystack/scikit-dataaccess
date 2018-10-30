@@ -35,6 +35,7 @@ setup(name     = package_name,
           'six',
           'tables',
           'tqdm',
+          'xarray',
       ],
 
       description = 'Scikit Data Access Package for accessing scientific data sets.',
