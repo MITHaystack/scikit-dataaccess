@@ -11,7 +11,7 @@ with open("README.md", encoding='utf-8') as rfile:
 
 
 setup(name     = package_name,
-      version  = '1.9.17',
+      version  = '1.9.17post1',
       packages = package_list,
       zip_safe = False,
 
@@ -70,7 +70,7 @@ setup(name     = package_name,
           'examples/Demo_SDSS_Spectra.ipynb',
           'examples/Demo_SRTM.ipynb',
           'examples/Demo_Sentinel_1.ipynb',
-          'examples/Demo_TESS_Alert_Data.ipynb',
+          'examples/Demo_TESS_Data_Alerts.ipynb',
           'examples/Demo_TESS_Simulated_Data.ipynb',
           'examples/Demo_Traffic_Counts.ipynb',
           'examples/Demo_UAVSAR.ipynb',
