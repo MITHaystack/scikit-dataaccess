@@ -118,7 +118,7 @@ Supported data sets:
 
    <!-- description -->
   <td width=500>
-   <sup> TESS Data Alerts <br>Source: https://archive.stsci.edu/prepds/tess-data-alerts/ </sup>
+   <sup> Light curves from TESS Data Alerts <br>Source: https://archive.stsci.edu/prepds/tess-data-alerts/ </sup>
   </td>
  </tr>
 
@@ -143,7 +143,7 @@ Supported data sets:
 
    <!-- description -->
   <td width=500>
-   <sup> TESS End-to-End 6 simulated data <br>Source: https://archive.stsci.edu/prepds/tess-data-alerts/ </sup>
+   <sup> Simulated lightcurves from TESS End-to-End 6 <br>Source: https://archive.stsci.edu/prepds/tess-data-alerts/ </sup>
   </td>
  </tr>
 
