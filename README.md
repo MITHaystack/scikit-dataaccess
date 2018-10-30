@@ -143,7 +143,7 @@ Supported data sets:
 
    <!-- description -->
   <td width=500>
-   <sup> Simulated lightcurves from TESS End-to-End 6 <br>Source: https://archive.stsci.edu/prepds/tess-data-alerts/ </sup>
+   <sup> Simulated light curves from TESS End-to-End 6 <br>Source: https://archive.stsci.edu/prepds/tess-data-alerts/ </sup>
   </td>
  </tr>
 
