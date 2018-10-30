@@ -61,12 +61,12 @@ Supported data sets:
   
    <!-- preview -->
   <td width=63>
-  <a href="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_Kepler.ipynb"><img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.astro.kepler.png"/></a>  
+  <a href="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_Kepler.ipynb"><img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.astro.kepler.png"/></a>
   </td>
    
    <!-- description -->
   <td width=500>
-   <img src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_datasource_logo_nasa.png" /> <sup> Light curves for stars imaged by the NASA Kepler Space Telescope <br>Source: https://keplerscience.arc.nasa.gov</sup> 
+   <img src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_datasource_logo_nasa.png" /> <sup> Light curves for stars imaged by the NASA Kepler Space Telescope <br>Source: https://keplerscience.arc.nasa.gov</sup>
   </td>
  </tr>
  
@@ -113,7 +113,7 @@ Supported data sets:
 
    <!-- preview -->
   <td width=63>
-  <a href="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_TESS_Data_Alerts.ipynb"><img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.astro.tess.data"/></a>
+  <a href="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_TESS_Data_Alerts.ipynb"><img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.astro.tess.data.png"/></a>
   </td>
 
    <!-- description -->
@@ -138,7 +138,7 @@ Supported data sets:
 
    <!-- preview -->
   <td width=63>
-  <a href="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_TESS_Simulated_Data.ipynb"><img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.astro.tess.simulated"/></a>
+  <a href="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_TESS_Simulated_Data.ipynb"><img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.astro.tess.simulated.png"/></a>
   </td>
 
    <!-- description -->
