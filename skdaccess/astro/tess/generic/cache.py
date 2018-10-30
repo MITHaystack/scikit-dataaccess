@@ -52,6 +52,8 @@ class DataFetcher(DataFetcherCache):
     def getTargetInformation():
         """
         Retrieve Target list information
+
+        @return Target information list
         """
     pass
 
@@ -59,7 +61,7 @@ class DataFetcher(DataFetcherCache):
         """
         Generate URL from TID
 
-        @param tid: Input Tess ID
+        @param tid_list: Input Tess ID list
         @return URL List of of objects in tid_list
         """
         pass

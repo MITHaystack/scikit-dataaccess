@@ -39,7 +39,7 @@ class DataFetcher(DataFetcherStream):
     Class for handling data requests to data.lacity.org
     """
 
-    def __init__(self, endpoint, parameters, label, verbose=False, app_token = None, date_columns=None, **pandas_kwargs):
+    def __init__(self, endpoint, parameters, label, verbose=False, app_token = None, **pandas_kwargs):
         """
         Initialize Data Fetcher for accessing data.lacity.org
 
@@ -48,6 +48,7 @@ class DataFetcher(DataFetcherStream):
         @param label: Label of pandas dataframe
         @param verbose: Print out extra information
         @param app_token: Application token to use to avoid throttling issues
+        @param date_columns
         @param pandas_kwargs: Any additional key word arguments are passed to pandas.read_csv
         """
         self.base_url = 'https://data.lacity.org/resource/'

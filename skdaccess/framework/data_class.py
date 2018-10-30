@@ -136,6 +136,7 @@ class DataFetcherBase(object):
 
         @param section: Section of configuration item
         @param key: Configuration key value
+        @param value: Value to be written
         @return Requested configuration item or None if it doesn't exist
         """
         conf = DataFetcherBase.getConfig()

@@ -51,7 +51,7 @@ class DataFetcher(GenericDF):
         """
         Generate URL from TID
 
-        @param tid: Input Tess ID
+        @param tid_list: Input Tess ID list
         @param return url to access data
         """
 
