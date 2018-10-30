@@ -97,7 +97,56 @@ Supported data sets:
  </tr>
 
 
-  
+  <!--- ENTRY ---------------------------------->
+ <tr>
+  <td width=2>
+  <p><o:p>&nbsp;</o:p></p>
+  </td>
+
+   <!-- namespace -->
+  <td width=200>
+  <sup>
+  <img src=https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_astro.png>
+         astro.tess.data
+  </sup>
+  </td>
+
+   <!-- preview -->
+  <td width=63>
+  <a href="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_TESS_Data_Alerts.ipynb"><img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.astro.tess.data"/></a>
+  </td>
+
+   <!-- description -->
+  <td width=500>
+   <sup> TESS Data Alerts <br>Source: https://archive.stsci.edu/prepds/tess-data-alerts/ </sup>
+  </td>
+ </tr>
+
+  <!--- ENTRY ---------------------------------->
+ <tr>
+  <td width=2>
+  <p><o:p>&nbsp;</o:p></p>
+  </td>
+
+   <!-- namespace -->
+  <td width=200>
+  <sup>
+  <img src=https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_astro.png>
+         astro.tess.simulated
+  </sup>
+  </td>
+
+   <!-- preview -->
+  <td width=63>
+  <a href="https://github.com/MITHaystack/scikit-dataaccess/blob/master/skdaccess/examples/Demo_TESS_Simulated_Data.ipynb"><img alt="Preview" src="https://github.com/MITHaystack/scikit-dataaccess/raw/master/skdaccess/docs/images/icon_skdaccess.astro.tess.simulated"/></a>
+  </td>
+
+   <!-- description -->
+  <td width=500>
+   <sup> TESS End-to-End 6 simulated data <br>Source: https://archive.stsci.edu/prepds/tess-data-alerts/ </sup>
+  </td>
+ </tr>
+
   <!--- ENTRY ---------------------------------->
  <tr>
   <td width=2>
